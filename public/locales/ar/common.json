@@ -1,0 +1,18 @@
+{
+  "Welcome to Phenix Accounting, Warehouse, and Management Systems": "مرحباً بك في أنظمة فينيكس للمحاسبة و المستودعات و الإدارة",
+  "Phenix System: The easiest and most integrated accounting solution for managing sales, inventory, and payroll.": "نظام فينيكس : الحل المحاسبي المتكامل والأسهل لإدارة المبيعات، المخازن، والرواتب.",
+  "Simple to use, accurate reporting, and complete flexibility to suit your company's needs": "بساطة في الاستخدام، دقة في التقارير، ومرونة تامة لتناسب احتياجات شركتك",
+  "Start Now": "إبدأ الآن",
+
+  "Request a Demo": "طلب نسخة تجريبية",
+  "Contact Technical Support": "الإستعانة بفريق الدعم الفني",
+  "Submit Feedback & Complaints": "تقديم ملاحظات و شكاوى",
+  "Database Rotation": "تدوير قاعدة البيانات",
+
+  "needHelp": {
+    "email": "البريد الإلكتروني",
+    "whatsapp": "واتساب",
+    "liveChat": "الدردشة المباشرة",
+    "needHelp": "تحتاج مساعدة؟"
+  }
+}

@@ -1,14 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { crmApi } from "../api/apiSlice";
+import { apiSlice } from "../api/apiSlice";
 import authReducer from "../features/auth/authSlice";
 import settingsReducer from "../features/settings/settingsSlice";
 
 export const store = configureStore({
   reducer: {
     // 1. إضافة الـ API Slice
-    // نستخدم [crmApi.reducerPath] ليكون الاسم ديناميكياً
+    // نستخدم [apiSlice.reducerPath] ليكون الاسم ديناميكياً
     // (عادةً هو "api")
-    [crmApi.reducerPath]: crmApi.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
 
     // 2. إضافة الـ Auth Slice
     // هذا سيتيح لنا الوصول لبيانات المستخدم عبر
@@ -21,7 +21,7 @@ export const store = configureStore({
   // هذا السطر ضروري جداً لتفعيل ميزات مثل
   // Caching و Invalidating Tags
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(crmApi.middleware),
+    getDefaultMiddleware().concat(apiSlice.middleware),
 
   // 4. تفعيل Redux DevTools (اختياري ولكنه مفيد جداً في التطوير)
   devTools: true,

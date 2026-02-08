@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-import { logOut, selectCurrentUser } from "../../../auth/authSlice";
+import { useDispatch } from "react-redux";
+import { logOut } from "../../../auth/authSlice";
+import { Link } from "react-router";
 
-const DashboardSidebar = () => {
-  const user = useSelector(selectCurrentUser);
+const DashboardSidebar = ({ sidebarLinks }) => {
   const dispatch = useDispatch();
   return (
     <div>
@@ -13,41 +13,15 @@ const DashboardSidebar = () => {
           <Link to="/dashboard" className="block p-2 hover:bg-slate-700">
             الرئيسية
           </Link>
-
-          {/* روابط للمدير فقط */}
-          {user.role === "admin" && (
-            <>
-              <Link
-                to="/dashboard/users"
-                className="block p-2 hover:bg-slate-700"
-              >
-                إدارة المستخدمين
-              </Link>
-              <Link
-                to="/dashboard/settings"
-                className="block p-2 hover:bg-slate-700"
-              >
-                إعدادات النظام
-              </Link>
-            </>
-          )}
-
-          {/* روابط للدعم الفني */}
-          {user.role === "user" && (
+          {sidebarLinks.map((link) => (
             <Link
-              to="/dashboard/tickets"
+              key={link.to}
+              to={link.to}
               className="block p-2 hover:bg-slate-700"
             >
-              تذاكر الدعم
+              {link.label}
             </Link>
-          )}
-
-          <Link
-            to="/dashboard/profile"
-            className="block p-2 hover:bg-slate-700"
-          >
-            ملفي الشخصي
-          </Link>
+          ))}
         </nav>
 
         <button

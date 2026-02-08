@@ -1,13 +1,16 @@
-import AdminStats from "../components/AdminStats";
-import SupportStats from "../components/SupportStats";
-import CustomerStats from "../components/CustomerStats";
+import { ROLES_CONFIG } from "../../../routes/roles.config";
 import { useSelector } from "react-redux";
 import { useGetDashboardStatsQuery } from "../../users/usersApiSlice";
 
 const DashboardPage = () => {
   const { user } = useSelector((state) => state.auth);
+
   const { data: stats, isLoading } = useGetDashboardStatsQuery();
+
   if (isLoading) return <p>جاري تحميل بيانات الداشبورد...</p>;
+
+  const RoleStatsComponent = ROLES_CONFIG[user.role]?.statsComponent;
+
   return (
     <div className="dashboard-container">
       <h1>لوحة التحكم - أهلاً {user.name}</h1>
@@ -23,9 +26,7 @@ const DashboardPage = () => {
 
       {/* هنا السحر: نعرض المكون بناءً على الرتبة القادمة من Laravel */}
       <div className="stats-grid">
-        {user.role === "admin" && <AdminStats />}
-        {user.role === "support" && <SupportStats />}
-        {user.role === "customer" && <CustomerStats />}
+        {RoleStatsComponent && <RoleStatsComponent />}
       </div>
 
       {/* هنا مكونات مشتركة يراها الجميع مثل التقويم أو المهام */}

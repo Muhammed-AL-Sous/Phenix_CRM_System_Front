@@ -1,27 +1,34 @@
-
 import { createBrowserRouter } from "react-router";
 
-import RootLayout from "../components/layout/RootLayout";
+// Layouts Components
+import PublicLayout from "../components/layout/PublicLayout";
+import AuthLayout from "../features/auth/components/layout/AuthLayout";
 import DashboardLayout from "../features/dashboard/components/layout/DashboardLayout";
+
 import ErrorPage from "../pages/ErrorPage";
 
-// استيراد مصفوفات المسارات
+// Routes Arrays
 import { publicRoutes } from "./PublicRoutes";
 import { authRoutes } from "./AuthRoutes";
 import { generateRoleRoutes } from "./roleRouteGenerator";
 
 export const router = createBrowserRouter([
+  // 🌐 Public Pages
   {
-    path: "/",
-    element: <RootLayout />,
+    element: <PublicLayout />,
     errorElement: <ErrorPage />,
-    children: [
-      ...publicRoutes,
-      ...authRoutes,
-      {
-        element: <DashboardLayout />,
-        children: [...generateRoleRoutes()],
-      },
-    ],
+    children: [...publicRoutes],
+  },
+
+  // 🔐 Auth Pages
+  {
+    element: <AuthLayout />,
+    children: [...authRoutes],
+  },
+
+  // 📊 Dashboard
+  {
+    element: <DashboardLayout />,
+    children: [...generateRoleRoutes()],
   },
 ]);

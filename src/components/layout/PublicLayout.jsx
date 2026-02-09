@@ -3,7 +3,7 @@ import { Outlet } from "react-router";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-export default function RootLayout() {
+const PublicLayout = () => {
   return (
     <div
       style={{
@@ -29,4 +29,6 @@ export default function RootLayout() {
       <Footer />
     </div>
   );
-}
+};
+
+export default PublicLayout;

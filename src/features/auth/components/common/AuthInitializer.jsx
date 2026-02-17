@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useGetUserDataQuery } from "../../auth/authApiSlice";
-import { setCredentials, logOut } from "../../auth/authSlice";
+import { useGetUserDataQuery } from "../../../auth/authApiSlice";
+import { setCredentials, logOut } from "../../authSlice";
 
 export default function AuthInitializer({ children }) {
   const dispatch = useDispatch();

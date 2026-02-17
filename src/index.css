@@ -6,14 +6,39 @@
   -moz-box-sizing: border-box;
 }
 
+:root {
+  --red: #dc2626; /* Vibrant red from logo */
+  --dark: #111827; /* Dark grey/black for text */
+  --light: #f3f4f6; /* Light grey for backgrounds */
+  --accent: #fef2f2; /* Very light red for backgrounds */
+}
+
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "Livvic";
+  font-family: "Almarai", sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #901519, #f9f9f9);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #f9f9f9, #901519);
 }
 
 a {
@@ -25,4 +50,22 @@ ul {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #ed1c24, #fafafa, #ed1c24);
+  background-size: 200% auto;
+  animation: gradient 3s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }

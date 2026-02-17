@@ -181,3 +181,39 @@
 }
 
 /* ===================================================================================== */
+
+/* almarai-300 - arabic_latin */
+@font-face {
+  font-display: swap;
+  font-family: "Almarai";
+  font-style: normal;
+  font-weight: 300;
+  src: url("/fonts/almarai/almarai-v19-arabic_latin-300.woff2") format("woff2");
+}
+
+/* almarai-regular 400 - arabic_latin */
+@font-face {
+  font-display: swap;
+  font-family: "Almarai";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/almarai/almarai-v19-arabic_latin-regular.woff2") format("woff2");
+}
+
+/* almarai-700 - arabic_latin */
+@font-face {
+  font-display: swap;
+  font-family: "Almarai";
+  font-style: normal;
+  font-weight: 700;
+  src: url("/fonts/almarai/almarai-v19-arabic_latin-700.woff2") format("woff2");
+}
+
+/* almarai-800 - arabic_latin */
+@font-face {
+  font-display: swap;
+  font-family: "Almarai";
+  font-style: normal;
+  font-weight: 800;
+  src: url("/fonts/almarai/almarai-v19-arabic_latin-800.woff2") format("woff2");
+}

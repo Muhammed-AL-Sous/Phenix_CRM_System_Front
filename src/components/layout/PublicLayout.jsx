@@ -1,20 +1,16 @@
+import { ParticleBackground } from "../utility/ParticleBackground";
+import Navbar from "./Navbar";
 import { Suspense } from "react";
 import { Outlet } from "react-router";
-import Navbar from "./Navbar";
+import ScrollToTopButton from "../utility/ScrollToTopButton";
 import Footer from "./Footer";
 
 const PublicLayout = () => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="bg-[#0a0a0a] text-white">
+      <ParticleBackground />
       <Navbar />
-
-      <main style={{ flexGrow: 1 }}>
+      <main className="relative z-10">
         <Suspense
           fallback={
             <div style={{ padding: "2rem", textAlign: "center" }}>
@@ -25,7 +21,7 @@ const PublicLayout = () => {
           <Outlet />
         </Suspense>
       </main>
-
+      <ScrollToTopButton />
       <Footer />
     </div>
   );

@@ -14,7 +14,7 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <div className="relative max-w-7xl mx-auto">
+    <div className="relative py-4 max-w-7xl mx-auto">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#ed1c24]/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#ed1c24]/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -22,7 +22,7 @@ const FeaturesSection = () => {
       </div>
 
       <div className="relative z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row items-center justify-center md:justify-between gap-12">
             {/* Left Content */}
             <div className="lg:w-1/2 space-y-8">
@@ -32,7 +32,7 @@ const FeaturesSection = () => {
                   <span className="text-gradient"> Modern Tech</span>
                 </h2>
 
-                <p className="text-lg text-gray-400 max-w-xl">
+                <p className="text-lg text-gray-400 max-w-xl" style={{fontFamily:"livvic"}}>
                   We create exceptional digital experiences that combine
                   cutting-edge technology with stunning design. Let's build
                   something amazing together.
@@ -76,29 +76,29 @@ const FeaturesSection = () => {
                       key={i}
                       className="bg-black/30 rounded-xl p-6 border border-white/5 hover:border-[#ff6b6b]/30 transition-all duration-300"
                     >
-                      <div className="text-3xl font-bold text-gradient mb-2">
+                      <div className="text-2xl md:text-3xl font-bold text-gradient mb-2">
                         {s.value}
                       </div>
-                      <p className="text-sm text-gray-400">{s.label}</p>
+                      <p className="text-sm text-gray-400" style={{fontFamily:"livvic"}}>{s.label}</p>
                     </div>
                   ))}
-
                 </div>
-                  <div className="mt-8 pt-8 border-t border-white/10">
-                    <p className="text-md text-gray-400 mb-4">
-                      The Best Integrated Accounting System
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {features.map((val) => (
-                        <span
-                          key={val.id}
-                          className="px-4 py-2 bg-white/5 rounded-lg text-sm"
-                        >
-                          {val.label}
-                        </span>
-                      ))}
-                    </div>
+                <div className="mt-8 pt-8 border-t border-white/10">
+                  <p className="text-md text-gray-400 mb-4">
+                    The Best Integrated Accounting System
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {features.map((val) => (
+                      <span
+                        key={val.id}
+                        className="px-4 py-2 bg-white/5 rounded-lg text-sm"
+                        style={{fontFamily:"livvic"}}
+                      >
+                        {val.label}
+                      </span>
+                    ))}
                   </div>
+                </div>
               </div>
             </div>
             {/* ==== Right Content ==== */}

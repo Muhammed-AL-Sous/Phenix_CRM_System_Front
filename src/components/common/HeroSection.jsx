@@ -1,6 +1,6 @@
 const HeroSection = () => {
   return (
-    <div className="relative pt-2 h-screen flex items-center justify-center flex-col text-center px-4">
+    <div className="relative h-screen flex items-center justify-center flex-col text-center">
       <div>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight flex flex-col">
           <span className="m-0">
@@ -12,11 +12,11 @@ const HeroSection = () => {
       </div>
 
       <div>
-        <p className="text-gray-400 text-lg md:text-xl lg:text-2xl mb-4">
-          Phenix System: The easiest and most integrated accounting solution for
+        <p className="text-gray-400 text-lg md:text-2xl mb-4" style={{fontFamily:"livvic"}}>
+          Phenix System : The easiest and most integrated accounting solution for
           managing sales, inventory, and payroll.
         </p>
-        <p className="text-gray-400 text-lg md:text-xl lg:text-2xl">
+        <p className="text-gray-400 text-lg md:text-2xl" style={{fontFamily:"livvic"}}>
           Simple to use, accurate reporting, and complete flexibility to suit
           your company's needs
         </p>

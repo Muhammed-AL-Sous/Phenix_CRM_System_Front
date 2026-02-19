@@ -1,3 +1,4 @@
+// React Hooks
 import {
   useState,
   useEffect,
@@ -5,49 +6,52 @@ import {
   useRef,
   useCallback,
 } from "react";
+
+// React Router Dom
 import { Link } from "react-router";
+
+// React Redux
+import { useDispatch, useSelector } from "react-redux";
+
+// Mode & Language
+import { toggleMode, setLang } from "../../store/Slices/uiSlice";
+
+// Translation Hook
+import { useTranslation } from "react-i18next";
+
+// Main Logo
 import phenixLogo from "/public/images/phenix_common/phenix_logo.png";
-import arabicIcon from "/public/images/phenix_lang/ar.png";
-import englishIcon from "/public/images/phenix_lang/en.png";
 
 const Navbar = () => {
+  const { t } = useTranslation("navbar");
+  const dispatch = useDispatch();
+  const { mode, lang } = useSelector((state) => state.ui);
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const menuRef = useRef(null);
   const toggleRef = useRef(null);
 
-  const langOptions = [
-    { label: "العربية", lang: "ar", icon: arabicIcon },
-    { label: "English", lang: "en", icon: englishIcon },
-  ];
+  /* ================= Scroll Effect ================= */
 
-  /* ================================
-     Scroll Effect
-  ================================= */
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  /* ================================
-     Lock Body Scroll
-  ================================= */
+  /* ================= Lock Body Scroll ================= */
+
   useLayoutEffect(() => {
     document.body.style.overflow = isMobileOpen ? "hidden" : "auto";
-
     return () => {
       document.body.style.overflow = "auto";
     };
   }, [isMobileOpen]);
 
-  /* ================================
-     Click Outside Detection
-  ================================= */
+  /* ================= Click Outside ================= */
+
   const handleClickOutside = useCallback(
     (event) => {
       if (
@@ -68,14 +72,13 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [handleClickOutside]);
 
-  /* ================================
-     Navigation Links
-  ================================= */
+  /* ================= Navigation Links ================= */
+
   const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Agents", path: "/agents" },
-    { name: "What's New", path: "/whats-new" },
+    { name: "home", path: "/" },
+    { name: "about", path: "/about" },
+    { name: "agents", path: "/agents" },
+    { name: "what's_new", path: "/whats-new" },
   ];
 
   return (
@@ -111,69 +114,71 @@ const Navbar = () => {
                   to={link.path}
                   className="group text-sm uppercase tracking-wider text-white"
                 >
-                  {link.name}
+                  {t(link.name)}
                   <span className="block h-0.5 w-0 group-hover:w-full transition-all duration-500 bg-[#ed1c24]" />
                 </Link>
               ))}
 
               {/* Change Language Button */}
               <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="size-6 cursor-pointer"
+                <button
+                  onClick={() => dispatch(setLang(lang === "ar" ? "en" : "ar"))}
+                  className="text-sm font-medium text-gray-700
+                   dark:text-white cursor-pointer group"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 0 1-3.827-5.802"
-                  />
-                </svg>
+                  {lang === "ar" ? "EN" : "AR"}
+                  <span className="block h-0.5 w-0 group-hover:w-full transition-all duration-500 bg-[#ed1c24]" />
+                </button>
               </div>
               {/* ==== Change Language Button ==== */}
 
               {/* Change Mode Buttons */}
               <div>
                 {/* Dark Mode */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="size-6 cursor-pointer"
+                <button
+                  onClick={() => dispatch(toggleMode())}
+                  className="text-gray-700 dark:text-white hover:text-[#ed1c24] relative top-1"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
-                  />
-                </svg>
-
-                {/* Light Mode */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  className="size-6 cursor-pointer"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
-                  />
-                </svg>
+                  {mode === "dark" ? (
+                    // Light Button
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      className="size-6 cursor-pointer"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                      />
+                    </svg>
+                  ) : (
+                    // Dark Button
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      className="size-6 cursor-pointer"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z"
+                      />
+                    </svg>
+                  )}
+                </button>
               </div>
               {/* ==== Change Mode Buttons ==== */}
 
               <Link to="/login">
                 <button className="px-6 py-2 bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-full text-white font-medium hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer">
-                  Get Started
+                  {t("get_Started")}
                 </button>
               </Link>
             </div>
@@ -287,7 +292,7 @@ const Navbar = () => {
             onClick={() => setIsMobileOpen(false)}
           >
             <button className="w-full bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-lg text-white font-medium hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer px-6 py-3">
-              Get Started
+              {t("get_Started")}
             </button>
           </Link>
         </div>

@@ -1,7 +1,8 @@
 {
   "home": "الرئيسية",
-  "about-phenix": "حول فينيكس",
+  "about": "حول فينيكس",
   "agents": "الوكلاء",
-  "what-is-new-with-us": "ما جديدنا",
-  "Sign In": "تسجيل الدخول"
+  "what's_new": "ما جديدنا",
+  "Sign In": "تسجيل الدخول",
+  "get_Started": "ابدأ الآن"
 }

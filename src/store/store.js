@@ -2,9 +2,11 @@ import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../api/apiSlice";
 import authReducer from "../features/auth/authSlice";
 import settingsReducer from "../features/settings/settingsSlice";
+import uiReducer from "./Slices/uiSlice";
 
 export const store = configureStore({
   reducer: {
+    ui: uiReducer,
     // 1. إضافة الـ API Slice
     // نستخدم [apiSlice.reducerPath] ليكون الاسم ديناميكياً
     // (عادةً هو "api")

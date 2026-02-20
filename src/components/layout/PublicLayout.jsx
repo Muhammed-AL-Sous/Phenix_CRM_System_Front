@@ -1,14 +1,30 @@
-import { ParticleBackground } from "../utility/ParticleBackground";
+// Layout Public Components
 import Navbar from "./Navbar";
-import { Suspense } from "react";
-import { Outlet } from "react-router";
-import ScrollToTopButton from "../utility/ScrollToTopButton";
 import Footer from "./Footer";
 
+// Utilities Public Components
+import { ParticleBackground } from "../utility/ParticleBackground";
+import ScrollToTopButton from "../utility/ScrollToTopButton";
+import ParticleNetwork from "../utility/ParticleNetwork";
+
+// React & Redux
+import { Suspense } from "react";
+import { Outlet } from "react-router";
+import { useSelector } from "react-redux";
+
 const PublicLayout = () => {
+  const { mode} = useSelector((state) => state.ui);
   return (
-    <div className="bg-[#0a0a0a] text-white">
-      <ParticleBackground />
+    <div className="dark:bg-[#0a0a0a] bg-white">
+
+      {mode === "dark" ?
+      ( // Dark Mode
+        <ParticleBackground />
+      ) : (
+        // Light Mode
+        <ParticleNetwork />
+      )}
+
       <Navbar />
       <main className="relative z-10">
         <Suspense

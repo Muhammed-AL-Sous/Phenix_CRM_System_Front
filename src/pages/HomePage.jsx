@@ -10,7 +10,7 @@ const HomePage = () => {
       {/* Hero Section */}
       <RevealSection
         className="relative overflow-x-hidden px-4 mx-auto
-        bg-linear-to-b from-black/60 via-black/40 to-black/60"
+        dark:bg-linear-to-b dark:from-black/60 dark:via-black/40 dark:to-black/60"
       >
         <HeroSection />
       </RevealSection>
@@ -19,7 +19,7 @@ const HomePage = () => {
       {/* Features Section */}
       <RevealSection
         className="relative overflow-x-hidden px-4 mx-auto
-        bg-linear-to-b from-black/60 via-black/40 to-black/60"
+       dark:bg-linear-to-b dark:from-black/60 dark:via-black/40 dark:to-black/60"
       >
         <FeaturesSection />
       </RevealSection>
@@ -28,7 +28,7 @@ const HomePage = () => {
       {/* Services Section */}
       <RevealSection
         className="relative overflow-x-hidden px-4 mx-auto
-        bg-linear-to-b from-black/60 via-black/40 to-black/60"
+         dark:bg-linear-to-b dark:from-black/60 dark:via-black/40 dark:to-black/60"
       >
         <ServicesSection />
       </RevealSection>
@@ -37,7 +37,7 @@ const HomePage = () => {
       {/* Testimonials Section */}
       <RevealSection
         className="relative overflow-x-hidden px-4 mx-auto
-        bg-linear-to-b from-black/60 via-black/40 to-black/60"
+        dark:bg-linear-to-b dark:from-black/60 dark:via-black/40 dark:to-black/60"
       >
         <TestimonialsSection />
       </RevealSection>

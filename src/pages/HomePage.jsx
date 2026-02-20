@@ -9,7 +9,7 @@ const HomePage = () => {
     <>
       {/* Hero Section */}
       <RevealSection
-        className="relative overflow-x-hidden px-4 mx-auto
+        className="relative overflow-x-hidden mx-auto px-4
         dark:bg-linear-to-b dark:from-black/60 dark:via-black/40 dark:to-black/60"
       >
         <HeroSection />

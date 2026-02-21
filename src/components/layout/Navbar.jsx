@@ -187,7 +187,9 @@ const Navbar = () => {
                   style={{
                     fontFamily: direction === "rtl" ? "Almarai" : "Inter",
                   }}
-                  className="px-6 py-2 bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-full text-white font-medium hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer"
+                  className="px-4 py-2 bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-full text-white font-medium
+                  transition-transform transform hover:scale-103 shadow-red-200 dark:hover:shadow-none
+                hover:shadow-lg cursor-pointer will-change-transform"
                 >
                   {t("get_Started")}
                 </button>

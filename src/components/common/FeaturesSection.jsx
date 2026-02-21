@@ -16,10 +16,95 @@ const FeaturesSection = () => {
   ];
 
   const features = [
-    { id: 1, label: "Easy to Use" },
-    { id: 2, label: "Accurate Reports" },
-    { id: 3, label: "For all Sectors" },
-    { id: 4, label: "Mobility Solution" },
+    {
+      id: 1,
+      label: "Easy to Use",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="lucide lucide-hand-heart-icon lucide-hand-heart"
+        >
+          <path d="M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16" />
+          <path d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95" />
+          <path d="m2 15 6 6" />
+          <path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91" />
+        </svg>
+      ),
+    },
+    {
+      id: 2,
+      label: "Accurate Reports",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="lucide lucide-folder-check-icon lucide-folder-check"
+        >
+          <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+          <path d="m9 13 2 2 4-4" />
+        </svg>
+      ),
+    },
+    {
+      id: 3,
+      label: "For all Sectors",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="lucide lucide-factory-icon lucide-factory"
+        >
+          <path d="M12 16h.01" />
+          <path d="M16 16h.01" />
+          <path d="M3 19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5a.5.5 0 0 0-.769-.422l-4.462 2.844A.5.5 0 0 1 15 10.5v-2a.5.5 0 0 0-.769-.422L9.77 10.922A.5.5 0 0 1 9 10.5V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z" />
+          <path d="M8 16h.01" />
+        </svg>
+      ),
+    },
+    {
+      id: 4,
+      label: "Mobility Solution",
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="lucide lucide-globe-icon lucide-globe"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+          <path d="M2 12h20" />
+        </svg>
+      ),
+    },
   ];
 
   return (
@@ -158,21 +243,23 @@ const FeaturesSection = () => {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {features.map((val) => (
-                      <span
+                      <div
                         key={val.id}
-                        className="px-4 py-2 dark:bg-white/5 dark:text-white
+                        className="flex items-center gap-2
+                         px-4 py-2 dark:bg-white/5 dark:text-white
                          dark:border-white/5 dark:hover:bg-transparent
                         bg-gray-50 rounded-full border border-gray-100 shadow-md
                          text-gray-700 text-sm hover:bg-white font-medium
                         hover:shadow-lg transition-all cursor-default
-                        "
+                         "
                         style={{
                           fontFamily:
                             direction === "rtl" ? "Vazirmatn" : "Livvic",
                         }}
                       >
+                        <span className="text-[#DC2626]">{val.icon}</span>
                         {t(val.label)}
-                      </span>
+                      </div>
                     ))}
                   </div>
                 </div>

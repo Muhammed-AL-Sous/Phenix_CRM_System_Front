@@ -1,34 +1,49 @@
+// Translation Hook
+import { useTranslation } from "react-i18next";
+
+// Redux
+import { useSelector } from "react-redux";
+
 const HeroSection = () => {
+  const { direction } = useSelector((state) => state.ui);
+  const { t } = useTranslation(["home"]);
+
   return (
     <div className="relative h-screen flex items-center justify-center flex-col text-center">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-15">
         <h1
-          style={{ fontFamily: "Inter", fontWeight: "800" }}
+          style={{
+            fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
+            fontWeight: "800",
+          }}
           className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl
           dark:text-white text-gray-900 dark:font-bold mb-8 leading-tight flex flex-col"
         >
           <span className="m-0">
-            Welcome to{" "}
-            <span className="text-gradient m-0">Phenix Accounting</span>
+            {t("Welcome To")}{" "}
+            <span className="text-gradient m-0 text-[#DC2626]">{t("Phenix Accounting")}</span>
           </span>
-          <span className="m-0">Warehouse, and Management Systems</span>
+          <span className="m-0">{t("Warehouse, and Management Systems")}</span>
         </h1>
       </div>
 
       <div>
         <p
-          className="dark:text-gray-400 max-w-5xl  text-gray-600 text-lg md:text-2xl mb-4"
-          style={{ fontFamily: "livvic" }}
+          className="dark:text-gray-400 max-w-5xl
+           text-gray-600 text-md md:text-lg lg:text-2xl mb-4"
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic" }}
         >
-          Phenix System : The easiest and most integrated accounting solution
-          for managing sales, inventory, and payroll.
+          {t(
+            "Phenix System : The Easiest and Most Integrated Accounting Solution For Managing Sales, Inventory, and Payroll.",
+          )}
         </p>
         <p
-          className="dark:text-gray-400 max-w-5xl  text-gray-600  text-lg md:text-2xl"
-          style={{ fontFamily: "livvic" }}
+          className="dark:text-gray-400 max-w-5xl text-gray-600 text-md md:text-lg lg:text-2xl"
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic" }}
         >
-          Simple to use, accurate reporting, and complete flexibility to suit
-          your company's needs
+          {t(
+            "Simple to Use, Accurate Reporting, and Complete Flexibility to Suit Your Company's Needs",
+          )}
         </p>
       </div>
 

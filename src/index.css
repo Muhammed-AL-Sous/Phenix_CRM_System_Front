@@ -54,13 +54,14 @@ ul {
   margin: 0;
 }
 
-.text-gradient {
+.dark .text-gradient {
   background: linear-gradient(90deg, #ed1c24, #fafafa, #ed1c24);
   background-size: 200% auto;
-  animation: gradient 3s linear infinite;
+  animation: gradient 4s linear infinite;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  -webkit-animation: gradient 4s linear infinite;
 }
 
 

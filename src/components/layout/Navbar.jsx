@@ -25,7 +25,7 @@ import phenixLogo from "/public/images/phenix_common/phenix_logo.png";
 const Navbar = () => {
   const { t } = useTranslation("navbar");
   const dispatch = useDispatch();
-  const { mode, lang } = useSelector((state) => state.ui);
+  const { mode, lang, direction } = useSelector((state) => state.ui);
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -113,7 +113,7 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   style={{
-                    fontFamily: '"Inter", sans-serif',
+                    fontFamily: direction === "rtl" ? "Almarai" : "Inter",
                   }}
                   className="group text-sm font-medium uppercase text-gray-800 dark:text-white"
                 >
@@ -129,7 +129,7 @@ const Navbar = () => {
                   className="text-sm font-medium text-gray-800
                    dark:text-white cursor-pointer group"
                   style={{
-                    fontFamily: '"Inter", sans-serif',
+                    fontFamily: direction === "rtl" ? "Almarai" : "Inter",
                   }}
                 >
                   {lang === "ar" ? "EN" : "AR"}
@@ -184,7 +184,9 @@ const Navbar = () => {
 
               <Link to="/login">
                 <button
-                  style={{ fontFamily: "Inter" }}
+                  style={{
+                    fontFamily: direction === "rtl" ? "Almarai" : "Inter",
+                  }}
                   className="px-6 py-2 bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-full text-white font-medium hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer"
                 >
                   {t("get_Started")}
@@ -201,7 +203,7 @@ const Navbar = () => {
                   className="text-sm text-gray-800
                    dark:text-white cursor-pointer group"
                   style={{
-                    fontFamily: '"Inter", sans-serif',
+                    fontFamily: direction === "rtl" ? "Almarai" : "Inter",
                     fontWeight: "600",
                   }}
                 >
@@ -301,7 +303,7 @@ const Navbar = () => {
               to={link.path}
               onClick={() => setIsMobileOpen(false)}
               className="dark:text-white text-gray-800 font-bold text-md uppercase"
-              style={{ fontFamily: "Inter" }}
+              style={{ fontFamily: direction === "rtl" ? "Almarai" : "Inter" }}
             >
               {t(link.name)}
             </Link>
@@ -313,7 +315,7 @@ const Navbar = () => {
             onClick={() => setIsMobileOpen(false)}
           >
             <button
-              style={{ fontFamily: "Inter" }}
+              style={{ fontFamily: direction === "rtl" ? "Almarai" : "Inter" }}
               className="w-full font-bold bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-lg text-white hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer px-6 py-3"
             >
               {t("get_Started")}

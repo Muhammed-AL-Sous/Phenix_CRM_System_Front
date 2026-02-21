@@ -241,11 +241,11 @@ const FeaturesSection = () => {
                   <p className="text-lg font-bold dark:text-gray-400 text-gray-600 mb-4">
                     {t("The Best Integrated Accounting System")}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 gap-x-20 gap-y-4">
                     {features.map((val) => (
                       <div
                         key={val.id}
-                        className="flex items-center gap-2
+                        className="flex items-center gap-4
                          px-4 py-2 dark:bg-white/5 dark:text-white
                          dark:border-white/5 dark:hover:bg-transparent
                         bg-gray-50 rounded-full border border-gray-100 shadow-md

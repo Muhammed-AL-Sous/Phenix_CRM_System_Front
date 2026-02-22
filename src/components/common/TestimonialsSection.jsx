@@ -50,7 +50,7 @@ const TestimonialsSection = () => {
   const testimonials = [
     {
       id: 1,
-      name: "John Doe",
+      name: "Ahmad Yasin",
       role: "CEO, Company",
       text: "An Excellent, Modern System, and We Want to Continue Working With this Wonderful System.",
       company: "Dajajati",
@@ -59,7 +59,7 @@ const TestimonialsSection = () => {
     },
     {
       id: 2,
-      name: "Sarah Smith",
+      name: "Sarah AL-Omar",
       role: "Marketing Manager",
       text: "The Program is More Than Wonderful. I Have Many Branches. I Was Able to Link and Follow Up on All the Branches.  Everyone is Looking For Excellence ...Thank you Phenix",
       company: "Bim",
@@ -68,7 +68,7 @@ const TestimonialsSection = () => {
     },
     {
       id: 3,
-      name: "Michael Brown",
+      name: "Michael Tony",
       role: "Product Designer",
       text: "Clean Design, Smooth Animations, and Great Performance.",
       company: "Beit AL-Mukhtar",
@@ -111,6 +111,8 @@ const TestimonialsSection = () => {
 
       <div ref={sliderRef} className="testimonials-slider">
         <Swiper
+          key={direction} // ← مهم جداً لإجبار إعادة الإنشاء
+          dir={direction} // ← تمرير الاتجاه مباشرة
           modules={[Autoplay, Pagination]}
           loop={true}
           speed={800}
@@ -148,17 +150,17 @@ const TestimonialsSection = () => {
             <SwiperSlide>
               <div className="testimonial-slide" key={testimonial.id}>
                 <div className="testimonial-card">
-                  <div className="testimonial-image">
-                    <img src={testimonial.avatar} alt={testimonial.company} />
-                  </div>
-
                   <div className="testimonial-meta">
                     <div className="testimonial-rating">
                       <RatingStars rating={testimonial.rating} />
                     </div>
-                    <div className="testimonial-company text-gradient">
+                    <div className="testimonial-company text-gradient text-gray-800">
                       {t(testimonial.company)}
                     </div>
+                  </div>
+
+                  <div className="testimonial-image">
+                    <img src={testimonial.avatar} alt={testimonial.company} />
                   </div>
                 </div>
 
@@ -166,9 +168,13 @@ const TestimonialsSection = () => {
                   <p className="testimonial-quote">{t(testimonial.text)}</p>
                 </div>
 
-                <div className="text">
-                  <h3>{t("Name :")} {t(testimonial.name)}</h3>
-                  <p>{t("Role :")} {t(testimonial.role)}</p>
+                <div className="text text-gray-900 dark:text-white/80 leading-relaxed">
+                  <h3>
+                    {t("Name :")} {t(testimonial.name)}
+                  </h3>
+                  <p>
+                    {t("Role :")} {t(testimonial.role)}
+                  </p>
                 </div>
               </div>
             </SwiperSlide>

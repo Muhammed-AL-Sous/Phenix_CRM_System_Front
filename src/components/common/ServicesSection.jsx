@@ -21,7 +21,7 @@ const ServicesSection = () => {
       img: demo,
       title: "Free Trial",
       description:
-        "Try the system before subscribing. Experience the power firsthand.",
+        "Try the System Before Subscribing. Experience the Power Firsthand.",
       color: "#61dafb",
       delay: "0.2s",
     },
@@ -30,7 +30,7 @@ const ServicesSection = () => {
       img: complaint,
       title: "Complaint or Feedback",
       description:
-        "We welcome your input to help improve our services constantly.",
+        "We Welcome Your Input to Help Improve our Services Constantly.",
       color: "#ed1c24",
       delay: "0.4s",
     },
@@ -39,7 +39,7 @@ const ServicesSection = () => {
       img: support,
       title: "Technical Support",
       description:
-        "Fast solutions to technical issues, available whenever you need assistance.",
+        "Fast Solutions to Technical Issues, Available Whenever You Need Assistance.",
       color: "#3178c6",
       delay: "0.6s",
     },
@@ -48,7 +48,7 @@ const ServicesSection = () => {
       img: dataBase,
       title: "Database Rotation",
       description:
-        "Smart and secure data management to keep your business running smoothly.",
+        "Smart and Secure Data Management to Keep Your Business Running Smoothly.",
       color: "#a1a1aa",
       delay: "0.8s",
     },
@@ -58,13 +58,15 @@ const ServicesSection = () => {
 
   return (
     <div className="py-16 max-w-7xl mx-auto relative z-10">
-      <div className="text-center max-w-4xl mx-auto mb-16">
+      <div className="text-center max-w-5xl mx-auto mb-16">
         <h2
-          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai" }}
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter" }}
           className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-gradient mb-6 text-gray-900 leading-tight tracking-wide"
         >
           {t("Choose The Service That")}{" "}
-          <span className="text-[#DC2626]">{t("Suits You")}</span>{" "}
+          <span style={{ color: mode !== "dark" && "#DC2626" }}>
+            {t("Suits You")}
+          </span>{" "}
           {t("and Get Started Now")}
         </h2>
         <p
@@ -126,20 +128,23 @@ const ServicesSection = () => {
               {/* Title */}
               <h3
                 style={{
-                  fontFamily: "Inter",
+                  fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
                   color: mode === "dark" ? "white" : service.color,
                 }}
                 className="font-bold mb-3 text-xl"
               >
-                {service.title}
+                {t(service.title)}
               </h3>
 
               {/* Description */}
               <p
-                className="text-sm font-medium dark:text-gray-400 text-gray-600 leading-relaxed"
-                style={{ fontFamily: "livvic", fontWeight: 500 }}
+                className="text-sm font-medium dark:text-gray-400 text-gray-700 leading-relaxed"
+                style={{
+                  fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic",
+                  fontWeight: 500,
+                }}
               >
-                {service.description}
+                {t(service.description)}
               </p>
 
               {/* Learn More */}
@@ -152,9 +157,9 @@ const ServicesSection = () => {
                   className="text-sm font-semibold flex items-center justify-center gap-2"
                   style={{ color: mode === "dark" ? "white" : service.color }}
                 >
-                  Learn More
+                  {t("Learn More")}
                   <svg
-                    className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                    className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 will-change-transform ${direction === "rtl" ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

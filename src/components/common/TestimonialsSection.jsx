@@ -17,7 +17,16 @@ import "../../assets/styles/testimonials.css";
 // Rating Component
 import RatingStars from "../utility/RatingStars";
 
+// Translation Hook
+import { useTranslation } from "react-i18next";
+
+// Redux
+import { useSelector } from "react-redux";
+
 const TestimonialsSection = () => {
+  const { t } = useTranslation(["home"]);
+  const { mode, direction } = useSelector((state) => state.ui);
+
   const sliderRef = useRef(null);
 
   useEffect(() => {
@@ -43,7 +52,7 @@ const TestimonialsSection = () => {
       id: 1,
       name: "John Doe",
       role: "CEO, Company",
-      text: "An excellent and modern system, we hope to continue to work and serve customers wherever they are.",
+      text: "An Excellent, Modern System, and We Want to Continue Working With this Wonderful System.",
       company: "Dajajati",
       avatar: dajajatiLogo,
       rating: 5,
@@ -52,7 +61,7 @@ const TestimonialsSection = () => {
       id: 2,
       name: "Sarah Smith",
       role: "Marketing Manager",
-      text: "The program is more than wonderful. I have many branches. I was able to link and follow up on all the branches.  Everyone is looking for excellence ...Thank you Phenix",
+      text: "The Program is More Than Wonderful. I Have Many Branches. I Was Able to Link and Follow Up on All the Branches.  Everyone is Looking For Excellence ...Thank you Phenix",
       company: "Bim",
       avatar: BIMLogo,
       rating: 4,
@@ -61,7 +70,7 @@ const TestimonialsSection = () => {
       id: 3,
       name: "Michael Brown",
       role: "Product Designer",
-      text: "Clean design, smooth animations, and great performance.",
+      text: "Clean Design, Smooth Animations, and Great Performance.",
       company: "Beit AL-Mukhtar",
       avatar: beitAlMukhtarLogo,
       rating: 3.5,
@@ -70,7 +79,7 @@ const TestimonialsSection = () => {
       id: 4,
       name: "Fahed Yunani",
       role: "Accountant",
-      text: "Our success is not complete without Phenix, which has been with us for more than 11 years of excellence",
+      text: "Our Success is Not Complete Without Phenix, Which Has Been With Us For More than 11 Years of Excellence",
       company: "Sign Cafe & Restaurant",
       avatar: signCafeLogo,
       rating: 4.5,
@@ -80,14 +89,23 @@ const TestimonialsSection = () => {
   return (
     <div className="py-16 max-w-7xl mx-auto relative z-10">
       <div className="text-center max-w-4xl mx-auto mb-16">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gradient mb-6">
-          Client Testimonials
+        <h2
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter" }}
+          className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 text-gradient mb-6 tracking-wide"
+        >
+          <span>{t("Client")}</span>
+          <span style={{ color: mode !== "dark" && "#DC2626" }}>
+            {" "}
+            {t("Testimonials")}
+          </span>
         </h2>
         <p
-          className="text-gray-400 max-w-2xl mx-auto text-lg"
-          style={{ fontFamily: "livvic", fontWeight: 500 }}
+          className="dark:text-gray-400 text-gray-600 max-w-2xl mx-auto text-xl font-medium"
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic" }}
         >
-          See what our clients say about their experience with Phenix System
+          {t(
+            "See What Our Clients Say About Their Experience With Phenix System",
+          )}
         </p>
       </div>
 
@@ -126,7 +144,6 @@ const TestimonialsSection = () => {
             },
           }}
         >
-          {/* Slide 1 */}
           {testimonials.map((testimonial) => (
             <SwiperSlide>
               <div className="testimonial-slide" key={testimonial.id}>
@@ -140,18 +157,18 @@ const TestimonialsSection = () => {
                       <RatingStars rating={testimonial.rating} />
                     </div>
                     <div className="testimonial-company text-gradient">
-                      {testimonial.company}
+                      {t(testimonial.company)}
                     </div>
                   </div>
                 </div>
 
                 <div className="quote">
-                  <p className="testimonial-quote">{testimonial.text}</p>
+                  <p className="testimonial-quote">{t(testimonial.text)}</p>
                 </div>
 
                 <div className="text">
-                  <h3>Name : {testimonial.name}</h3>
-                  <p>Role : {testimonial.role}</p>
+                  <h3>{t("Name :")} {t(testimonial.name)}</h3>
+                  <p>{t("Role :")} {t(testimonial.role)}</p>
                 </div>
               </div>
             </SwiperSlide>

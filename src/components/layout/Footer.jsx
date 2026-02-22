@@ -1,24 +1,25 @@
 import { Link } from "react-router";
-import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import phenixLogo from "../../../public/images/phenix_common/phenix_logo.png";
 
-// Footer Css File
-import "../../assets/styles/footer.css";
+// Translation Hook
+import { useTranslation } from "react-i18next";
+
+// Redux
+import { useSelector } from "react-redux";
 
 const footerNav = [
   { label: "home", path: "/" },
-  { label: "what-is-new-with-us", path: "/what-is-new-with-us" },
+  { label: "what's_new", path: "/whats-new" },
   { label: "agents", path: "/agents" },
-  { label: "about-phenix", path: "/about" },
+  { label: "about", path: "/about" },
 ];
 
 const footerLinks = [
   { label: "Sign In", path: "/login" },
   { label: "Register", path: "/register" },
   { label: "About Phenix", path: "/about" },
-  { label: "Blog", path: "/what-is-new-with-us" },
-  { label: "Contact Us", path: "/about" },
+  { label: "Blog", path: "/whats-new" },
+  { label: "Contact Us", path: "/contact" },
 ];
 
 const socials = [
@@ -97,29 +98,40 @@ const socials = [
 
 const Footer = () => {
   const { t } = useTranslation(["footer"]);
-  const { mode } = useSelector((state) => state.ui);
+  const { mode, direction } = useSelector((state) => state.ui);
   const isDark = mode === "dark";
   return (
-    <footer className="py-5" id="Footer">
+    <footer
+      className={`relative z-10 pt-8 pb-5 text-white ${isDark ? "bg-linear-to-b from-black/60 via-black/40 to-black/60" : "bg-gray-900"}`}
+      id="Footer"
+    >
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link to="/" className="inline-block">
               <img src={phenixLogo} alt="Phenix" className="h-25" />
             </Link>
             <p
-              className={`text-lg max-w-65 ${isDark ? "text-gray-300" : "text-gray-400"}`}
+              style={{
+                fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
+              }}
+              className={`text-md font-medium leading-relaxed max-w-65 ${isDark ? "text-gray-300" : "text-gray-400"}`}
             >
-              {t("Phenix System Your constant partner in success")}
+              {t("Phenix System Your Constant Partner in Success")}
             </p>
-            <p className="text-red-600 font-semibold text-md">
+            <p
+              style={{
+                fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic",
+              }}
+              className="text-red-600 font-semibold text-md"
+            >
               {t("Get More ... Get Phenix")}
             </p>
           </div>
 
           <div>
             <div
-              className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-300" : "text-gray-500"}`}
+              className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-400" : "text-gray-500"}`}
             >
               {t("Navigation")}
             </div>
@@ -128,7 +140,10 @@ const Footer = () => {
                 <li key={item.label}>
                   <Link
                     to={item.path}
-                    className={`footer__link ${isDark ? "text-gray-200" : "text-gray-800"}`}
+                    style={{
+                      fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
+                    }}
+                    className={`hover:text-red-700 transition-colors duration-300 ${isDark ? "text-gray-200" : "text-gray-400"}`}
                   >
                     {t(item.label)}
                   </Link>
@@ -139,7 +154,7 @@ const Footer = () => {
 
           <div>
             <div
-              className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-300" : "text-gray-500"}`}
+              className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-400" : "text-gray-500"}`}
             >
               {t("Account")}
             </div>
@@ -148,7 +163,10 @@ const Footer = () => {
                 <li key={item.label}>
                   <Link
                     to={item.path}
-                    className={`footer__link ${isDark ? "text-gray-200" : "text-gray-800"}`}
+                    style={{
+                      fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
+                    }}
+                    className={`hover:text-red-700 transition-colors duration-300 ${isDark ? "text-gray-200" : "text-gray-400"}`}
                   >
                     {t(item.label)}
                   </Link>
@@ -159,7 +177,7 @@ const Footer = () => {
 
           <div>
             <div
-              className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-300" : "text-gray-500"}`}
+              className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-400" : "text-gray-500"}`}
             >
               {t("Contact Us")}
             </div>
@@ -171,12 +189,12 @@ const Footer = () => {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={iconClass}
-                  className="w-10 h-10 flex items-center justify-center rounded-md transition"
+                  className="w-10 h-10 flex items-center justify-center rounded-md transitio"
                   style={{
                     backgroundColor: isDark
                       ? "rgba(255,255,255,0.06)"
-                      : "rgba(0,0,0,0.04)",
-                    color: isDark ? "#fafafa" : "#111",
+                      : "rgba(255,255,255,0.04)",
+                    color: isDark ? "#fafafa" : "#fafafa",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = color;
@@ -185,8 +203,10 @@ const Footer = () => {
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = isDark
                       ? "rgba(255,255,255,0.06)"
-                      : "rgba(0,0,0,0.04)";
-                    e.currentTarget.style.color = isDark ? "#fafafa" : "#111";
+                      : "rgba(255,255,255,0.04)";
+                    e.currentTarget.style.color = isDark
+                      ? "#fafafa"
+                      : "#fafafa";
                   }}
                 >
                   {iconClass}
@@ -197,7 +217,10 @@ const Footer = () => {
         </div>
 
         <div className="mt-5 border-t border-white/5 pt-5 text-center">
-          <p className={`${isDark ? "text-gray-400" : "text-gray-500"}`}>
+          <p
+            style={{ fontFamily: direction === "rtl" ? "Almarai" : "Inter" }}
+            className={`text-md font-bold ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
             {t("Copyright ©2003 - 2026 Phenix GmbH")}
           </p>
         </div>

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 @custom-variant dark (&:where(.dark, .dark *));
 
 * {
@@ -63,7 +62,6 @@ ul {
   color: transparent;
   -webkit-animation: gradient 4s linear infinite;
 }
-
 
 @keyframes gradient {
   0% {

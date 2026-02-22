@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 const PublicLayout = () => {
   const { mode} = useSelector((state) => state.ui);
   return (
-    <div className="dark:bg-[#0a0a0a] bg-white">
+    <div className="dark:bg-[#0a0a0a]">
 
       {mode === "dark" ?
       ( // Dark Mode

@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../api/apiSlice";
 import authReducer from "../features/auth/authSlice";
-import settingsReducer from "../features/settings/settingsSlice";
 import uiReducer from "./Slices/uiSlice";
 
 export const store = configureStore({
@@ -16,7 +15,6 @@ export const store = configureStore({
     // هذا سيتيح لنا الوصول لبيانات المستخدم عبر
     // state.auth
     auth: authReducer,
-    settings: settingsReducer,
   },
 
   // 3. إضافة الـ Middleware الخاص بـ RTK Query

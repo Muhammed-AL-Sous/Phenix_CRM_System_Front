@@ -18,8 +18,13 @@ import { useTranslation } from "react-i18next";
 
 // Main Logo
 import phenixLogo from "/public/images/phenix_common/phenix_logo.png";
+
+// Utility Components
 import LanguageToggle from "../utility/LanguageToggle";
 import ThemeToggle from "../utility/ThemeToggle";
+
+// Icons
+import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const { t } = useTranslation("navbar");
@@ -150,25 +155,9 @@ const Navbar = () => {
               <button
                 ref={toggleRef}
                 onClick={() => setIsMobileOpen((prev) => !prev)}
-                className="dark:text-white text-gray-700 focus:outline-none"
+                className="text-gray-700 focus:outline-none dark:text-white"
               >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d={
-                      isMobileOpen
-                        ? "M6 18L18 6M6 6l12 12"
-                        : "M4 6h16M4 12h16M4 18h16"
-                    }
-                  />
-                </svg>
+                {isMobileOpen ? <X size={25} /> : <Menu size={25} />}
               </button>
             </div>
           </div>

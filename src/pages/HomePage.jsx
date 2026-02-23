@@ -1,4 +1,7 @@
+// Utility Components
 import { RevealSection } from "../components/utility/RevealSection";
+
+// Common Components
 import HeroSection from "../components/common/HeroSection";
 import FeaturesSection from "../components/common/FeaturesSection";
 import ServicesSection from "../components/common/ServicesSection";

@@ -1,14 +1,23 @@
+// React Redux
 import { useSelector } from "react-redux";
+
+// Auth Slice
 import { selectCurrentUser } from "../../../auth/authSlice";
-import DashboardSidebar from "./DashboardSidebar";
+
+// React Router
 import { Outlet } from "react-router";
+
+// Roles Config
 import { ROLES_CONFIG } from "../../../../routes/roles.config";
+
+// Components
+import DashboardSidebar from "./DashboardSidebar";
 import DashboardNavbar from "./DashboardNavbar";
 
 export default function DashboardLayout() {
   const user = useSelector(selectCurrentUser);
   const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
-  const { darkMode, language } = useSelector((state) => state.settings);
+  const { mode, direction, lang } = useSelector((state) => state.ui);
 
   if (!user) return null; // حماية إضافية
 

@@ -11,6 +11,9 @@ import { useTranslation } from "react-i18next";
 // Redux
 import { useSelector } from "react-redux";
 
+// Icons
+import { MoveRight, MoveLeft } from "lucide-react";
+
 const ServicesSection = () => {
   const { t } = useTranslation(["home"]);
   const { mode, direction } = useSelector((state) => state.ui);
@@ -138,7 +141,7 @@ const ServicesSection = () => {
 
               {/* Description */}
               <p
-                className="text-sm font-medium dark:text-gray-400 text-gray-700 leading-relaxed"
+                className="px-2 text-sm font-medium dark:text-gray-400 text-gray-700 leading-relaxed"
                 style={{
                   fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic",
                   fontWeight: 500,
@@ -157,20 +160,20 @@ const ServicesSection = () => {
                   className="text-sm font-semibold flex items-center justify-center gap-2"
                   style={{ color: mode === "dark" ? "white" : service.color }}
                 >
-                  {t("Learn More")}
-                  <svg
-                    className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 will-change-transform ${direction === "rtl" ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    />
-                  </svg>
+                  <span>{t("Learn More")}</span>
+                  <span>
+                    {direction === "rtl" ? (
+                      <MoveLeft
+                        className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 will-change-transform"
+                        strokeWidth={2.25}
+                      />
+                    ) : (
+                      <MoveRight
+                        className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 will-change-transform"
+                        strokeWidth={2.25}
+                      />
+                    )}
+                  </span>
                 </span>
               </div>
             </div>

@@ -4,6 +4,9 @@ import { useTranslation } from "react-i18next";
 // Redux
 import { useSelector } from "react-redux";
 
+// Icon
+import { ChevronsDown } from "lucide-react";
+
 const HeroSection = () => {
   const { direction } = useSelector((state) => state.ui);
   const { t } = useTranslation(["home"]);
@@ -21,7 +24,9 @@ const HeroSection = () => {
         >
           <span className="m-0">
             {t("Welcome To")}{" "}
-            <span className="text-gradient m-0 text-[#DC2626]">{t("Phenix Accounting")}</span>
+            <span className="text-gradient m-0 text-[#DC2626]">
+              {t("Phenix Accounting")}
+            </span>
           </span>
           <span className="m-0">{t("Warehouse, and Management Systems")}</span>
         </h1>
@@ -49,20 +54,7 @@ const HeroSection = () => {
 
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
         <div className="animate-bounce dark:text-gray-400 text-gray-600 ">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
-            />
-          </svg>
+          <ChevronsDown size={35} />
         </div>
       </div>
     </div>

@@ -22,7 +22,6 @@ export const router = createBrowserRouter([
 
   // 🔐 Auth Pages
   {
-    element: <AuthLayout />,
     children: [...authRoutes],
   },
 

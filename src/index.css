@@ -8,13 +8,6 @@
   -moz-box-sizing: border-box;
 }
 
-:root {
-  --red: #dc2626; /* Vibrant red from logo */
-  --dark: #111827; /* Dark grey/black for text */
-  --light: #f3f4f6; /* Light grey for backgrounds */
-  --accent: #fef2f2; /* Very light red for backgrounds */
-}
-
 html {
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
@@ -26,20 +19,44 @@ body {
   font-family: "Almarai", sans-serif;
 }
 
+/* ================= Custom Scrollbar Light Mode ================= */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0a0a0a;
+  background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #901519, #f9f9f9);
-  border-radius: 5px;
+  background: #dc2626;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
+  background: #b91c1c;
+}
+
+/* ================= Custom Scrollbar Dark Mode ================= */
+
+.dark ::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #901519, #f9f9f9);
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #f9f9f9, #901519);
 }
 
@@ -71,3 +88,28 @@ ul {
     background-position: 200% center;
   }
 }
+
+/* ================= Auth Pages ================= */
+
+.mesh-gradient {
+  background-color: #f8fafc;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+}
+
+.dark .mesh-gradient {
+  background-color: #000000;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+}
+
+.glass {
+  @apply bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl border border-white/20 dark:border-white/5;
+}
+

@@ -1,4 +1,16 @@
 {
+  "login": "تسجيل الدخول",
+  "register": "إنشاء حساب",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "Confirm_password": "تأكيد كلمة المرور",
+  "name": "الاسم الكامل",
+  "already_have_account": "لديك حساب بالفعل ؟",
+  "dont_have_account": "ليس لديك حساب ؟",
+  "logout": "تسجيل الخروج",
+  "welcome": "مرحباً بعودتك",
+  "Join our family today": "إنضم إلى أسرتنا اليوم",
+
   "needHelp": {
     "email": "البريد الإلكتروني",
     "whatsapp": "واتساب",

@@ -14,5 +14,15 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Handle redirect from 404.html
+      (function () {
+        const redirectPath = sessionStorage.getItem("redirectPath");
+        if (redirectPath) {
+          sessionStorage.removeItem("redirectPath");
+          window.history.replaceState(null, null, redirectPath);
+        }
+      })();
+    </script>
   </body>
 </html>

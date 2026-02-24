@@ -6,12 +6,10 @@
   </head>
   <body>
     <script>
-      // Redirect all 404s to index.html with the requested path
-      const path = window.location.pathname.replace(
-        "/Phenix_CRM_System_Front",
-        "",
-      );
-      window.location.replace("/Phenix_CRM_System_Front/?" + path.slice(1));
+      // Save the requested path and redirect to index.html
+      const path = window.location.pathname;
+      sessionStorage.setItem("redirectPath", path);
+      window.location.href = "/Phenix_CRM_System_Front/";
     </script>
   </body>
 </html>

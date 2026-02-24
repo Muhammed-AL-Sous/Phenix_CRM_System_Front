@@ -15,12 +15,14 @@
   <body>
     <div id="root"></div>
     <script>
-      // Handle redirect from 404.html
+      // Handle redirect from 404.html - restore the original path
       (function () {
-        const redirectPath = sessionStorage.getItem("redirectPath");
+        const params = new URLSearchParams(window.location.search);
+        const redirectPath = params.get("_route");
         if (redirectPath) {
-          sessionStorage.removeItem("redirectPath");
-          window.history.replaceState(null, null, redirectPath);
+          // Clean the URL and restore the original path
+          const cleanPath = "/Phenix_CRM_System_Front/" + redirectPath;
+          window.history.replaceState(null, null, cleanPath);
         }
       })();
     </script>

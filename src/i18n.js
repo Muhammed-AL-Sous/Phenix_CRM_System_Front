@@ -15,7 +15,7 @@ i18n
     ns: ["common", "navbar", "footer", "home", "dashboard"],
 
     backend: {
-      loadPath: "/locales/{{lng}}/{{ns}}.json",
+      loadPath: "./locales/{{lng}}/{{ns}}.json",
     },
 
     detection: {

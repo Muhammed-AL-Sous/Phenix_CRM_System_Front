@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useMatches, useLocation } from "react-router";
 
 // Utilities Toggles
 import ThemeToggle from "../../../../components/utility/ThemeToggle";
@@ -14,8 +14,19 @@ import phenixLogo from "../../../../assets/images/common/phenix_logo_auth.png";
 // React Redux
 import { useSelector } from "react-redux";
 
-const AuthLayout = ({ children, title, subtitle }) => {
+// Translation Hook
+import { useTranslation } from "react-i18next";
+
+const AuthLayout = () => {
   const { direction } = useSelector((state) => state.ui);
+  const { t } = useTranslation("common");
+  const location = useLocation();
+
+  const matches = useMatches();
+  const currentRoute = matches[matches.length - 1];
+
+  const title = t(currentRoute?.handle?.titleKey || "");
+  const subtitle = t(currentRoute?.handle?.subtitleKey || "");
 
   return (
     <div className="min-h-screen flex items-center justify-center mesh-gradient p-4 relative overflow-hidden">
@@ -68,7 +79,18 @@ const AuthLayout = ({ children, title, subtitle }) => {
               {subtitle}
             </p>
           </div>
-          {children}
+          {/* 🔥 Animation Between Routes */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, x: direction === "rtl" ? -40 : 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction === "rtl" ? 40 : -40 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
       </Suspense>
     </div>

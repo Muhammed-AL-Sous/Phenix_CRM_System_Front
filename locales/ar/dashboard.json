@@ -1,0 +1,18 @@
+{
+  "welcome": "Welcome back",
+  "search": "Search...",
+  "settings": "Settings",
+  "profile": "Profile",
+  "customers": "Customers",
+  "tickets": "Tickets",
+  "reports": "Reports",
+  "logout": "Logout",
+  "my_tickets": "My Tickets",
+  "new_ticket": "New Ticket",
+  "active_tickets": "Active Tickets",
+  "assigned_to_me": "Assigned to Me",
+  "resolved": "Resolved",
+  "pending": "Pending",
+  "system_status": "System Status",
+  "total_users": "Total Users"
+}

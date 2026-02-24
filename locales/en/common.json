@@ -1,0 +1,20 @@
+{
+  "login": "Login",
+  "register": "Register",
+  "email": "Email Address",
+  "password": "Password",
+  "Confirm_password": "Confirm Password",
+  "name": "Full Name",
+  "already_have_account": "Already have an Account ?",
+  "dont_have_account": "Don't have an Account ?",
+  "logout": "Logout",
+  "welcome": "Welcome back",
+  "Join our family today": "Join our Family Today",
+
+  "needHelp": {
+    "email": "E-mail",
+    "whatsapp": "WhatsApp",
+    "liveChat": "Live Chat",
+    "needHelp": "Need Help?"
+  }
+}

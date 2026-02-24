@@ -1,0 +1,18 @@
+{
+  "welcome": "مرحباً بعودتك",
+  "search": "بحث...",
+  "settings": "الإعدادات",
+  "profile": "الملف الشخصي",
+  "customers": "العملاء",
+  "tickets": "التذاكر",
+  "reports": "التقارير",
+  "logout": "تسجيل الخروج",
+  "my_tickets": "تذاكري",
+  "new_ticket": "تذكرة جديدة",
+  "active_tickets": "التذاكر النشطة",
+  "assigned_to_me": "مكلف لي",
+  "resolved": "تم الحل",
+  "pending": "قيد الانتظار",
+  "system_status": "حالة النظام",
+  "total_users": "إجمالي المستخدمين"
+}

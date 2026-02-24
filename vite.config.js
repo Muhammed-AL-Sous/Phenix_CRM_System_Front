@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/Phenix_CRM_System_Front",
   plugins: [
     tailwindcss(),
     react({

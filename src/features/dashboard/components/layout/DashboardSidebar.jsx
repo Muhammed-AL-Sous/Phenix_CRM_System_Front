@@ -1,8 +1,17 @@
+// React Redux
 import { useDispatch } from "react-redux";
+
+// Auth Slice
 import { logOut } from "../../../auth/authSlice";
+
+// React Router
 import { Link } from "react-router";
 
+// Translation Hook
+import { useTranslation } from "react-i18next";
+
 const DashboardSidebar = ({ sidebarLinks }) => {
+  const { t } = useTranslation(["dashboard"]);
   const dispatch = useDispatch();
   return (
     <div>
@@ -19,7 +28,7 @@ const DashboardSidebar = ({ sidebarLinks }) => {
               to={link.to}
               className="block p-2 hover:bg-slate-700"
             >
-              {link.label}
+              {t(link.label)}
             </Link>
           ))}
         </nav>

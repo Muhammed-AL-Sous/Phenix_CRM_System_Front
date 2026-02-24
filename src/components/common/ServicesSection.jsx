@@ -141,10 +141,12 @@ const ServicesSection = () => {
 
               {/* Description */}
               <p
-                className="px-2 text-sm font-medium dark:text-gray-400 text-gray-700 leading-relaxed"
+                className="text-sm font-medium dark:text-gray-400 text-gray-700 leading-relaxed"
                 style={{
                   fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic",
                   fontWeight: 500,
+                  paddingLeft: direction === "rtl" ? "10px" : "",
+                  paddingRight: direction === "rtl" ? "10px" : "",
                 }}
               >
                 {t(service.description)}

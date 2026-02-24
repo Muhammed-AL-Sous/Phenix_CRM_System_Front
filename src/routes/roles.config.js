@@ -30,14 +30,27 @@ const CustomerStats = lazy(
   () => import("../features/customer/components/CustomerStats.jsx"),
 );
 
+// Icons
+import {
+  LayoutDashboard,
+  ChartNoAxesCombined,
+  Users,
+  Tickets,
+  ListTodo,
+  SendToBack,
+} from "lucide-react";
+
 export const ROLES_CONFIG = {
   admin: {
     prefix: "admin",
     statsComponent: AdminStats,
 
     sidebar: [
-      { label: "Dashboard", to: "/admin/dashboard" },
-      { label: "Users", to: "/admin/users" },
+      { icon: LayoutDashboard, label: "Dashboard", to: "/admin" },
+      { icon: Tickets, label: "Tickets", to: "/admin/tickets" },
+      { icon: ListTodo, label: "Tasks", to: "/admin/tasks" },
+      { icon: Users, label: "Users", to: "/admin/users" },
+      { icon: ChartNoAxesCombined, label: "Reports", to: "/admin/reports" },
     ],
 
     routes: [
@@ -52,8 +65,10 @@ export const ROLES_CONFIG = {
     statsComponent: SupportStats,
 
     sidebar: [
-      { label: "Dashboard", to: "/support/dashboard" },
-      { label: "Tickets", to: "/support/tickets" },
+      { icon: LayoutDashboard, label: "Dashboard", to: "/support" },
+      { icon: Tickets, label: "Tickets", to: "/support/tickets" },
+      { icon: ListTodo, label: "Tasks", to: "/support/tasks" },
+      { icon: Users, label: "Users", to: "/admin/users" },
     ],
 
     routes: [
@@ -68,8 +83,8 @@ export const ROLES_CONFIG = {
     statsComponent: CustomerStats,
 
     sidebar: [
-      { label: "Dashboard", to: "/customer/dashboard" },
-      { label: "My Requests", to: "/customer/requests" },
+      { icon: LayoutDashboard, label: "Dashboard", to: "/customer" },
+      { icon: SendToBack, label: "My Requests", to: "/customer/requests" },
     ],
 
     routes: [

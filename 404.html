@@ -5,13 +5,18 @@
     <link
       rel="icon"
       type="image/png"
-      href="/public/images/phenix_common/phenix_logo.png"
+      href="./images/phenix_common/phenix_logo.png"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phenix Systems | أنظمة فينيكس</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <p><strong>404 - Page Not Found</strong></p>
+    <p>The application uses hash-based routing. Redirecting to home...</p>
+    <script>
+      setTimeout(() => {
+        window.location.href = "./";
+      }, 2000);
+    </script>
   </body>
 </html>

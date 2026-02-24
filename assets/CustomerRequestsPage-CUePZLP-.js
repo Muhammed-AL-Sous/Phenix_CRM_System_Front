@@ -1,1 +1,0 @@
-import{a as e,c as t,o as n,r}from"./index-C2Zf-gXj.js";var i=e();n();var a=r(),o=()=>{let e=(0,i.c)(1),t;return e[0]===Symbol.for(`react.memo_cache_sentinel`)?(t=(0,a.jsx)(`div`,{children:`CustomerRequestsPage`}),e[0]=t):t=e[0],t};export{o as default};

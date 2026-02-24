@@ -2,21 +2,16 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      type="image/png"
-      href="./images/phenix_common/phenix_logo.png"
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phenix Systems | أنظمة فينيكس</title>
   </head>
   <body>
-    <p><strong>404 - Page Not Found</strong></p>
-    <p>The application uses hash-based routing. Redirecting to home...</p>
     <script>
-      setTimeout(() => {
-        window.location.href = "./";
-      }, 2000);
+      // Redirect all 404s to index.html with the requested path
+      const path = window.location.pathname.replace(
+        "/Phenix_CRM_System_Front",
+        "",
+      );
+      window.location.replace("/Phenix_CRM_System_Front/?" + path.slice(1));
     </script>
   </body>
 </html>

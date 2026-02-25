@@ -1,5 +1,5 @@
 // React Hooks
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 
 // Register Slice
 import { useRegisterMutation } from "../../auth/authApiSlice";
@@ -52,6 +52,29 @@ const RegisterPage = () => {
       console.error("فشل التسجيل", err);
     }
   };
+
+  // =============================
+  // Toggle Logic (Keyboard Fix)
+  // =============================
+  const handleToggle = useCallback((e, type) => {
+    e.preventDefault(); // يمنع فقدان التركيز (إغلاق الكيبورد)
+
+    const isMain = type === "password";
+    const input = isMain ? passwordRef.current : passwordConfirmRef.current;
+
+    if (!input) return;
+
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+
+    if (isMain) setShowPassword((prev) => !prev);
+    else setShowConfirmPassword((prev) => !prev);
+
+    requestAnimationFrame(() => {
+      input.setSelectionRange(start, end);
+      input.focus();
+    });
+  }, []);
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
@@ -149,19 +172,24 @@ const RegisterPage = () => {
           style={{
             fontFamily: "Livvic",
             fontWeight: "500",
+            letterSpacing:
+              !showPassword && registerForm.password.length > 0
+                ? "0.2em"
+                : "normal",
           }}
           value={registerForm.password}
           onChange={(e) =>
             setRegisterForm({ ...registerForm, password: e.target.value })
           }
-          className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+          // ذكاء الاتجاه: LTR فقط عند وجود نص ليبقى الـ placeholder في مكانه
+          dir={registerForm.password.length > 0 ? "ltr" : "inherit"}
+          className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white
+         ${direction === "rtl" ? "text-right" : "text-left"}`}
           placeholder="••••••••"
         />
-        <span
-          onMouseDown={(e) => {
-            e.preventDefault(); // يمنع فقدان الفوكس
-            setShowPassword((prev) => !prev);
-          }}
+        <button
+          type="button"
+          onMouseDown={(e) => handleToggle(e, "password")}
           style={{
             position: "absolute",
             top: "70%",
@@ -175,7 +203,7 @@ const RegisterPage = () => {
           }}
         >
           {showPassword ? <EyeOff /> : <Eye />}
-        </span>
+        </button>
         {/* عرض خطأ الباسورد من Laravel */}
         {error?.status === 422 && (
           <p className="text-red-500">{error.data.errors.password?.[0]}</p>
@@ -206,6 +234,11 @@ const RegisterPage = () => {
           style={{
             fontFamily: "Livvic",
             fontWeight: "500",
+            letterSpacing:
+              !showConfirmPassword &&
+              registerForm.password_confirmation.length > 0
+                ? "0.2em"
+                : "normal",
           }}
           value={registerForm.password_confirmation}
           onChange={(e) =>
@@ -214,14 +247,16 @@ const RegisterPage = () => {
               password_confirmation: e.target.value,
             })
           }
-          className=" w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+          dir={
+            registerForm.password_confirmation.length > 0 ? "ltr" : "inherit"
+          }
+          className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white
+         ${direction === "rtl" ? "text-right" : "text-left"}`}
           placeholder="••••••••"
         />
-        <span
-          onMouseDown={(e) => {
-            e.preventDefault(); // يمنع فقدان الفوكس
-            setShowConfirmPassword((prev) => !prev);
-          }}
+        <button
+          type="button"
+          onMouseDown={(e) => handleToggle(e, "confirm")}
           style={{
             position: "absolute",
             top: "70%",
@@ -235,13 +270,14 @@ const RegisterPage = () => {
           }}
         >
           {showConfirmPassword ? <EyeOff /> : <Eye />}
-        </span>
+        </button>
         {/* عرض خطأ الباسورد من Laravel */}
         {error?.status === 422 && (
           <p className="text-red-500">{error.data.errors.password?.[0]}</p>
         )}
       </div>
       <button
+        type="submit"
         disabled={isLoading}
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",

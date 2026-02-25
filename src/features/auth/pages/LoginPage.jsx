@@ -83,8 +83,7 @@ const LoginPage = () => {
           onChange={(e) =>
             setLoginForm({ ...loginForm, password: e.target.value })
           }
-          dir="ltr"
-          className="ltr:text-left rtl:text-right w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+          className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="••••••••"
         />
         <span

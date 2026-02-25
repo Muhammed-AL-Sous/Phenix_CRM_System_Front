@@ -1,5 +1,5 @@
 // React Hooks
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 // Register Slice
 import { useRegisterMutation } from "../../auth/authApiSlice";
@@ -26,6 +26,9 @@ import {
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const passwordRef = useRef(null);
+  const passwordConfirmRef = useRef(null);
 
   const { t } = useTranslation(["common"]);
   const { direction } = useSelector((state) => state.ui);
@@ -141,6 +144,7 @@ const RegisterPage = () => {
           {t("password")}
         </label>
         <input
+          ref={passwordRef}
           type={showPassword ? "text" : "password"}
           style={{
             fontFamily: "Livvic",
@@ -154,7 +158,10 @@ const RegisterPage = () => {
           placeholder="••••••••"
         />
         <span
-          onClick={() => setShowPassword(!showPassword)}
+          onMouseDown={(e) => {
+            e.preventDefault(); // يمنع فقدان الفوكس
+            setShowPassword((prev) => !prev);
+          }}
           style={{
             position: "absolute",
             top: "70%",
@@ -194,6 +201,7 @@ const RegisterPage = () => {
           {t("Confirm_password")}
         </label>
         <input
+          ref={passwordConfirmRef}
           type={showConfirmPassword ? "text" : "password"}
           style={{
             fontFamily: "Livvic",
@@ -210,7 +218,10 @@ const RegisterPage = () => {
           placeholder="••••••••"
         />
         <span
-          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          onMouseDown={(e) => {
+            e.preventDefault(); // يمنع فقدان الفوكس
+            setShowConfirmPassword((prev) => !prev);
+          }}
           style={{
             position: "absolute",
             top: "70%",

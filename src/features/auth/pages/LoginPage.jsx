@@ -10,10 +10,11 @@ import { useSelector } from "react-redux";
 // Icons
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
-// React Hook
-import { useState } from "react";
+// React Hooks
+import { useState, useRef } from "react";
 
 const LoginPage = () => {
+  const passwordRef = useRef(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loginForm, setLoginForm] = useState({
     email: "",
@@ -72,6 +73,7 @@ const LoginPage = () => {
           {t("password")}
         </label>
         <input
+          ref={passwordRef}
           type={showPassword ? "text" : "password"}
           style={{
             fontFamily: "Livvic",
@@ -85,7 +87,10 @@ const LoginPage = () => {
           placeholder="••••••••"
         />
         <span
-          onClick={() => setShowPassword(!showPassword)}
+          onMouseDown={(e) => {
+            e.preventDefault(); // يمنع فقدان الفوكس
+            setShowPassword((prev) => !prev);
+          }}
           style={{
             position: "absolute",
             top: "70%",

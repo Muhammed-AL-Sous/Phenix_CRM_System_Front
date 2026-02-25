@@ -14,6 +14,9 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+// Animation For Stats
+import { AnimatedStat } from "../utility/AnimatedStat";
+
 const FeaturesSection = () => {
   const { t } = useTranslation(["home"]);
   const { mode, direction } = useSelector((state) => state.ui);
@@ -140,19 +143,15 @@ const FeaturesSection = () => {
                   {stats.map((s, i) => (
                     <div
                       key={i}
-                      className="bg-white border-gray-100 p-6 md:p-8 rounded-2xl shadow-gray-200/50 shadow-xl hover:shadow-2xl
-                   dark:bg-black/30 dark:shadow-sm dark:shadow-red-400 dark:hover:shadow-md dark:border-white/5 dark:hover:border-[#ff6b6b]/30
-                   border hover:-translate-y-1
-                       transition-all duration-200 group"
+                      className="bg-white border-gray-100 p-6 md:p-8 rounded-2xl shadow-gray-200/50 shadow-xl hover:shadow-2xl dark:bg-black/30 dark:shadow-sm dark:shadow-red-400 dark:hover:shadow-md dark:border-white/5 dark:hover:border-[#ff6b6b]/30 border hover:-translate-y-1 transition-all duration-200 group"
                     >
                       <div
-                        style={{
-                          fontFamily: "Inter",
-                        }}
+                        style={{ fontFamily: "Inter" }}
                         className="text-xl md:text-2xl lg:text-3xl font-extrabold text-gradient text-[#DC2626] mb-2"
                       >
-                        {s.value}
+                        <AnimatedStat value={s.value} />
                       </div>
+
                       <p
                         className="text-sm dark:text-gray-400 text-gray-700 font-medium"
                         style={{

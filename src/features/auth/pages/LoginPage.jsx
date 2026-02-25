@@ -26,18 +26,24 @@ const LoginPage = () => {
   // =============================
   // Toggle Password (Professional Fix)
   // =============================
-const togglePassword = useCallback((e) => {
-    // منع المتصفح من سحب التركيز من الـ Input
-    e.preventDefault(); 
+  const togglePassword = useCallback((e) => {
+    // منع سحب التركيز (يمنع اختفاء الكيبورد)
+    e.preventDefault();
 
     const input = passwordRef.current;
     if (!input) return;
 
-    // تغيير الحالة
+    // حفظ مكان المؤشر بدقة قبل التغيير
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+
     setShowPassword((prev) => !prev);
 
-    // ملاحظة: لا حاجة لـ setTimeout أو إعادة التركيز يدوياً 
-    // لأن التركيز لم يذهب أصلاً بفضل preventDefault
+    // إعادة التركيز والمؤشر فوراً (بدون setTimeout إذا استخدمت onMouseDown)
+    requestAnimationFrame(() => {
+      input.setSelectionRange(start, end);
+      input.focus();
+    });
   }, []);
 
   return (
@@ -95,15 +101,22 @@ const togglePassword = useCallback((e) => {
           type={showPassword ? "text" : "password"}
           autoComplete="current-password"
           inputMode="text"
+          // الخدعة هنا: إذا كان هناك نص، اجعله LTR، إذا كان فارغاً اتركه لاتجيار الصفحة
+          dir={loginForm.password.length > 0 ? "ltr" : "inherit"}
           style={{
             fontFamily: "Livvic",
             fontWeight: "500",
+            letterSpacing:
+              !showPassword && loginForm.password.length > 0
+                ? "0.2em"
+                : "normal",
           }}
           value={loginForm.password}
           onChange={(e) =>
             setLoginForm({ ...loginForm, password: e.target.value })
           }
-          className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+          className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+         ${direction === "rtl" ? "text-right" : "text-left"}`}
           placeholder="••••••••"
         />
         <button

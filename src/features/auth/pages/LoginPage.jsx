@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 // React Hooks
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 
 const LoginPage = () => {
   const passwordRef = useRef(null);
@@ -22,6 +22,26 @@ const LoginPage = () => {
   });
   const { t } = useTranslation(["common"]);
   const { direction } = useSelector((state) => state.ui);
+
+  // =============================
+  // Toggle Password (Professional Fix)
+  // =============================
+  const togglePassword = useCallback(() => {
+    const input = passwordRef.current;
+    if (!input) return;
+
+    // حفظ مكان المؤشر
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+
+    setShowPassword((prev) => !prev);
+
+    // إعادة المؤشر بعد إعادة الرندر
+    setTimeout(() => {
+      input.setSelectionRange(start, end);
+      input.focus();
+    }, 0);
+  }, []);
 
   return (
     <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
@@ -45,6 +65,7 @@ const LoginPage = () => {
         </label>
         <input
           type="email"
+          autoComplete="email"
           className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="name@company.com"
           style={{
@@ -75,6 +96,8 @@ const LoginPage = () => {
         <input
           ref={passwordRef}
           type={showPassword ? "text" : "password"}
+          autoComplete="current-password"
+          inputMode="text"
           style={{
             fontFamily: "Livvic",
             fontWeight: "500",
@@ -86,11 +109,9 @@ const LoginPage = () => {
           className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="••••••••"
         />
-        <span
-          onMouseDown={(e) => {
-            e.preventDefault(); // يمنع فقدان الفوكس
-            setShowPassword((prev) => !prev);
-          }}
+        <button
+          type="button"
+          onClick={togglePassword}
           style={{
             position: "absolute",
             top: "70%",
@@ -104,11 +125,12 @@ const LoginPage = () => {
           }}
         >
           {showPassword ? <EyeOff /> : <Eye />}
-        </span>
+        </button>
       </div>
 
       {/* ============= Login Button ============= */}
       <button
+        type="submit"
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
         }}

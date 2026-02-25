@@ -7,23 +7,11 @@
       type="image/png"
       href="./images/phenix_common/phenix_logo.png"
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" ,viewport-fit="cover"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phenix Systems | أنظمة فينيكس</title>
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Handle redirect from 404.html - restore the original path
-      (function () {
-        const params = new URLSearchParams(window.location.search);
-        const redirectPath = params.get("_route");
-        if (redirectPath) {
-          // Clean the URL and restore the original path
-          const cleanPath = "/Phenix_CRM_System_Front/" + redirectPath;
-          window.history.replaceState(null, null, cleanPath);
-        }
-      })();
-    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

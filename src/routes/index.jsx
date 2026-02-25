@@ -12,28 +12,23 @@ import { publicRoutes } from "./PublicRoutes";
 import { authRoutes } from "./AuthRoutes";
 import { generateRoleRoutes } from "./roleRouteGenerator";
 
-export const router = createBrowserRouter(
-  [
-    // 🌐 Public Pages
-    {
-      element: <PublicLayout />,
-      errorElement: <ErrorPage />,
-      children: [...publicRoutes],
-    },
-
-    // 🔐 Auth Pages
-    {
-      element: <AuthLayout />,
-      children: [...authRoutes],
-    },
-
-    // 📊 Dashboard
-    {
-      element: <DashboardLayout />,
-      children: [...generateRoleRoutes()],
-    },
-  ],
+export const router = createBrowserRouter([
+  // 🌐 Public Pages
   {
-    basename: "/Phenix_CRM_System_Front/",
+    element: <PublicLayout />,
+    errorElement: <ErrorPage />,
+    children: [...publicRoutes],
   },
-);
+
+  // 🔐 Auth Pages
+  {
+    element: <AuthLayout />,
+    children: [...authRoutes],
+  },
+
+  // 📊 Dashboard
+  {
+    element: <DashboardLayout />,
+    children: [...generateRoleRoutes()],
+  },
+]);

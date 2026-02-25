@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Phenix Systems | أنظمة فينيكس</title>
+  </head>
+  <body>
+    <script>
+      // Save the requested path as query parameter and redirect to index.html
+      const path = window.location.pathname
+        .replace("/Phenix_CRM_System_Front", "")
+        .slice(1);
+      if (path) {
+        window.location.href =
+          "/Phenix_CRM_System_Front/?_route=" + encodeURIComponent(path);
+      } else {
+        window.location.href = "/Phenix_CRM_System_Front/";
+      }
+    </script>
+  </body>
+</html>

@@ -58,8 +58,12 @@ const Footer = () => {
       id="Footer"
     >
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 md:gap-8 text-start">
+          <div
+            className="col-span-2 lg:col-span-1 space-y-4
+        flex flex-col items-center md:items-start text-center md:text-start
+          "
+          >
             <Link to="/" className="inline-block">
               <img src={phenixLogo} alt="Phenix" className="h-25" />
             </Link>
@@ -81,6 +85,7 @@ const Footer = () => {
             </p>
           </div>
 
+          {/* Navigation */}
           <div>
             <div
               className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-400" : "text-gray-500"}`}
@@ -104,6 +109,7 @@ const Footer = () => {
             </ul>
           </div>
 
+          {/* Account */}
           <div>
             <div
               className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-400" : "text-gray-500"}`}
@@ -127,9 +133,13 @@ const Footer = () => {
             </ul>
           </div>
 
-          <div>
+          {/* Contact Us */}
+          <div className="col-span-2 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-start">
             <div
-              className={`uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-400" : "text-gray-500"}`}
+              className={`
+                
+               
+                uppercase tracking-wider font-semibold mb-3 ${isDark ? "text-gray-400" : "text-gray-500"}`}
             >
               {t("Contact Us")}
             </div>

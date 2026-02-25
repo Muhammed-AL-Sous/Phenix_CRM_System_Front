@@ -87,7 +87,7 @@ const TestimonialsSection = () => {
   ];
 
   return (
-    <div className="py-16 max-w-7xl mx-auto relative z-10">
+    <div className=" max-w-7xl mx-auto relative z-10">
       <div className="text-center max-w-4xl mx-auto mb-16">
         <h2
           style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter" }}

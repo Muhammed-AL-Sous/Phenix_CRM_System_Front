@@ -29,22 +29,22 @@ const FeaturesSection = () => {
     {
       id: 1,
       label: "Easy to Use",
-      icon: <HandHeart className="w-5 h-5" />,
+      icon: <HandHeart className="w-4 h-4 md:w-5 md:h-5" />,
     },
     {
       id: 2,
       label: "Accurate Reports",
-      icon: <FolderCheck className="w-5 h-5" />,
+      icon: <FolderCheck className="w-4 h-4 md:w-5 md:h-5" />,
     },
     {
       id: 3,
       label: "For all Sectors",
-      icon: <Factory className="w-5 h-5" />,
+      icon: <Factory className="w-4 h-4 md:w-5 md:h-5" />,
     },
     {
       id: 4,
       label: "Mobility Solution",
-      icon: <Globe className="w-5 h-5" />,
+      icon: <Globe className="w-4 h-4 md:w-5 md:h-5" />,
     },
   ];
 
@@ -94,7 +94,7 @@ const FeaturesSection = () => {
                   fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
                 }}
               >
-                <button className="cursor-pointer flex items-center bg-linear-to-r from-[#ed1c24] to-[#ed1c29] text-white font-medium px-8 py-4 rounded-lg hover:shadow-xl hover:shadow-[#ff6b6b]/30 transition-all duration-300 transform hover:-translate-y-1">
+                <button className="cursor-pointer flex items-center justify-center bg-linear-to-r from-[#ed1c24] to-[#ed1c29] text-white font-medium px-8 py-4 rounded-lg hover:shadow-xl hover:shadow-[#ff6b6b]/30 transition-all duration-300 transform hover:-translate-y-1">
                   <span>{t("Start Project")}</span>
                   <span className="ms-1">
                     {direction === "rtl" ? (
@@ -124,7 +124,7 @@ const FeaturesSection = () => {
                 className="relative dark:bg-linear-to-br dark:from-white/5 dark:to-white/0 backdrop-blur-xl 
                 bg-linear-to-br from-white/90 to-white 
                 rounded-2xl
-               border border-white/10 p-8 shadow-2xl"
+               border border-white/10 p-6 md:p-8 shadow-2xl"
               >
                 {mode === "dark" && (
                   <>
@@ -140,7 +140,7 @@ const FeaturesSection = () => {
                   {stats.map((s, i) => (
                     <div
                       key={i}
-                      className="bg-white border-gray-100 p-8 rounded-2xl shadow-gray-200/50 shadow-xl hover:shadow-2xl
+                      className="bg-white border-gray-100 p-6 md:p-8 rounded-2xl shadow-gray-200/50 shadow-xl hover:shadow-2xl
                    dark:bg-black/30 dark:shadow-sm dark:shadow-red-400 dark:hover:shadow-md dark:border-white/5 dark:hover:border-[#ff6b6b]/30
                    border hover:-translate-y-1
                        transition-all duration-200 group"
@@ -149,7 +149,7 @@ const FeaturesSection = () => {
                         style={{
                           fontFamily: "Inter",
                         }}
-                        className="text-2xl md:text-3xl font-extrabold text-gradient text-[#DC2626] mb-2"
+                        className="text-xl md:text-2xl lg:text-3xl font-extrabold text-gradient text-[#DC2626] mb-2"
                       >
                         {s.value}
                       </div>
@@ -172,18 +172,18 @@ const FeaturesSection = () => {
                     fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
                   }}
                 >
-                  <p className="text-lg font-bold dark:text-gray-400 text-gray-600 mb-4">
+                  <p className="text-md md:text-lg font-bold dark:text-gray-400 text-gray-600 mb-4">
                     {t("The Best Integrated Accounting System")}
                   </p>
-                  <div className="grid grid-cols-2 gap-x-20 gap-y-4">
+                  <div className="grid grid-cols-2 gap-x-2 md:gap-x-10 xl:gap-x-20 gap-y-4">
                     {features.map((val) => (
                       <div
                         key={val.id}
                         className="flex items-center gap-2
-                         px-4 py-2 dark:bg-white/5 dark:text-white
+                        px-2 md:px-4 py-2 dark:bg-white/5 dark:text-white
                          dark:border-white/5 dark:hover:bg-transparent
                         bg-gray-50 rounded-full border border-gray-100 shadow-md
-                         text-gray-700 text-sm hover:bg-white font-medium
+                         text-gray-700 text-xs md:text-sm hover:bg-white font-medium
                         hover:shadow-lg transition-all cursor-default
                          "
                         style={{

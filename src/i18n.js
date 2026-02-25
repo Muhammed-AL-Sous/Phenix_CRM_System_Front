@@ -8,6 +8,7 @@ i18n
   //   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    debug: false, // تأكد أن هذه القيمة false لإيقاف سجلات المكتبة في الكونسول
     supportedLngs: ["ar", "en"],
     fallbackLng: "en",
     defaultNS: "common",

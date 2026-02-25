@@ -18,6 +18,7 @@ const HeroSection = () => {
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
             fontWeight: "800",
+            lineHeight: direction === "rtl" ? 1.8 : "",
           }}
           className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl
           dark:text-white text-gray-900 dark:font-bold mb-8 leading-tight flex flex-col"
@@ -36,7 +37,9 @@ const HeroSection = () => {
         <p
           className="dark:text-gray-400 max-w-5xl
            text-gray-600 text-md md:text-lg lg:text-2xl mb-4"
-          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic" }}
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic",
+            lineHeight: direction === "rtl" ? 1.9 : "",
+           }}
         >
           {t(
             "Phenix System : The Easiest and Most Integrated Accounting Solution For Managing Sales, Inventory, and Payroll.",
@@ -44,7 +47,9 @@ const HeroSection = () => {
         </p>
         <p
           className="dark:text-gray-400 max-w-5xl text-gray-600 text-md md:text-lg lg:text-2xl"
-          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic" }}
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "livvic" ,
+            lineHeight: direction === "rtl" ? 1.9 : "",
+          }}
         >
           {t(
             "Simple to Use, Accurate Reporting, and Complete Flexibility to Suit Your Company's Needs",

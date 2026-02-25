@@ -26,21 +26,18 @@ const LoginPage = () => {
   // =============================
   // Toggle Password (Professional Fix)
   // =============================
-  const togglePassword = useCallback(() => {
+const togglePassword = useCallback((e) => {
+    // منع المتصفح من سحب التركيز من الـ Input
+    e.preventDefault(); 
+
     const input = passwordRef.current;
     if (!input) return;
 
-    // حفظ مكان المؤشر
-    const start = input.selectionStart;
-    const end = input.selectionEnd;
-
+    // تغيير الحالة
     setShowPassword((prev) => !prev);
 
-    // إعادة المؤشر بعد إعادة الرندر
-    setTimeout(() => {
-      input.setSelectionRange(start, end);
-      input.focus();
-    }, 0);
+    // ملاحظة: لا حاجة لـ setTimeout أو إعادة التركيز يدوياً 
+    // لأن التركيز لم يذهب أصلاً بفضل preventDefault
   }, []);
 
   return (
@@ -111,7 +108,7 @@ const LoginPage = () => {
         />
         <button
           type="button"
-          onClick={togglePassword}
+          onMouseDown={togglePassword}
           style={{
             position: "absolute",
             top: "70%",

@@ -13,10 +13,23 @@ import { Link } from "react-router";
 // React Redux
 import { useSelector } from "react-redux";
 
+// Icons
+import {
+  Eye,
+  EyeOff,
+  UserRoundPlus,
+  Mail,
+  Lock,
+  LockKeyhole,
+} from "lucide-react";
+
 const RegisterPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const { t } = useTranslation(["common"]);
   const { direction } = useSelector((state) => state.ui);
-  const [formData, setFormData] = useState({
+  const [registerForm, setRegisterForm] = useState({
     name: "",
     email: "",
     password: "",
@@ -29,7 +42,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await register(formData).unwrap(); // unwrap تجعلنا نمسك الخطأ في catch
+      await register(registerForm).unwrap(); // unwrap تجعلنا نمسك الخطأ في catch
       alert("تم التسجيل بنجاح!");
     } catch (err) {
       // الأخطاء مخزنة الآن في المتغير 'error' بالأعلى تلقائياً
@@ -45,14 +58,24 @@ const RegisterPage = () => {
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
           }}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
         >
+          <span>
+            <UserRoundPlus
+              style={{
+                top: direction === "rtl" ? "-2px" : "",
+              }}
+              className="w-4 h-4 relative"
+            />
+          </span>
           {t("name")}
         </label>
         <input
           type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          value={registerForm.name}
+          onChange={(e) =>
+            setRegisterForm({ ...registerForm, name: e.target.value })
+          }
           className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="John Doe"
           style={{
@@ -68,8 +91,16 @@ const RegisterPage = () => {
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
           }}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
         >
+          <span>
+            <Mail
+              style={{
+                top: direction === "rtl" ? "-2px" : "",
+              }}
+              className="w-4 h-4 relative"
+            />
+          </span>
           {t("email")}
         </label>
         <input
@@ -78,8 +109,10 @@ const RegisterPage = () => {
             fontFamily: "Livvic",
             fontWeight: "500",
           }}
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          value={registerForm.email}
+          onChange={(e) =>
+            setRegisterForm({ ...registerForm, email: e.target.value })
+          }
           className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="name@company.com"
         />
@@ -90,24 +123,52 @@ const RegisterPage = () => {
       </div>
 
       {/* ============= PassWord ============= */}
-      <div>
+      <div className="relative">
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
           }}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
         >
+          <span>
+            <Lock
+              style={{
+                top: direction === "rtl" ? "-2px" : "",
+              }}
+              className="w-4 h-4 relative"
+            />
+          </span>
           {t("password")}
         </label>
         <input
-          type="password"
-          value={formData.password}
+          type={showPassword ? "text" : "password"}
+          style={{
+            fontFamily: "Livvic",
+            fontWeight: "500",
+          }}
+          value={registerForm.password}
           onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
+            setRegisterForm({ ...registerForm, password: e.target.value })
           }
-          className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+          className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="••••••••"
         />
+        <span
+          onClick={() => setShowPassword(!showPassword)}
+          style={{
+            position: "absolute",
+            top: "70%",
+            left: direction === "rtl" ? "15px" : "",
+            right: direction === "rtl" ? "" : "15px",
+            transform: "translateY(-50%)",
+            cursor: "pointer",
+            zIndex: 10,
+            color: "#6c757d",
+            fontSize: "18px",
+          }}
+        >
+          {showPassword ? <EyeOff /> : <Eye />}
+        </span>
         {/* عرض خطأ الباسورد من Laravel */}
         {error?.status === 422 && (
           <p className="text-red-500">{error.data.errors.password?.[0]}</p>
@@ -115,27 +176,55 @@ const RegisterPage = () => {
       </div>
 
       {/* ============= PassWord Confirmation ============= */}
-      <div>
+      <div className="relative">
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
           }}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
         >
+          <span>
+            <LockKeyhole
+              style={{
+                top: direction === "rtl" ? "-2px" : "",
+              }}
+              className="w-4 h-4 relative"
+            />
+          </span>
           {t("Confirm_password")}
         </label>
         <input
-          type="password"
-          value={formData.password_confirmation}
+          type={showConfirmPassword ? "text" : "password"}
+          style={{
+            fontFamily: "Livvic",
+            fontWeight: "500",
+          }}
+          value={registerForm.password_confirmation}
           onChange={(e) =>
-            setFormData({
-              ...formData,
+            setRegisterForm({
+              ...registerForm,
               password_confirmation: e.target.value,
             })
           }
-          className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+          className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="••••••••"
         />
+        <span
+          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          style={{
+            position: "absolute",
+            top: "70%",
+            left: direction === "rtl" ? "15px" : "",
+            right: direction === "rtl" ? "" : "15px",
+            transform: "translateY(-50%)",
+            cursor: "pointer",
+            zIndex: 10,
+            color: "#6c757d",
+            fontSize: "18px",
+          }}
+        >
+          {showConfirmPassword ? <EyeOff /> : <Eye />}
+        </span>
         {/* عرض خطأ الباسورد من Laravel */}
         {error?.status === 422 && (
           <p className="text-red-500">{error.data.errors.password?.[0]}</p>

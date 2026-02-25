@@ -7,18 +7,39 @@ import { Link } from "react-router";
 // React Redux
 import { useSelector } from "react-redux";
 
+// Icons
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+
+// React Hook
+import { useState } from "react";
+
 const LoginPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginForm, setLoginForm] = useState({
+    email: "",
+    password: "",
+  });
   const { t } = useTranslation(["common"]);
   const { direction } = useSelector((state) => state.ui);
+
   return (
     <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+      {/* ============= Email ============= */}
       <div>
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
           }}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
         >
+          <span>
+            <Mail
+              style={{
+                top: direction === "rtl" ? "-2px" : "",
+              }}
+              className="w-4 h-4 relative"
+            />
+          </span>
           {t("email")}
         </label>
         <input
@@ -31,21 +52,57 @@ const LoginPage = () => {
           }}
         />
       </div>
-      <div>
+
+      {/* ============= PassWord ============= */}
+      <div className="relative">
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
           }}
-          className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
         >
+          <span>
+            <Lock
+              style={{
+                top: direction === "rtl" ? "-2px" : "",
+              }}
+              className="w-4 h-4 relative"
+            />
+          </span>
           {t("password")}
         </label>
         <input
-          type="password"
-          className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+          type={showPassword ? "text" : "password"}
+          style={{
+            fontFamily: "Livvic",
+            fontWeight: "500",
+          }}
+          value={loginForm.password}
+          onChange={(e) =>
+            setLoginForm({ ...loginForm, password: e.target.value })
+          }
+          className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="••••••••"
         />
+        <span
+          onClick={() => setShowPassword(!showPassword)}
+          style={{
+            position: "absolute",
+            top: "70%",
+            left: direction === "rtl" ? "15px" : "",
+            right: direction === "rtl" ? "" : "15px",
+            transform: "translateY(-50%)",
+            cursor: "pointer",
+            zIndex: 10,
+            color: "#6c757d",
+            fontSize: "18px",
+          }}
+        >
+          {showPassword ? <EyeOff /> : <Eye />}
+        </span>
       </div>
+
+      {/* ============= Login Button ============= */}
       <button
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
@@ -54,6 +111,8 @@ const LoginPage = () => {
       >
         {t("login")}
       </button>
+
+      {/* ============= Register Button ============= */}
       <p className="text-center text-sm text-slate-500 dark:text-slate-400">
         {t("dont_have_account")}{" "}
         <Link
@@ -63,6 +122,17 @@ const LoginPage = () => {
           {t("register")}
         </Link>
       </p>
+
+      {/* ============= Forgot PassWord ============= */}
+
+      <Link to="/forgot_password">
+        <p
+          className="text-center text-sm text-slate-500 dark:text-slate-400
+        transition-all duration-200 font-bold hover:underline"
+        >
+          {t("forgot_password")}{" "}
+        </p>
+      </Link>
     </form>
   );
 };

@@ -11,7 +11,7 @@ const LanguageToggle = () => {
     <div>
       <button
         onClick={() => dispatch(setLang(lang === "ar" ? "en" : "ar"))}
-        className="text-sm font-medium text-gray-800
+        className="text-sm font-bold text-gray-800
                      dark:text-white cursor-pointer group"
         style={{
           fontFamily: direction === "rtl" ? "Almarai" : "Inter",

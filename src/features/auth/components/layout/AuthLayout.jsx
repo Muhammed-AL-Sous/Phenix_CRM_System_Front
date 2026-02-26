@@ -32,22 +32,20 @@ const AuthLayout = () => {
   const subtitle = t(currentRoute?.handle?.subtitleKey || "");
 
   return (
-    <div className="min-h-screen flex items-center justify-center mesh-gradient p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center flex-col gap-3 justify-center mesh-gradient p-4 relative overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-500/5 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px]" />
 
-      <div className="absolute top-8 right-8 flex items-center gap-4 z-20">
-        <span className="border-2 border-red-500/15 flex justify-center items-center w-10 h-10 rounded-lg">
+      {/* ============= Icons Buttons ============= */}
+      <div className="flex items-center justify-start w-full gap-4 z-20">
+        <span className="text-gray-700 dark:text-white border-2 dark:border-white/25 border-gray-700/25 flex justify-center items-center w-10 h-10 rounded-lg">
           <ThemeToggle />
         </span>
-        <span className="border-2 border-red-500/15 flex justify-center items-center w-10 h-10 rounded-lg">
-          <LanguageToggle />
+        <span className="text-gray-700 font-bold dark:text-white border-2 dark:border-white/25 border-gray-700/25 flex justify-center items-center w-10 h-10 rounded-lg">
+          <LanguageToggle/>
         </span>
-        <span
-          className=" text-gray-700 dark:text-white
-         hover:text-[#ed1c24] border-2 border-red-500/15 flex justify-center items-center w-10 h-10 rounded-lg"
-        >
+        <span className="text-gray-700 dark:text-white border-2 dark:border-white/25 border-gray-700/25 flex justify-center items-center w-10 h-10 rounded-lg">
           <Link to="/">
             <House />
           </Link>

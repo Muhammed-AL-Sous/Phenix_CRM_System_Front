@@ -19,6 +19,7 @@ const LoginPage = () => {
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
+    remember: false,
   });
   const { t } = useTranslation(["common"]);
   const { direction } = useSelector((state) => state.ui);
@@ -68,6 +69,10 @@ const LoginPage = () => {
         </label>
         <input
           type="email"
+          value={loginForm.email}
+          onChange={(e) =>
+            setLoginForm({ ...loginForm, email: e.target.value })
+          }
           autoComplete="email"
           className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="name@company.com"
@@ -135,6 +140,53 @@ const LoginPage = () => {
           }}
         >
           {showPassword ? <EyeOff /> : <Eye />}
+        </button>
+      </div>
+
+      {/* ============= Remember Me Smooth Switch ============= */}
+      <div className="flex items-center justify-between">
+        <label
+          htmlFor="remember"
+          style={{
+            fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
+          }}
+          className="text-md font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
+        >
+          {t("remember_me")}
+        </label>
+
+        <button
+          type="button"
+          role="switch"
+          aria-checked={loginForm.remember}
+          onClick={() =>
+            setLoginForm({ ...loginForm, remember: !loginForm.remember })
+          }
+          className={`
+      relative w-14 h-7 rounded-full
+      transition-colors duration-300 ease-out
+      ${
+        loginForm.remember
+          ? "bg-red-500 shadow-lg shadow-red-500/30"
+          : "bg-slate-300 dark:bg-zinc-700"
+      }
+    `}
+        >
+          <span
+            className={`
+        absolute top-1
+        h-5 w-5 rounded-full bg-white shadow-md
+        transition-transform duration-300 ease-out
+        ${direction === "rtl" ? "right-1" : "left-1"}
+        ${
+          loginForm.remember
+            ? direction === "rtl"
+              ? "-translate-x-7"
+              : "translate-x-7"
+            : "translate-x-0"
+        }
+      `}
+          />
         </button>
       </div>
 

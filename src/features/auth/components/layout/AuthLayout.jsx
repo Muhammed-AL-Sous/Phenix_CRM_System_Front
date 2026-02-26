@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Outlet, useMatches, useLocation } from "react-router";
+import { Outlet, useMatches, useLocation, Link } from "react-router";
 
 // Utilities Toggles
 import ThemeToggle from "../../../../components/utility/ThemeToggle";
@@ -16,6 +16,9 @@ import { useSelector } from "react-redux";
 
 // Translation Hook
 import { useTranslation } from "react-i18next";
+
+// Icon
+import { House } from "lucide-react";
 
 const AuthLayout = () => {
   const { direction } = useSelector((state) => state.ui);
@@ -40,6 +43,14 @@ const AuthLayout = () => {
         </span>
         <span className="border-2 border-red-500/15 flex justify-center items-center w-10 h-10 rounded-lg">
           <LanguageToggle />
+        </span>
+        <span
+          className=" text-gray-700 dark:text-white
+         hover:text-[#ed1c24] border-2 border-red-500/15 flex justify-center items-center w-10 h-10 rounded-lg"
+        >
+          <Link to="/">
+            <House />
+          </Link>
         </span>
       </div>
 

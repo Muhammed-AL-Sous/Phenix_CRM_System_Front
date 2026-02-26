@@ -98,14 +98,14 @@ const Navbar = () => {
         >
           <div className="flex items-center justify-between">
             {/* ================= Logo ================= */}
-            <Link to="/" className="relative">
+            <a href="/" className="relative">
               <img
                 src={phenixLogo}
                 alt="Phenix Systems Logo"
                 className="h-13"
               />
               <div className="absolute -top-1 -right-1 w-2 h-2 bg-[#ed1c24] rounded-full animate-ping"></div>
-            </Link>
+            </a>
 
             {/* ================= Desktop Links ================= */}
             <div className="hidden md:flex items-center space-x-8">

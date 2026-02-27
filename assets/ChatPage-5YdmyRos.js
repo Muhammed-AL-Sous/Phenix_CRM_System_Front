@@ -1,0 +1,1 @@
+import{i as e,n as t,o as n,r}from"./index-DGW5LlSO.js";var i=r();e();var a=t(),o=()=>{let e=(0,i.c)(1),t;return e[0]===Symbol.for(`react.memo_cache_sentinel`)?(t=(0,a.jsx)(`div`,{children:`ChatPage`}),e[0]=t):t=e[0],t};export{o as default};

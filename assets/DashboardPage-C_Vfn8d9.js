@@ -1,0 +1,1 @@
+import{n as e,r as t,t as n}from"./index-DGW5LlSO.js";var r=t(),i=e(),a=()=>{let e=(0,r.c)(1),t=n.admin?.statsComponent,a;return e[0]===Symbol.for(`react.memo_cache_sentinel`)?(a=(0,i.jsx)(`div`,{children:(0,i.jsx)(t,{})}),e[0]=a):a=e[0],a};export{a as default};

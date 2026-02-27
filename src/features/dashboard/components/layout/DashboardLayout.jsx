@@ -12,7 +12,7 @@ import { ROLES_CONFIG } from "../../../../routes/roles.config";
 
 // Components
 import DashboardSidebar from "./DashboardSidebar";
-import DashboardNavbar from "./DashboardNavBar";
+import DashboardNavbar from "./DashboardNavbar";
 
 import { motion, AnimatePresence } from "motion/react";
 

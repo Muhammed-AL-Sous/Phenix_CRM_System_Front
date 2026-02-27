@@ -32,9 +32,10 @@ const DashboardSidebar = ({ sidebarLinks }) => {
   return (
     <aside
       className={cn(
-        "w-80 bg-white dark:bg-zinc-950 border-r-2 border-gray-400 dark:border-zinc-900 p-8 flex flex-col lg:flex sticky top-0 min-h-screen",
+        "w-80 bg-white dark:bg-zinc-950 border-r shadow-2xl font-medium border-gray-400 dark:border-zinc-900 p-8 flex flex-col lg:flex sticky top-0 min-h-screen",
         isRtl && "border-r-0 border-l",
       )}
+      style={{ fontFamily: isRtl ? "Vazirmatn" : "Inter" }}
     >
       {/* ============= Phenix CRM Logo ============= */}
       <div className="flex items-center justify-center gap-4 mb-12 px-2">
@@ -74,7 +75,7 @@ const DashboardSidebar = ({ sidebarLinks }) => {
               />
               <span className="font-semibold text-sm">{t(item.label)}</span>
 
-              {/* الأنيميشن الخاص بالمؤشر الجانبي */}
+              {/* ============ SideBar Animation ============ */}
               {isActive && (
                 <motion.div
                   layoutId="active-indicator"
@@ -88,12 +89,18 @@ const DashboardSidebar = ({ sidebarLinks }) => {
         })}
       </nav>
 
-      <div className="mt-auto pt-8 border-t dark:border-zinc-900">
-        <button className="flex items-center gap-3 px-4 py-3 w-full text-slate-500 dark:text-slate-400 hover:text-red-500 transition-all font-bold text-sm group">
+      {/* ============ Logout Button ============ */}
+      <div className=" pt-4 mt-4 border-t border-gray-400 dark:border-zinc-900">
+        <button
+          className="flex items-center gap-3 px-4 py-3 rounded-2xl
+         w-full text-slate-500 dark:text-slate-400 hover:text-red-500
+          transition-all font-bold text-sm group
+           hover:bg-slate-100 dark:hover:bg-white/5 hover:ps-5 cursor-pointer"
+        >
           <LogOut
             onClick={() => dispatch(logOut())}
             size={20}
-            className="group-hover:-translate-x-1 transition-transform"
+            className="group-hover:scale-110 group-hover:text-red-500 transition-transform duration-300"
           />
           <span>{t("logout")}</span>
         </button>

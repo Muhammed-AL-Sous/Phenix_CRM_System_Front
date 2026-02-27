@@ -33,7 +33,7 @@ const AuthLayout = () => {
 
   return (
     <div className="min-h-screen flex items-center flex-col gap-4 justify-start mesh-gradient p-4 relative overflow-hidden">
-      {/* Decorative blobs */}
+      {/* ============= Decorative Blobs ============= */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-500/5 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px]" />
 
@@ -64,6 +64,7 @@ const AuthLayout = () => {
           className="w-full max-w-md glass rounded-[2.5rem] pt-0 pb-4 px-8 shadow-2xl relative z-10"
         >
           <div className="text-center mb-4">
+            {/* ============= Phenix Logo ============= */}
             <motion.div
               initial={{ rotate: -10 }}
               animate={{ rotate: 0 }}
@@ -71,6 +72,8 @@ const AuthLayout = () => {
             >
               <img src={phenixLogo} alt="phenix-logo" />
             </motion.div>
+
+            {/* ============= Title ============= */}
             <h1
               style={{
                 fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -79,6 +82,8 @@ const AuthLayout = () => {
             >
               {title}
             </h1>
+
+            {/* ============= Subtitle ============= */}
             <p
               style={{
                 fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic",
@@ -88,7 +93,8 @@ const AuthLayout = () => {
               {subtitle}
             </p>
           </div>
-          {/* 🔥 Animation Between Routes */}
+
+          {/* ============= Animation Between Routes ============= */}
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

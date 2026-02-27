@@ -5,21 +5,24 @@ import { useSelector } from "react-redux";
 // import { selectCurrentUser } from "../../../auth/authSlice";
 
 // React Router
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 
 // Roles Config
 import { ROLES_CONFIG } from "../../../../routes/roles.config";
 
 // Components
 import DashboardSidebar from "./DashboardSidebar";
-import DashboardNavbar from "./DashboardNavbar";
+import DashboardNavbar from "./DashboardNavBar";
+
+import { motion, AnimatePresence } from "motion/react";
 
 export default function DashboardLayout() {
+  const location = useLocation();
   // const user = useSelector(selectCurrentUser);
   const user = "admin";
   // const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
   const sidebarLinks = ROLES_CONFIG[user].sidebar;
-  const { mode, lang } = useSelector((state) => state.ui);
+  const { lang } = useSelector((state) => state.ui);
   if (!user) return null; // حماية إضافية
 
   return (
@@ -30,13 +33,23 @@ export default function DashboardLayout() {
       {/* ============== Dashboard SideBar ============== */}
       <DashboardSidebar sidebarLinks={sidebarLinks} lang={lang} />
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 flex flex-col min-w-0">
         {/* ============== Dashboard NavBar ============== */}
         <DashboardNavbar />
 
-        <section className="p-6">
-          {/* ============== Dashboard Content ============== */}
-          <Outlet />
+        {/* ============== Dashboard Content ============== */}
+        <section className="p-10 overflow-y-auto mesh-gradient flex-1">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </section>
       </main>
     </div>

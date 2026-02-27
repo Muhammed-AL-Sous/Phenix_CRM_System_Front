@@ -2,7 +2,7 @@
 import { useTranslation } from "react-i18next";
 
 // Icons
-import { Search, Bell, User, Rotate3D, Rotate3DIcon } from "lucide-react";
+import { Search, Bell, User } from "lucide-react";
 
 // Motion Library
 import { motion } from "motion/react";

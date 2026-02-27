@@ -1,7 +1,7 @@
 import {
   useGetCustomersQuery,
   useAddCustomerMutation,
-} from "../../../customer/customersApiSlice";
+} from "../customersApiSlice";
 
 export default function CustomersList() {
   // الـ Hook يعطينا كل شيء تحتاجه الواجهة

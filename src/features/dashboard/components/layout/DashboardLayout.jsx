@@ -2,7 +2,7 @@
 import { useSelector } from "react-redux";
 
 // Auth Slice
-import { selectCurrentUser } from "../../../auth/authSlice";
+// import { selectCurrentUser } from "../../../auth/authSlice";
 
 // React Router
 import { Outlet } from "react-router";
@@ -14,34 +14,28 @@ import { ROLES_CONFIG } from "../../../../routes/roles.config";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardNavbar from "./DashboardNavbar";
 
-
-
 export default function DashboardLayout() {
-  const user = useSelector(selectCurrentUser);
-  const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
-  const { mode, direction, lang } = useSelector((state) => state.ui);
-
+  // const user = useSelector(selectCurrentUser);
+  const user = "admin";
+  // const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
+  const sidebarLinks = ROLES_CONFIG[user].sidebar;
+  const { mode, lang } = useSelector((state) => state.ui);
   if (!user) return null; // حماية إضافية
 
   return (
     <div
-      className={`${darkMode ? "dark bg-gray-900" : "bg-white"} min-h-screen flex`}
+      className="min-h-screen bg-slate-50 dark:bg-black
+     flex selection:bg-red-500/30"
     >
-      <DashboardSidebar sidebarLinks={sidebarLinks} lang={language} />
+      {/* ============== Dashboard SideBar ============== */}
+      <DashboardSidebar sidebarLinks={sidebarLinks} lang={lang} />
 
-      {/* المحتوى الرئيسي */}
       <main className="flex-1 overflow-y-auto">
+        {/* ============== Dashboard NavBar ============== */}
         <DashboardNavbar />
-        <header className="bg-white shadow p-4 flex justify-between items-center">
-          <span className="font-semibold">
-            أهلاً بك، {user.name} ({user.role})
-          </span>
-          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
-            {user.name.charAt(0)}
-          </div>
-        </header>
 
         <section className="p-6">
+          {/* ============== Dashboard Content ============== */}
           <Outlet />
         </section>
       </main>

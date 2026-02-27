@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   useGetCustomersQuery,
   useDeleteCustomerMutation,
-} from "../../customer/customersApiSlice";
+} from "../customersApiSlice";
 
 export default function CustomersTable() {
   const [search, setSearch] = useState("");

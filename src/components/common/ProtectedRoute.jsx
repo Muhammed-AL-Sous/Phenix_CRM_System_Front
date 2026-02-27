@@ -3,13 +3,14 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../features/auth/authSlice";
 
 export default function ProtectedRoute({ allowedRoles }) {
-  const user = useSelector(selectCurrentUser);
-  const isAuthenticated = localStorage.getItem("token");
+  // const user = useSelector(selectCurrentUser);
+  const user = "admin";
+  // const isAuthenticated = localStorage.getItem("token");
 
   // 1. إذا لم يكن مسجلاً أصلاً
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  // if (!isAuthenticated) {
+  //   return <Navigate to="/login" replace />;
+  // }
 
   // 2. إذا كان مسجلاً ولكن لم يتم تحميل بيانات المستخدم بعد (حالة Loading)
   if (!user) {
@@ -17,9 +18,9 @@ export default function ProtectedRoute({ allowedRoles }) {
   }
 
   // 3. إذا كان الدور غير مسموح به
-  if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+  // if (!allowedRoles.includes(user.role)) {
+  //   return <Navigate to="/unauthorized" replace />;
+  // }
 
   // إذا كل شيء تمام
   return <Outlet />;

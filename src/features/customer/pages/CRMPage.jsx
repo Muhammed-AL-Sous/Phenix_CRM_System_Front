@@ -1,7 +1,7 @@
 import {
   useAddCustomerMutation,
   useGetCustomersQuery,
-} from "../../customer/customersApiSlice";
+} from "../customersApiSlice";
 
 export default function CRMPage() {
   // بمجرد تحميل الصفحة، يتم جلب البيانات وتخزينها بالكاش بـ Tag "Customers"

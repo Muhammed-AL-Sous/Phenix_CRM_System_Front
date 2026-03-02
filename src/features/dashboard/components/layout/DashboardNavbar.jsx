@@ -2,7 +2,14 @@
 import { useTranslation } from "react-i18next";
 
 // Icons
-import { Search, Bell, User } from "lucide-react";
+import {
+  Search,
+  Bell,
+  User,
+  UserRoundPen,
+  UserCog,
+  LogOut,
+} from "lucide-react";
 
 // Motion Library
 import { motion } from "motion/react";
@@ -10,11 +17,18 @@ import { motion } from "motion/react";
 // Utilities Toggles
 import ThemeToggle from "../../../../components/utility/ThemeToggle";
 import LanguageToggle from "../../../../components/utility/LanguageToggle";
+import Dropdown from "../../../../components/utility/Dropdown";
+
+// Redux
+import { useSelector } from "react-redux";
 
 const DashboardNavbar = () => {
   const { t } = useTranslation(["dashboard"]);
+  const { direction } = useSelector((state) => state.ui);
+  const isRTL = direction === "rtl";
+
   return (
-    <header className="h-20 shadow-2xl glass px-10 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-20 shadow-xl glass px-10 flex items-center justify-between sticky top-0 z-30">
       {/* ============ Search Button ============ */}
       <div className="flex items-center gap-6 flex-1">
         <div className="relative max-w-md w-full hidden md:block group">
@@ -57,23 +71,49 @@ const DashboardNavbar = () => {
         </button>
 
         <div className="h-10 w-px bg-slate-200 dark:bg-zinc-800 mx-2" />
-        <motion.div className="flex items-center gap-4 pl-2 cursor-pointer">
-          {/* ============ User's Image ============ */}
-          <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-slate-200 to-slate-300 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center overflow-hidden border-2 border-white dark:border-zinc-800 shadow-lg">
-            <User size={24} className="text-slate-500 dark:text-slate-400" />
-          </div>
 
-          {/* ============ User's Name & Role ============ */}
-          <div className="text-right hidden sm:block">
-            <p className="text-sm font-black text-slate-900 dark:text-white leading-tight">
-              Muhammed AL-Sous
-            </p>
-            <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
-              {/* {role} */}
-              admin
-            </p>
-          </div>
-        </motion.div>
+        <Dropdown
+          align={isRTL ? "left" : "right"}
+          trigger={
+            <motion.div className="flex items-center gap-4 pl-2 cursor-pointer">
+              {/* ============ User's Image ============ */}
+              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-slate-200 to-slate-300 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center overflow-hidden border-2 border-white dark:border-zinc-800 shadow-lg">
+                <User
+                  size={24}
+                  className="text-slate-500 dark:text-slate-400"
+                />
+              </div>
+
+              {/* ============ User's Name & Role ============ */}
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-black text-slate-900 dark:text-white leading-tight">
+                  Muhammed AL-Sous
+                </p>
+                <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
+                  {/* {role} */}
+                  admin
+                </p>
+              </div>
+            </motion.div>
+          }
+          items={[
+            {
+              icon: UserRoundPen,
+              label: `${t("profile")}`,
+              onClick: () => console.log("Profile clicked"),
+            },
+            {
+              icon: UserCog,
+              label: `${t("account_settings")}`,
+              onClick: () => console.log("Settings clicked"),
+            },
+            {
+              icon: LogOut,
+              label: `${t("logout")}`,
+              onClick: () => console.log("Logout"),
+            },
+          ]}
+        />
       </div>
     </header>
   );

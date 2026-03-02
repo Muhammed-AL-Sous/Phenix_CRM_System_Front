@@ -20,7 +20,7 @@ import { cn } from "../../../../lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 
 // Phenix CRM Logo
-import phenixCRMLogo from "../../../../assets/images/common/phenix_logo_dashboard.png";
+import phenixCRMLogo from "../../../../assets/images/dashboard/phenix_logo_dashboard.png";
 
 const DashboardSidebar = ({ sidebarLinks }) => {
   const { t } = useTranslation(["dashboard"]);
@@ -32,7 +32,7 @@ const DashboardSidebar = ({ sidebarLinks }) => {
   return (
     <aside
       className={cn(
-        "w-80 bg-white dark:bg-zinc-950 border-r shadow-2xl font-medium border-gray-400 dark:border-zinc-900 p-8 flex flex-col lg:flex sticky top-0 min-h-screen",
+        "w-80 bg-white dark:bg-zinc-950 border-r shadow-xl font-medium border-gray-400 dark:border-zinc-900 p-8 flex flex-col lg:flex sticky top-0 min-h-screen",
         isRtl && "border-r-0 border-l",
       )}
       style={{ fontFamily: isRtl ? "Vazirmatn" : "Inter" }}

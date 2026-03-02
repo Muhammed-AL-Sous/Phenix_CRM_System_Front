@@ -2,7 +2,7 @@
 import { useSelector } from "react-redux";
 
 // Auth Slice
-// import { selectCurrentUser } from "../../../auth/authSlice";
+import { selectCurrentUser } from "../../../auth/authSlice";
 
 // React Router
 import { Outlet, useLocation } from "react-router";
@@ -18,10 +18,8 @@ import { motion, AnimatePresence } from "motion/react";
 
 export default function DashboardLayout() {
   const location = useLocation();
-  // const user = useSelector(selectCurrentUser);
-  const user = "admin";
-  // const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
-  const sidebarLinks = ROLES_CONFIG[user].sidebar;
+  const user = useSelector(selectCurrentUser);
+  const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
   const { lang } = useSelector((state) => state.ui);
   if (!user) return null; // حماية إضافية
 

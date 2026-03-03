@@ -1,3 +1,6 @@
+// React Hooks
+import { useState, useLayoutEffect } from "react";
+
 // React Redux
 import { useSelector } from "react-redux";
 
@@ -17,11 +20,26 @@ import DashboardNavbar from "./DashboardNavbar";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function DashboardLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // const user = useSelector(selectCurrentUser);
+  const { direction } = useSelector((state) => state.ui);
+  const isRtl = direction === "rtl";
+
+  // const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
+  const sidebarLinks = ROLES_CONFIG["admin"].sidebar;
   const location = useLocation();
-  const user = useSelector(selectCurrentUser);
-  const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
-  const { lang } = useSelector((state) => state.ui);
-  if (!user) return null; // حماية إضافية
+
+  /* ================= Lock Body Scroll ================= */
+  useLayoutEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => (document.body.style.overflow = "");
+  }, [isSidebarOpen]);
+
+  // if (!user) return null; // حماية إضافية
 
   return (
     <div
@@ -29,27 +47,37 @@ export default function DashboardLayout() {
      flex selection:bg-red-500/30"
     >
       {/* ============== Dashboard SideBar ============== */}
-      <DashboardSidebar sidebarLinks={sidebarLinks} lang={lang} />
+      <DashboardSidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+        sidebarLinks={sidebarLinks}
+      />
 
-      <main className="flex-1 flex flex-col min-w-0">
+      {/* ============== Main Content Area ============== */}
+      <div
+        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out
+          ${isRtl ? "lg:mr-80" : "lg:ml-80"}`}
+      >
         {/* ============== Dashboard NavBar ============== */}
-        <DashboardNavbar />
+        <DashboardNavbar toggleSidebar={() => setIsSidebarOpen(true)} />
 
         {/* ============== Dashboard Content ============== */}
-        <section className="p-10 overflow-y-auto mesh-gradient flex-1">
+        <main className="overflow-y-auto mesh-gradient flex-1 p-4 md:p-8 lg:p-10 relative overflow-x-hidden">
+          {/* ============== Page Transition Animation ============== */}
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.3, ease: "circOut" }}
+              className="h-full"
             >
               <Outlet />
             </motion.div>
           </AnimatePresence>
-        </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

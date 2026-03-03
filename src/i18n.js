@@ -2,6 +2,8 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import HttpBackend from "i18next-http-backend";
 // import LanguageDetector from "i18next-browser-languagedetector";
+const savedLang = localStorage.getItem("lang") || "en";
+
 
 i18n
   .use(HttpBackend)
@@ -10,13 +12,14 @@ i18n
   .init({
     debug: false, // تأكد أن هذه القيمة false لإيقاف سجلات المكتبة في الكونسول
     supportedLngs: ["ar", "en"],
+    lng: savedLang,
     fallbackLng: "en",
     defaultNS: "common",
 
     ns: ["common", "navbar", "footer", "home", "dashboard"],
 
     backend: {
-      loadPath: "./locales/{{lng}}/{{ns}}.json",
+      loadPath: "/locales/{{lng}}/{{ns}}.json",
     },
 
     detection: {

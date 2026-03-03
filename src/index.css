@@ -89,6 +89,40 @@ ul {
   }
 }
 
+/* ================= Custom Scrollbar For SideBar In DashBoard ================= */
+
+.custom-scrollbar {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+/* Chrome / Edge */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* نخفيه عبر border */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(150, 150, 150, 0.6);
+  border-radius: 6px;
+  border: 3px solid transparent; /* يخفيه */
+  background-clip: content-box;
+  transition: border 0.25s ease;
+}
+
+/* عند hover */
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  border: 0px solid transparent; /* يظهر */
+}
+
+.custom-scrollbar-mobile::-webkit-scrollbar {
+  width: 5px;
+}
+
 /* ================= Auth Pages ================= */
 
 .mesh-gradient {
@@ -112,4 +146,3 @@ ul {
 .glass {
   @apply bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl border border-white/20 dark:border-white/5;
 }
-

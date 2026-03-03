@@ -9,10 +9,8 @@ import {
   UserRoundPen,
   UserCog,
   LogOut,
+  Menu,
 } from "lucide-react";
-
-// Motion Library
-import { motion } from "motion/react";
 
 // Utilities Toggles
 import ThemeToggle from "../../../../components/utility/ThemeToggle";
@@ -22,24 +20,36 @@ import Dropdown from "../../../../components/utility/Dropdown";
 // Redux
 import { useSelector } from "react-redux";
 
-const DashboardNavbar = () => {
+const DashboardNavbar = ({ toggleSidebar }) => {
   const { t } = useTranslation(["dashboard"]);
   const { direction } = useSelector((state) => state.ui);
   const isRTL = direction === "rtl";
 
   return (
-    <header className="h-20 shadow-xl glass px-10 flex items-center justify-between sticky top-0 z-30">
-      {/* ============ Search Button ============ */}
+    <header
+      className="h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 md:px-8 flex items-center justify-between sticky top-0 z-30
+     shadow-xl glass px-10"
+    >
       <div className="flex items-center gap-6 flex-1">
-        <div className="relative max-w-md w-full hidden md:block group">
+        {/* ============ Toggle SideBar Button ============ */}
+        <button
+          onClick={toggleSidebar}
+          className="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-900 transition-colors"
+          aria-label="Toggle Menu"
+        >
+          <Menu size={24} />
+        </button>
+
+        {/* ============ Search Bar - Hidden on small mobile ============ */}
+        <div className="relative group hidden sm:block max-w-70 lg:max-w-md w-full ml-2">
           <Search
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-red-500 transition-colors"
-            size={20}
+            size={18}
           />
           <input
-            type="text"
+            type="search"
             placeholder={t("search")}
-            className="w-full pl-12 pr-6 py-3 bg-slate-100 dark:bg-zinc-900/50 border-2 border-transparent focus:border-red-500/20 rounded-[1.25rem] transition-all outline-none text-sm font-medium dark:text-white"
+            className="w-full pl-11 pr-4 py-2.5 bg-slate-100 dark:bg-zinc-900 border-none rounded-xl focus:ring-2 focus:ring-red-500/20 transition-all outline-none text-sm"
           />
         </div>
       </div>
@@ -75,7 +85,7 @@ const DashboardNavbar = () => {
         <Dropdown
           align={isRTL ? "left" : "right"}
           trigger={
-            <motion.div className="flex items-center gap-4 pl-2 cursor-pointer">
+            <div className="flex items-center gap-4 pl-2 cursor-pointer">
               {/* ============ User's Image ============ */}
               <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-slate-200 to-slate-300 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center overflow-hidden border-2 border-white dark:border-zinc-800 shadow-lg">
                 <User
@@ -94,7 +104,7 @@ const DashboardNavbar = () => {
                   admin
                 </p>
               </div>
-            </motion.div>
+            </div>
           }
           items={[
             {

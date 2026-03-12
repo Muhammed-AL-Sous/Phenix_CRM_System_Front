@@ -27,8 +27,8 @@ const DashboardNavbar = ({ toggleSidebar }) => {
 
   return (
     <header
-      className="h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 md:px-8 flex items-center justify-between sticky top-0 z-30
-     shadow-xl glass px-10"
+      className="h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between sticky top-0 z-30
+     shadow-xl glass px-2 md:px-4"
     >
       <div className="flex items-center gap-6 flex-1">
         {/* ============ Toggle SideBar Button ============ */}

@@ -1,27 +1,22 @@
 import { useState } from "react";
 import {
-  useGetCustomersQuery,
-  useDeleteCustomerMutation,
-} from "../customersApiSlice";
+  useGetClientsQuery,
+  useDeleteClientMutation,
+} from "../clientsApiSlice";
 
-export default function CustomersTable() {
+export default function ClientsTable() {
   const [search, setSearch] = useState("");
 
   // 1. جلب البيانات (تتحدث تلقائياً عند تغيير نص البحث)
-  const {
-    data: customers,
-    isLoading,
-    isFetching,
-  } = useGetCustomersQuery(search);
+  const { data: clients, isLoading, isFetching } = useGetClientsQuery(search);
 
   // 2. دالة الحذف
-  const [deleteCustomer, { isLoading: isDeleting }] =
-    useDeleteCustomerMutation();
+  const [deleteClient, { isLoading: isDeleting }] = useDeleteClientMutation();
 
   const handleDelete = async (id) => {
     if (window.confirm("هل أنت متأكد من حذف هذا العميل؟")) {
       try {
-        await deleteCustomer(id).unwrap();
+        await deleteClient(id).unwrap();
         // لا حاجة لعمل أي شيء هنا، الجدول سيحدث نفسه بفضل الـ Tags!
       } catch (err) {
         alert("فشل الحذف: " + err.data?.message);
@@ -57,13 +52,13 @@ export default function CustomersTable() {
             </tr>
           </thead>
           <tbody>
-            {customers?.map((customer) => (
-              <tr key={customer.id} className="hover:bg-gray-50">
-                <td className="border p-2">{customer.name}</td>
-                <td className="border p-2">{customer.email}</td>
+            {clients?.map((client) => (
+              <tr key={client.id} className="hover:bg-gray-50">
+                <td className="border p-2">{client.name}</td>
+                <td className="border p-2">{client.email}</td>
                 <td className="border p-2 text-center">
                   <button
-                    onClick={() => handleDelete(customer.id)}
+                    onClick={() => handleDelete(client.id)}
                     className="bg-red-500 text-white px-3 py-1 rounded"
                     disabled={isDeleting}
                   >

@@ -51,18 +51,18 @@ const SupportStats = lazy(
   () => import("../features/support/components/SupportStats.jsx"),
 );
 
-// =================== Customer =================== //
+// =================== Client =================== //
 
-const CustomerRequestsPage = lazy(
-  () => import("../features/customer/pages/CustomerRequestsPage.jsx"),
+const ClientRequestsPage = lazy(
+  () => import("../features/clients/pages/ClientRequestsPage.jsx"),
 );
 
-const CustomerStats = lazy(
-  () => import("../features/customer/components/CustomerStats.jsx"),
+const ClientStats = lazy(
+  () => import("../features/clients/components/ClientStats.jsx"),
 );
 
-const ProspectiveCustomersPage = lazy(
-  () => import("../features/customer/pages/ProspectiveCustomersPage.jsx"),
+const ProspectiveClientsPage = lazy(
+  () => import("../features/clients/pages/ProspectiveClientsPage.jsx"),
 );
 
 export const ROLES_CONFIG = {
@@ -79,8 +79,8 @@ export const ROLES_CONFIG = {
       { icon: UserStar, label: "ratings", to: "/admin/ratings" },
       {
         icon: Crown,
-        label: "prospective_customers",
-        to: "/admin/prospective-customers",
+        label: "prospective_clients",
+        to: "/admin/prospective-clients",
       },
       { icon: ChartNoAxesCombined, label: "reports", to: "/admin/reports" },
       { icon: Settings, label: "settings", to: "/admin/settings" },
@@ -94,7 +94,7 @@ export const ROLES_CONFIG = {
       { path: "users", element: UsersPage },
       { path: "chat", element: ChatPage },
       { path: "ratings", element: RatingsPage },
-      { path: "prospective-customers", element: ProspectiveCustomersPage },
+      { path: "prospective-clients", element: ProspectiveClientsPage },
     ],
   },
 
@@ -110,8 +110,8 @@ export const ROLES_CONFIG = {
       { icon: UserStar, label: "ratings", to: "/support/ratings" },
       {
         icon: Crown,
-        label: "prospective_customers",
-        to: "/support/prospective-customers",
+        label: "prospective_clients",
+        to: "/support/prospective-clients",
       },
       { icon: MessageCircleMore, label: "chat", to: "/support/chat" },
     ],
@@ -123,33 +123,33 @@ export const ROLES_CONFIG = {
       { path: "tasks", element: TasksPage },
       { path: "users", element: UsersPage },
       { path: "ratings", element: RatingsPage },
-      { path: "prospective-customers", element: ProspectiveCustomersPage },
+      { path: "prospective-clients", element: ProspectiveClientsPage },
       { path: "chat", element: ChatPage },
     ],
   },
 
-  customer: {
-    prefix: "customer",
-    statsComponent: CustomerStats,
+  client: {
+    prefix: "client",
+    statsComponent: ClientStats,
 
     sidebar: [
-      { icon: LayoutDashboard, label: "dashboard", to: "/customer" },
-      { icon: Tickets, label: "tickets", to: "/customer/tickets" },
-      { icon: SendToBack, label: "my_requests", to: "/customer/requests" },
-      { icon: MessageCircleMore, label: "chat", to: "/customer/chat" },
+      { icon: LayoutDashboard, label: "dashboard", to: "/client" },
+      { icon: Tickets, label: "tickets", to: "/client/tickets" },
+      { icon: SendToBack, label: "my_requests", to: "/client/requests" },
+      { icon: MessageCircleMore, label: "chat", to: "/client/chat" },
       {
         icon: Handshake,
         label: "add_your_opinion",
-        to: "/customer/testimonials",
+        to: "/client/testimonials",
       },
-      { icon: HeartPlus, label: "support_plan", to: "/customer/support-plan" },
+      { icon: HeartPlus, label: "support_plan", to: "/client/support-plan" },
     ],
 
     routes: [
       { path: "", element: DashboardPage },
       { path: "profile", element: ProfilePage },
       { path: "tickets", element: TicketsPage },
-      { path: "requests", element: CustomerRequestsPage },
+      { path: "requests", element: ClientRequestsPage },
       { path: "chat", element: ChatPage },
     ],
   },

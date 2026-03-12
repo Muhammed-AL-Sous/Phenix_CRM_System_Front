@@ -8,10 +8,14 @@ import {
 } from "react";
 
 // React Router Dom
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+
+import { useLogoutMutation } from "../../features/auth/authApiSlice";
+
+import { logOut } from "../../features/auth/authSlice";
 
 // React Redux
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 // Translation Hook
 import { useTranslation } from "react-i18next";
@@ -31,8 +35,29 @@ const Navbar = () => {
   const { direction } = useSelector((state) => state.ui);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [logoutApi] = useLogoutMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const menuRef = useRef(null);
   const toggleRef = useRef(null);
+
+  /* ================= Handle Logout ================= */
+  const handleLogout = async () => {
+    try {
+      // 1. طلب تسجيل الخروج من السيرفر (لحذف الكوكيز والـ Session)
+      await logoutApi().unwrap();
+
+      // 2. مسح بيانات المستخدم من Redux و LocalStorage
+      dispatch(logOut());
+
+      // 3. التوجيه لصفحة تسجيل الدخول
+      navigate("/login");
+    } catch (err) {
+      console.error("فشل تسجيل الخروج من السيرفر، يتم المسح محلياً فقط", err);
+      dispatch(logOut());
+      navigate("/login");
+    }
+  };
 
   /* ================= Scroll Effect ================= */
 
@@ -141,6 +166,7 @@ const Navbar = () => {
                   {t("get_Started")}
                 </button>
               </Link>
+              <button onClick={handleLogout}>تسجيل الخروج</button>
             </div>
 
             {/* Mobile Toggle */}
@@ -198,6 +224,7 @@ const Navbar = () => {
               {t("get_Started")}
             </button>
           </Link>
+          <button onClick={handleLogout}>تسجيل الخروج</button>
         </div>
       </div>
     </nav>

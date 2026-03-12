@@ -13,7 +13,7 @@ const SupportStats = () => {
         {t("support_dashboard")}
       </h1>
       <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">
-        {t("Helping_customers_succeed_one_ticket_at_a_time")}
+        {t("Helping_clients_succeed_one_ticket_at_a_time")}
       </p>
     </div>
   );

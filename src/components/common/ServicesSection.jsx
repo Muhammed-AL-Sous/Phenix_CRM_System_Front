@@ -1,5 +1,5 @@
 import demo from "../../assets/images/common/demo.png";
-import support from "../../assets/images/common/customer-service.png";
+import support from "../../assets/images/common/client-service.png";
 import dataBase from "../../assets/images/common/data.png";
 import complaint from "../../assets/images/common/complaint.png";
 

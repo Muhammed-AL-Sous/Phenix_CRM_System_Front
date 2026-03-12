@@ -1,12 +1,9 @@
-import {
-  useGetCustomersQuery,
-  useAddCustomerMutation,
-} from "../customersApiSlice";
+import { useGetClientsQuery, useAddClientMutation } from "../clientsApiSlice";
 
-export default function CustomersList() {
+export default function ClientsList() {
   // الـ Hook يعطينا كل شيء تحتاجه الواجهة
-  const { data: customers, isLoading, isError } = useGetCustomersQuery();
-  const [addCustomer] = useAddCustomerMutation();
+  const { data: clients, isLoading, isError } = useGetClientsQuery();
+  const [addClient] = useAddClientMutation();
 
   if (isLoading) return <p>جاري تحميل العملاء...</p>;
   if (isError) return <p>حدث خطأ أثناء الاتصال بـ Laravel</p>;
@@ -15,12 +12,12 @@ export default function CustomersList() {
     <div>
       <h2>قائمة عملاء الـ CRM</h2>
       <ul>
-        {customers.map((c) => (
+        {clients.map((c) => (
           <li key={c.id}>{c.name}</li>
         ))}
       </ul>
 
-      <button onClick={() => addCustomer({ name: "عميل جديد" })}>
+      <button onClick={() => addClient({ name: "عميل جديد" })}>
         إضافة عميل
       </button>
     </div>

@@ -4,7 +4,6 @@ import HttpBackend from "i18next-http-backend";
 // import LanguageDetector from "i18next-browser-languagedetector";
 const savedLang = localStorage.getItem("lang") || "en";
 
-
 i18n
   .use(HttpBackend)
   //   .use(LanguageDetector)
@@ -21,6 +20,11 @@ i18n
     backend: {
       loadPath: "/locales/{{lng}}/{{ns}}.json",
     },
+
+    // resources: {
+    //   en: { translation: { select_country: "Select Country" } },
+    //   ar: { translation: { select_country: "اختر الدولة" } },
+    // },
 
     detection: {
       order: ["localStorage"],

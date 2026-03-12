@@ -5,23 +5,18 @@ import { setCredentials, logOut } from "../../authSlice";
 
 export default function AuthInitializer({ children }) {
   const dispatch = useDispatch();
-  const token = localStorage.getItem("token");
 
-  // سنقوم بطلب بيانات المستخدم فقط إذا كان هناك توكن مخزن
-  // وإلا سنقوم بإنهاء التحميل فوراً
-  const { data, error, isLoading, isSuccess } = useGetUserDataQuery(undefined, {
-    skip: !token, // لا ترسل طلب إذا لا يوجد توكن
-  });
+  const { data, error, isLoading } = useGetUserDataQuery();
 
   useEffect(() => {
-    if (isSuccess && data) {
-      // إذا نجح الطلب، خزن البيانات في Redux
-      dispatch(setCredentials({ user: data, token }));
+    if (data) {
+      // إذا نجح الطلب، يعني أن الكوكي (تذكرني) موجودة وصالحة
+      dispatch(setCredentials({ user: data.user }));
     } else if (error) {
-      // إذا فشل (التوكن منتهي أو مزور)، سجل خروج وامسح التوكن
+      // إذا فشل (مثلاً 401)، نمسح أي بيانات قديمة
       dispatch(logOut());
     }
-  }, [isSuccess, data, error, dispatch, token]);
+  }, [data, error, dispatch]);
 
   // حالة التحميل: مهمة لكي لا يرى المستخدم صفحة الـ Login لثانية واحدة ثم يتغير المحتوى
   if (isLoading) {

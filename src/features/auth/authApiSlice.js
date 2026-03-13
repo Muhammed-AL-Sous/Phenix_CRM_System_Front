@@ -7,14 +7,14 @@ export const authApiSlice = apiSlice.injectEndpoints({
     // طلب تهيئة الكوكيز (يجب تنفيذه مرة واحدة قبل اللوجن)
     getCsrfToken: builder.query({
       query: () => ({
-        url: "/sanctum/csrf-cookie",
+        url: "/sanctum/csrf-cookie", // استخدم .. للرجوع للخلف خطوة عن v1
         method: "GET",
       }),
     }),
 
     login: builder.mutation({
       query: (credentials) => ({
-        url: "/auth/login",
+        url: "/v1/auth/login",
         method: "POST",
         body: { ...credentials },
       }),
@@ -22,20 +22,20 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
     register: builder.mutation({
       query: (userInfo) => ({
-        url: "/auth/register",
+        url: "/v1/auth/register",
         method: "POST",
         body: { ...userInfo },
       }),
     }),
 
     getUserData: builder.query({
-      query: () => "/user-data",
+      query: () => "/v1/user/user-data",
       providesTags: ["User"],
     }),
 
     logout: builder.mutation({
       query: () => ({
-        url: "/auth/logout",
+        url: "/v1/auth/logout",
         method: "POST",
       }),
     }),

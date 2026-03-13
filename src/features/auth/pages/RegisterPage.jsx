@@ -23,6 +23,9 @@ import {
   LockKeyhole,
 } from "lucide-react";
 
+// Notification Toast
+import { notify, notifyPromise } from "../../../lib/notify";
+
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -44,12 +47,25 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // نقوم بتعريف العملية في متغير دون تنفيذها بـ await هنا
+    const registrationPromise = register(registerForm).unwrap();
+
+    // نمرر العملية لـ notifyPromise وهي ستدير الـ Loading والـ Success والـ Error
+    notifyPromise(registrationPromise, {
+      loading: "auth.registering",
+      success: "auth.welcome_message",
+      error: "auth.failed_try_again",
+    });
+
     try {
-      await register(registerForm).unwrap(); // unwrap تجعلنا نمسك الخطأ في catch
-      alert("تم التسجيل بنجاح!");
+      await registrationPromise;
+      // هنا يمكنك إضافة تحويل المستخدم لصفحة أخرى مثلاً
+      // navigate('/verify-email');
     } catch (err) {
-      // الأخطاء مخزنة الآن في المتغير 'error' بالأعلى تلقائياً
-      console.error("فشل التسجيل", err);
+      // الأخطاء الفرعية (مثل 422) ستظهر تلقائياً في التنبيه بسبب notifyPromise
+      // ولكننا نترك الـ catch هنا إذا أردت القيام بشيء إضافي (كطباعة الخطأ في الكونسول)
+      console.error("Registration detail error:", err);
     }
   };
 
@@ -77,9 +93,9 @@ const RegisterPage = () => {
   }, []);
 
   return (
-    <form className="space-y-5" onSubmit={handleSubmit}>
+    <form className="space-y-2" onSubmit={handleSubmit}>
       {/* ============= Full Name ============= */}
-      <div>
+      <div className="relative mb-7">
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -109,10 +125,17 @@ const RegisterPage = () => {
             fontWeight: "500",
           }}
         />
+        {error?.status === 422 && error.data.errors.name && (
+          <div className="absolute left-1 right-1 top-[calc(100%+6px)] w-full">
+            <p className="text-red-500 text-xs font-medium font-[Livvic]">
+              {t(error.data.errors.name[0])}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ============= Email ============= */}
-      <div>
+      <div className="relative mb-7">
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -142,14 +165,18 @@ const RegisterPage = () => {
           className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
           placeholder="name@company.com"
         />
-        {/* عرض خطأ الإيميل من Laravel */}
-        {error?.status === 422 && (
-          <p className="text-red-500">{error.data.errors.email?.[0]}</p>
+
+        {error?.status === 422 && error.data.errors.email && (
+          <div className="absolute left-1 right-1 top-[calc(100%+6px)] w-full">
+            <p className="text-red-500 text-xs font-medium font-[Livvic]">
+              {t(error.data.errors.email?.[0])}
+            </p>
+          </div>
         )}
       </div>
 
       {/* ============= PassWord ============= */}
-      <div className="relative">
+      <div className="relative mb-7">
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -166,52 +193,54 @@ const RegisterPage = () => {
           </span>
           {t("password")}
         </label>
-        <input
-          ref={passwordRef}
-          type={showPassword ? "text" : "password"}
-          style={{
-            fontFamily: "Livvic",
-            fontWeight: "500",
-            letterSpacing:
-              !showPassword && registerForm.password.length > 0
-                ? "0.2em"
-                : "normal",
-          }}
-          value={registerForm.password}
-          onChange={(e) =>
-            setRegisterForm({ ...registerForm, password: e.target.value })
-          }
-          // ذكاء الاتجاه: LTR فقط عند وجود نص ليبقى الـ placeholder في مكانه
-          dir={registerForm.password.length > 0 ? "ltr" : "inherit"}
-          className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white
+        <div className="relative">
+          <input
+            ref={passwordRef}
+            type={showPassword ? "text" : "password"}
+            style={{
+              fontFamily: "Livvic",
+              fontWeight: "500",
+              letterSpacing:
+                !showPassword && registerForm.password.length > 0
+                  ? "0.2em"
+                  : "normal",
+            }}
+            value={registerForm.password}
+            onChange={(e) =>
+              setRegisterForm({ ...registerForm, password: e.target.value })
+            }
+            // ذكاء الاتجاه: LTR فقط عند وجود نص ليبقى الـ placeholder في مكانه
+            dir={registerForm.password.length > 0 ? "ltr" : "inherit"}
+            className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white
          ${direction === "rtl" ? "text-right" : "text-left"}`}
-          placeholder="••••••••"
-        />
-        <button
-          type="button"
-          onMouseDown={(e) => handleToggle(e, "password")}
-          style={{
-            position: "absolute",
-            top: "70%",
-            left: direction === "rtl" ? "15px" : "",
-            right: direction === "rtl" ? "" : "15px",
-            transform: "translateY(-50%)",
-            cursor: "pointer",
-            zIndex: 10,
-            color: "#6c757d",
-            fontSize: "18px",
-          }}
-        >
-          {showPassword ? <EyeOff /> : <Eye />}
-        </button>
-        {/* عرض خطأ الباسورد من Laravel */}
-        {error?.status === 422 && (
-          <p className="text-red-500">{error.data.errors.password?.[0]}</p>
-        )}
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            className={`absolute top-1/2 -translate-y-1/2
+          ${direction === "rtl" ? "left-4" : "right-4"}`}
+            onMouseDown={(e) => handleToggle(e, "password")}
+            style={{
+              cursor: "pointer",
+              zIndex: 10,
+              color: "#6c757d",
+              fontSize: "18px",
+            }}
+          >
+            {showPassword ? <EyeOff /> : <Eye />}
+          </button>
+          {error?.status === 422 && error.data.errors.password && (
+            <div className="absolute left-1 right-1 top-[calc(100%+6px)] w-full">
+              <p className="text-red-500 text-xs font-medium font-[Livvic]">
+                {t(error.data.errors.password[0])}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ============= PassWord Confirmation ============= */}
-      <div className="relative">
+      <div className="relative mb-9">
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -228,54 +257,58 @@ const RegisterPage = () => {
           </span>
           {t("Confirm_password")}
         </label>
-        <input
-          ref={passwordConfirmRef}
-          type={showConfirmPassword ? "text" : "password"}
-          style={{
-            fontFamily: "Livvic",
-            fontWeight: "500",
-            letterSpacing:
-              !showConfirmPassword &&
-              registerForm.password_confirmation.length > 0
-                ? "0.2em"
-                : "normal",
-          }}
-          value={registerForm.password_confirmation}
-          onChange={(e) =>
-            setRegisterForm({
-              ...registerForm,
-              password_confirmation: e.target.value,
-            })
-          }
-          dir={
-            registerForm.password_confirmation.length > 0 ? "ltr" : "inherit"
-          }
-          className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white
+        <div className="relative">
+          <input
+            ref={passwordConfirmRef}
+            type={showConfirmPassword ? "text" : "password"}
+            style={{
+              fontFamily: "Livvic",
+              fontWeight: "500",
+              letterSpacing:
+                !showConfirmPassword &&
+                registerForm.password_confirmation.length > 0
+                  ? "0.2em"
+                  : "normal",
+            }}
+            value={registerForm.password_confirmation}
+            onChange={(e) =>
+              setRegisterForm({
+                ...registerForm,
+                password_confirmation: e.target.value,
+              })
+            }
+            dir={
+              registerForm.password_confirmation.length > 0 ? "ltr" : "inherit"
+            }
+            className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white
          ${direction === "rtl" ? "text-right" : "text-left"}`}
-          placeholder="••••••••"
-        />
-        <button
-          type="button"
-          onMouseDown={(e) => handleToggle(e, "confirm")}
-          style={{
-            position: "absolute",
-            top: "70%",
-            left: direction === "rtl" ? "15px" : "",
-            right: direction === "rtl" ? "" : "15px",
-            transform: "translateY(-50%)",
-            cursor: "pointer",
-            zIndex: 10,
-            color: "#6c757d",
-            fontSize: "18px",
-          }}
-        >
-          {showConfirmPassword ? <EyeOff /> : <Eye />}
-        </button>
-        {/* عرض خطأ الباسورد من Laravel */}
-        {error?.status === 422 && (
-          <p className="text-red-500">{error.data.errors.password?.[0]}</p>
-        )}
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            className={`absolute top-1/2 -translate-y-1/2
+          ${direction === "rtl" ? "left-4" : "right-4"}`}
+            onMouseDown={(e) => handleToggle(e, "confirm")}
+            style={{
+              cursor: "pointer",
+              zIndex: 10,
+              color: "#6c757d",
+              fontSize: "18px",
+            }}
+          >
+            {showConfirmPassword ? <EyeOff /> : <Eye />}
+          </button>
+
+          {error?.status === 422 && error.data.errors.password && (
+            <div className="absolute left-0 top-[calc(100%+4px)] w-full">
+              <p className="text-red-500 text-xs font-medium font-[Livvic]">
+                {t(error.data.errors.password[0])}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
+
       <button
         type="submit"
         disabled={isLoading}

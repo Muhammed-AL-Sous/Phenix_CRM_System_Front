@@ -6,7 +6,7 @@ import { logOut } from "../features/auth/authSlice";
 // ===================================================================================
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000/v1",
+  baseUrl: "http://localhost:8000",
   // السماح بإرسال واستقبال الكوكيز
   prepareHeaders: (headers) => {
     headers.set("Accept", "application/json");
@@ -17,14 +17,14 @@ const baseQuery = fetchBaseQuery({
 // ===================================================================================
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
-  // args: تحتوي على معلومات الطلب (مثل الـ URL والـ Body).
-  // result: هنا نقوم بتنفيذ الطلب لأول مرة وننتظر النتيجة.
-
   let result = await baseQuery(args, api, extraOptions);
 
-  // إذا انتهت الجلسة (401)، نقوم بتنظيف الـ Redux وتوجيه المستخدم للوجن
-  if (result.error && result.error.status === 401) {
-    api.dispatch(logOut());
+  if (result.error?.status === 401) {
+    const url = typeof args === "string" ? args : args.url;
+
+    if (url !== "/v1/user/user-data") {
+      api.dispatch(logOut());
+    }
   }
 
   return result;

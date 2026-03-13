@@ -15,6 +15,18 @@
   "welcome": "Welcome back",
   "Join our family today": "Join our Family Today",
   "remember_me": "Remember Me",
+  "The name field is required.": "The Name Field is Required.",
+  "The email field is required.": "The Email Field is Required.",
+  "The password field is required.": "The Password Field is Required.",
+
+  "auth": {
+    "registering": "Registering Your Account...",
+    "welcome_message": "Account Created Successfully! Welcome.",
+    "failed_try_again": "Registration Failed, Please try Again.",
+    "validation_error": "Please Check the Highlighted Errors.",
+    "server_error": "Internal Server Error, Please try Later.",
+    "register_success": "Success! Check Your Email for Verification Code."
+  },
 
   "needHelp": {
     "email": "E-mail",

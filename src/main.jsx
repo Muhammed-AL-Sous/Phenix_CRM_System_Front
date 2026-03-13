@@ -25,10 +25,10 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <UIProvider>
-        {/* <AuthInitializer> */}
-        <RouterProvider router={router} />
+        <AuthInitializer>
+          <RouterProvider router={router} />
+        </AuthInitializer>
       </UIProvider>
-      {/* </AuthInitializer> */}
     </Provider>
   </StrictMode>,
 );

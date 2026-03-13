@@ -15,6 +15,18 @@
   "welcome": "مرحباً بعودتك",
   "Join our family today": "إنضم إلى أسرتنا اليوم",
   "remember_me": "تذكرني",
+  "The name field is required.": "حقل الإسم مطلوب .",
+  "The email field is required.": "حقل البريد الإلكتروني مطلوب .",
+  "The password field is required.": "حقل كلمة المرور مطلوب .",
+
+  "auth": {
+    "registering": "جاري إنشاء حسابك...",
+    "welcome_message": "تم إنشاء الحساب بنجاح! أهلاً بك.",
+    "failed_try_again": "فشل التسجيل، يرجى المحاولة مرة أخرى.",
+    "validation_error": "يرجى التأكد من الأخطاء الموضحة.",
+    "server_error": "خطأ في السيرفر، يرجى المحاولة لاحقاً.",
+    "register_success": "تم التسجيل بنجاح! تفقد بريدك الإلكتروني لكود التفعيل."
+  },
 
   "needHelp": {
     "email": "البريد الإلكتروني",

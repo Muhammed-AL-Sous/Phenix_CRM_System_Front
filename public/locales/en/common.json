@@ -27,6 +27,8 @@
   "reset_password_success": "Password Updated Successfully! You Can Now Login.",
   "password_mismatch": "Passwords Do Not Match.",
   "back_to_login": "Back to Login",
+  "preparing...": "Preparing...",
+  "We can't find a user with that email address.": "We Can't Find a User With That Email Address.",
 
   "auth": {
     "registering": "Registering Your Account...",
@@ -38,7 +40,8 @@
     "logging_in": "Logging in to Your Account...",
     "welcome_back": "Logged in Successfully! Welcome back.",
     "login_failed": "Login Failed, Please check your credentials.",
-    "auth_required": "Please Login to access this page."
+    "auth_required": "Please Login to access this page.",
+    "invalid_email_format": "Invalid Email Format"
   },
 
   "needHelp": {

@@ -48,17 +48,15 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // نقوم بتعريف العملية في متغير دون تنفيذها بـ await هنا
-    const registrationPromise = register(registerForm).unwrap();
-
-    // نمرر العملية لـ notifyPromise وهي ستدير الـ Loading والـ Success والـ Error
-    notifyPromise(registrationPromise, {
-      loading: "auth.registering",
-      success: "auth.welcome_message",
-      error: "auth.failed_try_again",
-    });
-
     try {
+      const registrationPromise = register(registerForm).unwrap();
+
+      notifyPromise(registrationPromise, {
+        loading: "auth.registering",
+        success: "auth.welcome_message",
+        error: "auth.failed_try_again",
+      });
+
       await registrationPromise;
       // هنا يمكنك إضافة تحويل المستخدم لصفحة أخرى مثلاً
       // navigate('/verify-email');

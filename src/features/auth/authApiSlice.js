@@ -8,14 +8,14 @@ export const authApiSlice = apiSlice.injectEndpoints({
     // طلب تهيئة الكوكيز (يجب تنفيذه مرة واحدة قبل اللوجن)
     getCsrfToken: builder.query({
       query: () => ({
-        url: "/sanctum/csrf-cookie", // استخدم .. للرجوع للخلف خطوة عن v1
+        url: "/sanctum/csrf-cookie",
         method: "GET",
       }),
     }),
 
     login: builder.mutation({
       query: (credentials) => ({
-        url: "/v1/auth/login",
+        url: "/login",
         method: "POST",
         body: { ...credentials },
       }),
@@ -37,7 +37,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
     register: builder.mutation({
       query: (userInfo) => ({
-        url: "/v1/auth/register",
+        url: "/register",
         method: "POST",
         body: { ...userInfo },
       }),
@@ -59,7 +59,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
     // إرسال طلب نسيان كلمة المرور (إرسال الإيميل)
     forgotPassword: builder.mutation({
       query: (email) => ({
-        url: "/v1/auth/forgot-password",
+        url: "/forgot-password",
         method: "POST",
         body: { email },
       }),
@@ -68,7 +68,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
     // إعادة تعيين كلمة المرور الجديدة (باستخدام التوكن المرسل للإيميل)
     resetPassword: builder.mutation({
       query: (data) => ({
-        url: "/v1/auth/reset-password",
+        url: "/reset-password",
         method: "POST",
         body: {
           token: data.token,
@@ -80,7 +80,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
     }),
 
     getUserData: builder.query({
-      query: () => "/v1/user/user-data",
+      query: () => "/user-data",
       providesTags: ["User"],
       // في حال نجاح جلب البيانات (مثلاً بعد عمل Refresh) نجدد الكوكي
       async onQueryStarted(arg, { queryFulfilled }) {
@@ -94,7 +94,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
     logout: builder.mutation({
       query: () => ({
-        url: "/v1/auth/logout",
+        url: "/logout",
         method: "POST",
       }),
       // --- حذف الكوكي عند تسجيل الخروج ---

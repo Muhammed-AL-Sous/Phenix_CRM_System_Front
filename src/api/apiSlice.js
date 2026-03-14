@@ -34,7 +34,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
     const url = typeof args === "string" ? args : args.url;
 
     // استثناء رابط التحقق من البيانات لمنع تسجيل الخروج اللانهائي
-    if (!url.includes("/v1/user/user-data")) {
+    if (!url.includes("/user-data")) {
       api.dispatch(logOut());
       // مسح الكوكي المساعد عند تسجيل الخروج التلقائي بسبب انتهاء الجلسة
       document.cookie =

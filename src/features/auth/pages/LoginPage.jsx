@@ -35,15 +35,15 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const loginPromise = login(loginForm).unwrap();
-
-    notifyPromise(loginPromise, {
-      loading: "auth.logging_in",
-      success: "auth.welcome_back",
-      error: "auth.login_failed",
-    });
-
     try {
+      const loginPromise = login(loginForm).unwrap();
+
+      notifyPromise(loginPromise, {
+        loading: "auth.logging_in",
+        success: "auth.welcome_back",
+        error: "auth.login_failed",
+      });
+
       await loginPromise;
       // هنا يمكنك إضافة تحويل المستخدم لصفحة أخرى مثلاً
       // navigate('/verify-email');

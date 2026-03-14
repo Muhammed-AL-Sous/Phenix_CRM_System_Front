@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetUserDataQuery } from "../../../auth/authApiSlice";
 import { selectCurrentUser, setCredentials, logOut } from "../../authSlice";
@@ -7,24 +7,40 @@ export default function AuthInitializer({ children }) {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
 
-  // تنفيذ الطلب للتحقق من الجلسة (Session) عند فتح الموقع
+  // 1. فحص وجود الكوكي المساعد (Flag) لمعرفة ما إذا كان هناك جلسة سابقة
+  // نستخدم useMemo لضمان عدم إعادة الحساب إلا عند الضرورة
+  const hasFastCheck = useMemo(() => {
+    return document.cookie
+      .split(";")
+      .some((item) => item.trim().startsWith("fast_check="));
+  }, []);
+
+  // 2. تنفيذ الطلب بذكاء
   const { data, error, isLoading } = useGetUserDataQuery(undefined, {
-    skip: !!user, // لا نطلب البيانات إذا كان لدينا مستخدم
-    // يمنع إعادة المحاولة التلقائية إذا فشل الطلب (مثلاً إذا كان المستخدم غير مسجل)
+    // الشرط الجوهري:
+    // "تخطى الطلب" إذا كان المستخدم موجوداً بالفعل في Redux
+    // أَوْ إذا لم يكن هناك كوكي fast_check (يعني لا توجد جلسة أصلاً)
+    skip: !!user || !hasFastCheck,
+
     retryOnMountWithNoData: false,
-    refetchOnFocus: false, // اختياري: يمنع إعادة الطلب عند تبديل نوافذ المتصفح
+    refetchOnFocus: false,
   });
 
   useEffect(() => {
+    // إذا نجح الطلب وجاءت بيانات المستخدم
     if (data?.data?.user) {
       dispatch(setCredentials({ user: data.data.user }));
-      return;
-    }
-    if (error?.status === 401) {
-      return;
     }
 
-    if (error) {
+    // إذا حدث خطأ 401 (انتهت الجلسة فعلياً رغم وجود الكوكي المساعد)
+    if (error?.status === 401) {
+      // نمسح الكوكي المساعد لأنه أصبح غير صالح
+      document.cookie =
+        "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      dispatch(logOut());
+    }
+    // أي خطأ آخر غير الـ 401
+    else if (error) {
       dispatch(logOut());
     }
   }, [data, error, dispatch]);

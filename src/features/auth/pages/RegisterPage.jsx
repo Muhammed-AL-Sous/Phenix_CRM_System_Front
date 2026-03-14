@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 // Notification Toast
-import { notify, notifyPromise } from "../../../lib/notify";
+import { notifyPromise } from "../../../lib/notify";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);

@@ -1,42 +1,39 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import HttpBackend from "i18next-http-backend";
-// import LanguageDetector from "i18next-browser-languagedetector";
+
+// 1. جلب اللغة المخزنة أو الافتراضية
 const savedLang = localStorage.getItem("lang") || "en";
+
+// 2. كتم رسالة Locize الترويجية (Hack بسيط لتنظيف الكونسول)
+const originalInfo = console.info;
+console.info = (...args) => {
+  if (typeof args[0] === "string" && args[0].includes("i18next is maintained"))
+    return;
+  originalInfo(...args);
+};
 
 i18n
   .use(HttpBackend)
-  //   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    debug: false, // تأكد أن هذه القيمة false لإيقاف سجلات المكتبة في الكونسول
+    debug: false, // إيقاف سجلات المكتبة التقنية
     supportedLngs: ["ar", "en"],
     lng: savedLang,
     fallbackLng: "en",
     defaultNS: "common",
-
     ns: ["common", "navbar", "footer", "home", "dashboard"],
 
     backend: {
       loadPath: "/locales/{{lng}}/{{ns}}.json",
     },
 
-    // resources: {
-    //   en: { translation: { select_country: "Select Country" } },
-    //   ar: { translation: { select_country: "اختر الدولة" } },
-    // },
-
-    detection: {
-      order: ["localStorage"],
-      caches: ["localStorage"],
-    },
-
     interpolation: {
-      escapeValue: false,
+      escapeValue: false, // لا حاجة للتشفير مع React (هو يحمينا تلقائياً)
     },
 
     react: {
-      useSuspense: false,
+      useSuspense: false, // لتجنب مشاكل الـ Loading في البداية
     },
   });
 

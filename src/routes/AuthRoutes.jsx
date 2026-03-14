@@ -25,7 +25,7 @@ export const authRoutes = [
     element: <ForgotPasswordPage />,
     handle: {
       titleKey: "find your account",
-      subtitleKey: "enter your email.",
+      subtitleKey: "forgot_password_desc",
     },
   },
 ];

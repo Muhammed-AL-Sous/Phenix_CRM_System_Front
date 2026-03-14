@@ -56,6 +56,29 @@ export const authApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    // إرسال طلب نسيان كلمة المرور (إرسال الإيميل)
+    forgotPassword: builder.mutation({
+      query: (email) => ({
+        url: "/v1/auth/forgot-password",
+        method: "POST",
+        body: { email },
+      }),
+    }),
+
+    // إعادة تعيين كلمة المرور الجديدة (باستخدام التوكن المرسل للإيميل)
+    resetPassword: builder.mutation({
+      query: (data) => ({
+        url: "/v1/auth/reset-password",
+        method: "POST",
+        body: {
+          token: data.token,
+          email: data.email,
+          password: data.password,
+          password_confirmation: data.password_confirmation,
+        },
+      }),
+    }),
+
     getUserData: builder.query({
       query: () => "/v1/user/user-data",
       providesTags: ["User"],
@@ -93,9 +116,11 @@ export const authApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-  useLoginMutation,
-  useLogoutMutation,
-  useRegisterMutation,
   useGetCsrfTokenQuery,
+  useLoginMutation,
+  useRegisterMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGetUserDataQuery,
+  useLogoutMutation,
 } = authApiSlice;

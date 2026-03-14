@@ -18,6 +18,15 @@
   "The name field is required.": "The Name Field is Required.",
   "The email field is required.": "The Email Field is Required.",
   "The password field is required.": "The Password Field is Required.",
+  "The email has already been taken.": "The Email has Already been Taken.",
+  "The password field must be between 6 and 12 characters.": "The Password Field Must be Between 6 and 12 Characters.",
+  "forgot_password_desc": "No Worries! Enter Your Email and We Will Send You a Reset Link.",
+  "sending_link": "Sending Reset Link...",
+  "reset_link_sent": "Reset Link Sent! Please Check Your Inbox.",
+  "email_not_found": "This Email Address is Not Registered.",
+  "reset_password_success": "Password Updated Successfully! You Can Now Login.",
+  "password_mismatch": "Passwords Do Not Match.",
+  "back_to_login": "Back to Login",
 
   "auth": {
     "registering": "Registering Your Account...",
@@ -25,7 +34,11 @@
     "failed_try_again": "Registration Failed, Please try Again.",
     "validation_error": "Please Check the Highlighted Errors.",
     "server_error": "Internal Server Error, Please try Later.",
-    "register_success": "Success! Check Your Email for Verification Code."
+    "register_success": "Success! Check Your Email for Verification Code.",
+    "logging_in": "Logging in to Your Account...",
+    "welcome_back": "Logged in Successfully! Welcome back.",
+    "login_failed": "Login Failed, Please check your credentials.",
+    "auth_required": "Please Login to access this page."
   },
 
   "needHelp": {

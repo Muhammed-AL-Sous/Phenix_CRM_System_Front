@@ -93,7 +93,7 @@ const RegisterPage = () => {
   }, []);
 
   return (
-    <form className="space-y-2" onSubmit={handleSubmit}>
+    <form className="space-y-3" onSubmit={handleSubmit}>
       {/* ============= Full Name ============= */}
       <div className="relative mb-7">
         <label
@@ -127,7 +127,12 @@ const RegisterPage = () => {
         />
         {error?.status === 422 && error.data.errors.name && (
           <div className="absolute left-1 right-1 top-[calc(100%+6px)] w-full">
-            <p className="text-red-500 text-xs font-medium font-[Livvic]">
+            <p
+              className="text-red-500 text-xs font-medium"
+              style={{
+                fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
+              }}
+            >
               {t(error.data.errors.name[0])}
             </p>
           </div>
@@ -168,7 +173,12 @@ const RegisterPage = () => {
 
         {error?.status === 422 && error.data.errors.email && (
           <div className="absolute left-1 right-1 top-[calc(100%+6px)] w-full">
-            <p className="text-red-500 text-xs font-medium font-[Livvic]">
+            <p
+              className="text-red-500 text-xs font-medium"
+              style={{
+                fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
+              }}
+            >
               {t(error.data.errors.email?.[0])}
             </p>
           </div>
@@ -231,7 +241,12 @@ const RegisterPage = () => {
           </button>
           {error?.status === 422 && error.data.errors.password && (
             <div className="absolute left-1 right-1 top-[calc(100%+6px)] w-full">
-              <p className="text-red-500 text-xs font-medium font-[Livvic]">
+              <p
+                className="text-red-500 text-xs font-medium"
+                style={{
+                  fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
+                }}
+              >
                 {t(error.data.errors.password[0])}
               </p>
             </div>
@@ -240,7 +255,7 @@ const RegisterPage = () => {
       </div>
 
       {/* ============= PassWord Confirmation ============= */}
-      <div className="relative mb-9">
+      <div className="relative mb-8">
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -301,7 +316,12 @@ const RegisterPage = () => {
 
           {error?.status === 422 && error.data.errors.password && (
             <div className="absolute left-0 top-[calc(100%+4px)] w-full">
-              <p className="text-red-500 text-xs font-medium font-[Livvic]">
+              <p
+                className="text-red-500 text-xs font-medium"
+                style={{
+                  fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
+                }}
+              >
                 {t(error.data.errors.password[0])}
               </p>
             </div>

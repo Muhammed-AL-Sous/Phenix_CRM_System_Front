@@ -10,12 +10,46 @@ import { useSelector } from "react-redux";
 // Icons
 import { Mail } from "lucide-react";
 
+import { notifyPromise, notify } from "../../../lib/notify.js";
+
+import {
+  useGetCsrfTokenQuery,
+  useForgotPasswordMutation,
+} from "../authApiSlice.js";
+
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
+  // 1. استدعاء التوكن تلقائياً عند فتح الصفحة
+  // بمجرد تحميل المكون، سيقوم RTK Query بجلب التوكن وتخزينه في كوكيز المتصفح
+  const { isLoading: isCsrfLoading } = useGetCsrfTokenQuery();
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
   const { t } = useTranslation(["common"]);
   const { direction } = useSelector((state) => state.ui);
 
-  const handleSubmit = () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const forgotPasswordPromise = forgotPassword(email).unwrap();
+
+    notifyPromise(forgotPasswordPromise, {
+      loading: "sending_link",
+      success: "reset_link_sent",
+    });
+
+    try {
+      await forgotPasswordPromise;
+    } catch (err) {
+      console.log(err);
+      if (err.status === 404) {
+        notify(t("email_not_found"), "error"); // "الإيميل غير مسجل."
+      } else if (err.status === 422) {
+        notify(t("The email field is required."), "error"); // "الإيميل غير مسجل."
+      } else if (err.status !== 419) {
+        // 419 عادة تعني فشل الـ CSRF
+        notify(t("server_error"), "error");
+      }
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -52,12 +86,14 @@ const ForgotPasswordPage = () => {
 
       {/* ============= Continue Button ============= */}
       <button
+        type="submit"
+        disabled={isLoading || isCsrfLoading}
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
         }}
         className="w-full py-3 my-6 bg-red-500 hover:bg-red-600 duration-300 text-white font-bold rounded-3xl shadow-lg shadow-red-500/30 transition-all transform active:scale-[0.98] cursor-pointer"
       >
-        {t("continue")}
+        {isLoading ? t("sending_link") : t("continue")}
       </button>
     </form>
   );

@@ -10,6 +10,16 @@ const baseQuery = fetchBaseQuery({
   // السماح بإرسال واستقبال الكوكيز
   prepareHeaders: (headers) => {
     headers.set("Accept", "application/json");
+    // استخراج XSRF-TOKEN من الكوكيز وإضافته للهيدرز (اختياري لكنه يضمن التوافق)
+    const xsrfToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("XSRF-TOKEN="))
+      ?.split("=")[1];
+
+    if (xsrfToken) {
+      // لارافيل يبحث عن هذا الهيدر في طلبات POST/PUT/DELETE
+      headers.set("X-XSRF-TOKEN", decodeURIComponent(xsrfToken));
+    }
     return headers;
   },
   credentials: "include", // هذه تجعل RTK Query يرسل الكوكيز في كل طلب
@@ -20,10 +30,15 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error?.status === 401) {
+    // استخراج الرابط سواء كان string أو object
     const url = typeof args === "string" ? args : args.url;
 
-    if (url !== "/v1/user/user-data") {
+    // استثناء رابط التحقق من البيانات لمنع تسجيل الخروج اللانهائي
+    if (!url.includes("/v1/user/user-data")) {
       api.dispatch(logOut());
+      // مسح الكوكي المساعد عند تسجيل الخروج التلقائي بسبب انتهاء الجلسة
+      document.cookie =
+        "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     }
   }
 

@@ -22,7 +22,7 @@ i18n
     lng: savedLang,
     fallbackLng: "en",
     defaultNS: "common",
-    ns: ["common", "navbar", "footer", "home", "dashboard"],
+    ns: ["common", "navbar", "footer", "home", "dashboard", "auth"],
 
     backend: {
       loadPath: "/locales/{{lng}}/{{ns}}.json",

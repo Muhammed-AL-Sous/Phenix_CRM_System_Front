@@ -8,24 +8,24 @@ export const authRoutes = [
     path: "login",
     element: <LoginPage />,
     handle: {
-      titleKey: "login",
-      subtitleKey: "welcome",
+      titleKey: "auth.login.login",
+      subtitleKey: "auth.common.welcome",
     },
   },
   {
     path: "register",
     element: <RegisterPage />,
     handle: {
-      titleKey: "register",
-      subtitleKey: "Join our family today",
+      titleKey: "auth.register.register",
+      subtitleKey: "auth.common.Join our family today",
     },
   },
   {
     path: "forgot_password",
     element: <ForgotPasswordPage />,
     handle: {
-      titleKey: "find your account",
-      subtitleKey: "forgot_password_desc",
+      titleKey: "auth.common.find your account",
+      subtitleKey: "auth.password.forgot_password_desc",
     },
   },
 ];

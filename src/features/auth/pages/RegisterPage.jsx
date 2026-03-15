@@ -43,7 +43,7 @@ const RegisterPage = () => {
   const passwordConfirmRef = useRef(null);
 
   // ========= Translation ========= //
-  const { t } = useTranslation(["common"]);
+  const { t } = useTranslation(["auth"]);
 
   // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);
@@ -57,32 +57,33 @@ const RegisterPage = () => {
 
     // Name validation
     if (!registerForm.name.trim()) {
-      newErrors.name = "name_required";
+      newErrors.name = "auth.name.name_required";
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!registerForm.email.trim()) {
-      newErrors.email = "email_required";
+      newErrors.email = "auth.email.email_required";
     } else if (!emailRegex.test(registerForm.email)) {
-      newErrors.email = "email_invalid";
+      newErrors.email = "auth.email.email_invalid";
     }
 
     // Password validation
     if (!registerForm.password) {
-      newErrors.password = "password_required";
+      newErrors.password = "auth.password.password_required";
     } else if (
       registerForm.password.length < 6 ||
       registerForm.password.length > 12
     ) {
-      newErrors.password = "password_length_error";
+      newErrors.password = "auth.password.password_length_error";
     }
 
     // Confirm Password
     if (!registerForm.password_confirmation) {
-      newErrors.password_confirmation = "confirm_password_required";
+      newErrors.password_confirmation =
+        "auth.password.confirm_password_required";
     } else if (registerForm.password !== registerForm.password_confirmation) {
-      newErrors.password_confirmation = "passwords_dont_match";
+      newErrors.password_confirmation = "auth.password.passwords_dont_match";
     }
 
     setErrors(newErrors);
@@ -112,9 +113,9 @@ const RegisterPage = () => {
       const registrationPromise = register(registerForm).unwrap();
 
       notifyPromise(registrationPromise, {
-        loading: "auth.registering",
-        success: "auth.welcome_message",
-        error: "auth.failed_try_again",
+        loading: "auth.register.registering",
+        success: "auth.register.welcome_message",
+        error: "auth.register.failed_try_again",
       });
 
       await registrationPromise;
@@ -165,7 +166,7 @@ const RegisterPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("name")}
+          {t("auth.name.name")}
         </label>
         <input
           type="text"
@@ -211,7 +212,7 @@ const RegisterPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("email")}
+          {t("auth.email.email")}
         </label>
         <input
           type="email"
@@ -257,7 +258,7 @@ const RegisterPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("password")}
+          {t("auth.password.password")}
         </label>
         <div className="relative">
           <input
@@ -331,7 +332,7 @@ const RegisterPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("Confirm_password")}
+          {t("auth.password.Confirm_password")}
         </label>
         <div className="relative">
           <input
@@ -399,15 +400,17 @@ const RegisterPage = () => {
         }}
         className="w-full py-3 bg-red-500 hover:bg-red-600 duration-300 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 transition-all transform active:scale-[0.98] cursor-pointer"
       >
-        {isLoading ? t("loading") : t("register")}
+        {isLoading
+          ? t("auth.register.registering")
+          : t("auth.register.register")}
       </button>
       <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-        {t("already_have_account")}{" "}
+        {t("auth.common.already_have_account")}
         <Link
           to="/login"
           className="text-red-500 transition-all duration-200 hover:text-red-600 font-bold hover:underline ms-1.5"
         >
-          {t("login")}
+          {t("auth.login.login")}
         </Link>
       </p>
     </form>

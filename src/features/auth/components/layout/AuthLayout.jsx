@@ -22,7 +22,7 @@ import { House } from "lucide-react";
 
 const AuthLayout = () => {
   const { direction } = useSelector((state) => state.ui);
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("auth");
   const location = useLocation();
 
   const matches = useMatches();

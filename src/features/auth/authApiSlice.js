@@ -1,5 +1,3 @@
-// Endpoints (Login مثالاً) باستخدام RTK Query لإنشاء شريحة API للمصادقة في React.
-// الشريحة تتضمن نقطة نهاية لتسجيل الدخول ونقطة نهاية لجلب بيانات المستخدم.
 import { apiSlice } from "../../api/apiSlice";
 import { setCredentials, logOut } from "./authSlice.js";
 
@@ -13,6 +11,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    // ============ Login Api Mutation ============ //
     login: builder.mutation({
       query: (credentials) => ({
         url: "/login",
@@ -35,6 +34,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    // ============ Register Api Mutation ============ //
     register: builder.mutation({
       query: (userInfo) => ({
         url: "/register",
@@ -56,7 +56,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
-    // إرسال طلب نسيان كلمة المرور (إرسال الإيميل)
+    // ============ Forgot Password Api Mutation ============ //
     forgotPassword: builder.mutation({
       query: (email) => ({
         url: "/forgot-password",
@@ -65,7 +65,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-    // إعادة تعيين كلمة المرور الجديدة (باستخدام التوكن المرسل للإيميل)
+    // ============ Reset Password Api Mutation ============ //
     resetPassword: builder.mutation({
       query: (data) => ({
         url: "/reset-password",
@@ -79,6 +79,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    // ============ Get User Data Api Query ============ //
     getUserData: builder.query({
       query: () => "/user-data",
       providesTags: ["User"],
@@ -92,6 +93,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    // ============ Logout Api Mutation ============ //
     logout: builder.mutation({
       query: () => ({
         url: "/logout",
@@ -117,6 +119,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetCsrfTokenQuery,
+  useLazyGetCsrfTokenQuery,
   useLoginMutation,
   useRegisterMutation,
   useForgotPasswordMutation,

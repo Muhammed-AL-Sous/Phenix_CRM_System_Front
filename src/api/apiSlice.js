@@ -1,9 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-// createApi, fetchBaseQuery: الأدوات الأساسية من RTK Query لبناء الـ API.
-
 import { logOut } from "../features/auth/authSlice";
-
-// ===================================================================================
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8000",
@@ -24,6 +20,7 @@ const baseQuery = fetchBaseQuery({
   },
   credentials: "include", // هذه تجعل RTK Query يرسل الكوكيز في كل طلب
 });
+
 // ===================================================================================
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {

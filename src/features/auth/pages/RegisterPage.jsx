@@ -8,10 +8,13 @@ import { Link } from "react-router";
 import { useSelector } from "react-redux";
 
 // ========= Register Slice ========= //
-import { useRegisterMutation } from "../../auth/authApiSlice";
+import {
+  useRegisterMutation,
+  useLazyGetCsrfTokenQuery,
+} from "../../auth/authApiSlice";
 
 // ========= Notification Toast ========= //
-import { notifyPromise } from "../../../lib/notify";
+import { notify, notifyPromise } from "../../../lib/notify";
 
 // ========= Translation Hook ========= //
 import { useTranslation } from "react-i18next";
@@ -49,6 +52,8 @@ const RegisterPage = () => {
   const { direction } = useSelector((state) => state.ui);
 
   // ========= API Mutation ========= //
+  const [getCsrfToken, { isLoading: isCsrfLoading }] =
+    useLazyGetCsrfTokenQuery();
   const [register, { isLoading }] = useRegisterMutation();
 
   // ========= Validate Register Form ========= //
@@ -78,7 +83,7 @@ const RegisterPage = () => {
       newErrors.password = "auth.password.password_length_error";
     }
 
-    // Confirm Password
+    // Confirm Password validation
     if (!registerForm.password_confirmation) {
       newErrors.password_confirmation =
         "auth.password.confirm_password_required";
@@ -110,18 +115,35 @@ const RegisterPage = () => {
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
+      // 1. اطلب التوكن أولاً (سيقوم السيرفر بإرسال الكوكيز للمتصفح)
+      // استدعاء يدوي لتهيئة الكوكيز قبل التسجيل
+      await getCsrfToken().unwrap();
       const registrationPromise = register(registerForm).unwrap();
 
       notifyPromise(registrationPromise, {
-        loading: "auth.register.registering",
-        success: "auth.register.welcome_message",
-        error: "auth.register.failed_try_again",
+        loading: "auth:auth.register.registering",
+        success: "auth:auth.register.welcome_message",
+        error: "auth:auth.register.failed_try_again",
       });
 
       await registrationPromise;
       // navigate('/verify-email');
     } catch (err) {
       console.error("Registration detail error:", err);
+      if (err.status === 422) {
+        const serverMessage = err.data.message;
+
+        // إذا كان الخطأ أن الإيميل مأخوذ مسبقاً
+        if (serverMessage.includes("already been taken")) {
+          setErrors({
+            ...errors,
+            email: "auth.email.The email has already been taken.",
+          });
+        } else {
+          // أي خطأ Validation آخر
+          notify("auth:auth.error.validation_error", "error");
+        }
+      }
     }
   };
 
@@ -152,6 +174,7 @@ const RegisterPage = () => {
     <form className="space-y-3" onSubmit={handleSubmit}>
       {/* ============= Full Name ============= */}
       <div className="relative mb-7">
+        {/* ======= Label Name ======= */}
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -168,6 +191,8 @@ const RegisterPage = () => {
           </span>
           {t("auth.name.name")}
         </label>
+
+        {/* ======= Input Name ======= */}
         <input
           type="text"
           name="name"
@@ -181,7 +206,7 @@ const RegisterPage = () => {
             fontWeight: "500",
           }}
         />
-
+        {/* ======= Errors Name ======= */}
         {errors.name && (
           <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
             <p
@@ -198,6 +223,7 @@ const RegisterPage = () => {
 
       {/* ============= Email ============= */}
       <div className="relative mb-7">
+        {/* ======= Label Email ======= */}
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -214,6 +240,8 @@ const RegisterPage = () => {
           </span>
           {t("auth.email.email")}
         </label>
+
+        {/* ======= Input Email ======= */}
         <input
           type="email"
           name="email"
@@ -228,6 +256,7 @@ const RegisterPage = () => {
           placeholder="name@company.com"
         />
 
+        {/* ======= Errors Email ======= */}
         {errors.email && (
           <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
             <p
@@ -244,6 +273,7 @@ const RegisterPage = () => {
 
       {/* ============= PassWord ============= */}
       <div className="relative mb-7">
+        {/* ======= Label Password ======= */}
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -260,7 +290,9 @@ const RegisterPage = () => {
           </span>
           {t("auth.password.password")}
         </label>
+
         <div className="relative">
+          {/* ======= Input Password ======= */}
           <input
             name="password"
             ref={passwordRef}
@@ -286,6 +318,8 @@ const RegisterPage = () => {
         ${direction === "rtl" ? "text-right" : "text-left"}`}
             placeholder="••••••••"
           />
+
+          {/* ======= Icon Show Hide Password ======= */}
           <button
             type="button"
             className={`absolute top-1/2 -translate-y-1/2
@@ -301,6 +335,7 @@ const RegisterPage = () => {
             {showPassword ? <EyeOff /> : <Eye />}
           </button>
 
+          {/* ======= Errors Password ======= */}
           {errors.password && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
@@ -318,6 +353,7 @@ const RegisterPage = () => {
 
       {/* ============= PassWord Confirmation ============= */}
       <div className="relative mb-8">
+        {/* ======= Label Password Confirmation ======= */}
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -334,7 +370,9 @@ const RegisterPage = () => {
           </span>
           {t("auth.password.Confirm_password")}
         </label>
+
         <div className="relative">
+          {/* ======= Input Password Confirmation ======= */}
           <input
             name="password_confirmation"
             ref={passwordConfirmRef}
@@ -362,6 +400,8 @@ const RegisterPage = () => {
         ${direction === "rtl" ? "text-right" : "text-left"}`}
             placeholder="••••••••"
           />
+
+          {/* ======= Icon Show Hide Password Confirmation ======= */}
           <button
             type="button"
             className={`absolute top-1/2 -translate-y-1/2
@@ -377,6 +417,7 @@ const RegisterPage = () => {
             {showConfirmPassword ? <EyeOff /> : <Eye />}
           </button>
 
+          {/* ======= Errors Password Confirmation ======= */}
           {errors.password_confirmation && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
@@ -392,18 +433,34 @@ const RegisterPage = () => {
         </div>
       </div>
 
+      {/* ======= Register Button ======= */}
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isLoading || isCsrfLoading}
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
         }}
-        className="w-full py-3 bg-red-500 hover:bg-red-600 duration-300 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 transition-all transform active:scale-[0.98] cursor-pointer"
+        className={`w-full py-3 bg-red-500
+             hover:bg-red-600 duration-300 text-white font-bold
+              rounded-xl shadow-lg shadow-red-500/30 transition-all transform 
+              active:scale-[0.98] cursor-pointer 
+               ${
+                 isLoading || isCsrfLoading
+                   ? "bg-slate-400 cursor-not-allowed opacity-70"
+                   : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
+               }`}
       >
-        {isLoading
-          ? t("auth.register.registering")
-          : t("auth.register.register")}
+        {isLoading || isCsrfLoading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            {t("auth.common.preparing...")}
+          </span>
+        ) : (
+          t("auth.register.register")
+        )}
       </button>
+
+      {/* ======= Login Link ======= */}
       <p className="text-center text-sm text-slate-500 dark:text-slate-400">
         {t("auth.common.already_have_account")}
         <Link

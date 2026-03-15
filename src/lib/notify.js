@@ -28,8 +28,9 @@ export const notifyPromise = (
   keys = { loading: "", success: "", error: "" },
 ) => {
   return toast.promise(promise, {
-    loading: i18n.t(keys.loading),
-    success: i18n.t(keys.success),
-    error: i18n.t(keys.error),
+    // نمرر دوال ترجع النص المترجم لضمان استدعائها في لحظة ظهور التنبيه
+    loading: () => i18n.t(keys.loading),
+    success: () => i18n.t(keys.success),
+    error: () => i18n.t(keys.error),
   });
 };

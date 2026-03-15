@@ -1,55 +1,103 @@
-// Translation Hook
-import { useTranslation } from "react-i18next";
-
-// React Router
-import { Link } from "react-router";
-
-// React Redux
-import { useSelector } from "react-redux";
-
-// Icons
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-
-// React Hooks
+// ========= React Hooks ========= //
 import { useState, useRef, useCallback } from "react";
 
-// Notification Toast
-import { notifyPromise } from "../../../lib/notify";
+// ========= React Router ========= //
+import { Link } from "react-router";
 
-// Login Slice
+// ========= React Redux ========= //
+import { useSelector } from "react-redux";
+
+// ========= Login Slice ========= //
 import { useLoginMutation } from "../authApiSlice";
 
+// ========= Translation Hook ========= //
+import { useTranslation } from "react-i18next";
+
+// ========= Notification Toast ========= //
+import { notifyPromise } from "../../../lib/notify";
+
+// ========= Icons ========= //
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+
 const LoginPage = () => {
-  const passwordRef = useRef(null);
+  // ========= React State ========= //
   const [showPassword, setShowPassword] = useState(false);
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
     remember: false,
   });
-  const { t } = useTranslation(["common"]);
+  const [errors, setErrors] = useState({});
+
+  // ========= Refs ========= //
+  const passwordRef = useRef(null);
+
+  // ========= Translation ========= //
+  const { t } = useTranslation(["auth"]);
+
+  // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);
 
-  const [login, { error, isLoading }] = useLoginMutation();
+  // ========= API Mutation ========= //
+  const [login, { isLoading }] = useLoginMutation();
+
+  // ========= Validate Login Form ========= //
+  const validateLoginForm = () => {
+    let newErrors = {};
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!loginForm.email.trim()) {
+      newErrors.email = "auth.email.email_required";
+    } else if (!emailRegex.test(loginForm.email)) {
+      newErrors.email = "auth.email.email_invalid";
+    }
+
+    // Password validation
+    if (!loginForm.password) {
+      newErrors.password = "auth.password.password_required";
+    } else if (
+      loginForm.password.length < 6 ||
+      loginForm.password.length > 12
+    ) {
+      newErrors.password = "auth.password.password_length_error";
+    }
+
+    setErrors(newErrors);
+    // إذا كان كائن الأخطاء فارغاً، فهذا يعني أن البيانات صالحة
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // ========= Handle Change Function ========= //
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setLoginForm((prev) => ({ ...prev, [name]: value }));
+
+    // مسح الخطأ الخاص بهذا الحقل فقط عند الكتابة
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // التحقق المحلي أولاً
+    const isValid = validateLoginForm();
+    if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
       const loginPromise = login(loginForm).unwrap();
 
       notifyPromise(loginPromise, {
-        loading: "auth.logging_in",
-        success: "auth.welcome_back",
-        error: "auth.login_failed",
+        loading: "auth.login.logging_in",
+        success: "auth.login.welcome_back",
+        error: "auth.login.login_failed",
       });
 
       await loginPromise;
-      // هنا يمكنك إضافة تحويل المستخدم لصفحة أخرى مثلاً
       // navigate('/verify-email');
     } catch (err) {
-      // الأخطاء الفرعية (مثل 422) ستظهر تلقائياً في التنبيه بسبب notifyPromise
-      // ولكننا نترك الـ catch هنا إذا أردت القيام بشيء إضافي (كطباعة الخطأ في الكونسول)
       console.error("Logging detail error:", err);
     }
   };
@@ -95,32 +143,32 @@ const LoginPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("email")}
+          {t("auth.email.email")}
         </label>
         <div className="relative">
           <input
             type="email"
+            name="email"
             value={loginForm.email}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, email: e.target.value })
-            }
+            onChange={handleChange}
             autoComplete="email"
-            className="w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white"
+            className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border outline-none transition-all dark:text-white focus:ring-2 
+        ${errors.email ? "border-red-500 ring-red-500/20" : "border-slate-200 dark:border-zinc-700 focus:ring-red-500/20"}`}
             placeholder="name@company.com"
             style={{
               fontFamily: "Livvic",
               fontWeight: "500",
             }}
           />
-          {error?.status === 422 && error.data.errors.email && (
-            <div className="absolute left-1 right-1 top-[calc(100%+6px)] w-full">
+          {errors.email && (
+            <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 text-xs font-medium"
+                className="text-red-500 text-[10px] sm:text-xs font-medium px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}
               >
-                {t(error.data.errors.email[0])}
+                {t(errors.email)}
               </p>
             </div>
           )}
@@ -143,12 +191,13 @@ const LoginPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("password")}
+          {t("auth.password.password")}
         </label>
 
         <div className="relative">
           <input
             ref={passwordRef}
+            name="password"
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             inputMode="text"
@@ -163,11 +212,14 @@ const LoginPage = () => {
                   : "normal",
             }}
             value={loginForm.password}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, password: e.target.value })
-            }
-            className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 focus:ring-2 ring-red-500/20 outline-none transition-all dark:text-white
-         ${direction === "rtl" ? "text-right" : "text-left"}`}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border outline-none transition-all dark:text-white focus:ring-2 
+        ${
+          errors.password
+            ? "border-red-500 ring-red-500/20"
+            : "border-slate-200 dark:border-zinc-700 focus:ring-red-500/20"
+        } 
+        ${direction === "rtl" ? "text-right" : "text-left"}`}
             placeholder="••••••••"
           />
           <button
@@ -185,15 +237,15 @@ const LoginPage = () => {
             {showPassword ? <EyeOff /> : <Eye />}
           </button>
 
-          {error?.status === 422 && error.data.errors.password && (
-            <div className="absolute left-1 right-1 top-[calc(100%+6px)] w-full">
+          {errors.password && (
+            <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 text-xs font-medium"
+                className="text-red-500 text-[10px] sm:text-xs font-medium px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}
               >
-                {t(error.data.errors.password[0])}
+                {t(errors.password)}
               </p>
             </div>
           )}
@@ -209,7 +261,7 @@ const LoginPage = () => {
           }}
           className="text-md font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
         >
-          {t("remember_me")}
+          {t("auth.login.remember_me")}
         </label>
 
         <button
@@ -256,17 +308,17 @@ const LoginPage = () => {
         }}
         className="w-full py-3 bg-red-500 hover:bg-red-600 duration-300 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 transition-all transform active:scale-[0.98] cursor-pointer"
       >
-        {t("login")}
+        {isLoading ? t("auth.login.logging_in") : t("auth.login.login")}
       </button>
 
       {/* ============= Register Button ============= */}
       <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-        {t("dont_have_account")}{" "}
+        {t("auth.common.dont_have_account")}{" "}
         <Link
           to="/register"
           className="text-red-500 hover:text-red-600 transition-all duration-200 font-bold hover:underline ms-1.5"
         >
-          {t("register")}
+          {t("auth.register.register")}
         </Link>
       </p>
 
@@ -277,7 +329,7 @@ const LoginPage = () => {
           className="text-center text-sm text-slate-500 dark:text-slate-400
         transition-all duration-200 font-bold hover:underline"
         >
-          {t("forgot_password")}{" "}
+          {t("auth.password.forgot_password")}{" "}
         </p>
       </Link>
     </form>

@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import { ROLES_CONFIG } from "./roles.config";
 
-
 export const generateRoleRoutes = () => {
   return Object.entries(ROLES_CONFIG).map(([role, config]) => ({
     path: config.prefix,
@@ -17,4 +16,3 @@ export const generateRoleRoutes = () => {
     })),
   }));
 };
-

@@ -49,7 +49,7 @@ const UIProvider = ({ children }) => {
           },
         }}
       />
-      {children};
+      {children}
     </>
   );
 };

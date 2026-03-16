@@ -8,10 +8,7 @@ import { Link } from "react-router";
 import { useSelector } from "react-redux";
 
 // ========= Register Slice ========= //
-import {
-  useRegisterMutation,
-  useLazyGetCsrfTokenQuery,
-} from "../../auth/authApiSlice";
+import { useRegisterMutation, useLazyGetCsrfTokenQuery } from "../authApiSlice";
 
 // ========= Notification Toast ========= //
 import { notify, notifyPromise } from "../../../lib/notify";
@@ -77,10 +74,11 @@ const RegisterPage = () => {
     if (!registerForm.password) {
       newErrors.password = "auth.password.password_required";
     } else if (
-      registerForm.password.length < 6 ||
-      registerForm.password.length > 12
+      registerForm.password.length < 8 ||
+      !/[a-zA-Z]/.test(registerForm.password) || // يجب أن تحتوي على حرف
+      !/[0-9]/.test(registerForm.password) // يجب أن تحتوي على رقم
     ) {
-      newErrors.password = "auth.password.password_length_error";
+      newErrors.password = "auth.password.password_length_letter_error";
     }
 
     // Confirm Password validation
@@ -107,6 +105,7 @@ const RegisterPage = () => {
     }
   };
 
+  // ========= Handle Submit Function ========= //
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -118,6 +117,7 @@ const RegisterPage = () => {
       // 1. اطلب التوكن أولاً (سيقوم السيرفر بإرسال الكوكيز للمتصفح)
       // استدعاء يدوي لتهيئة الكوكيز قبل التسجيل
       await getCsrfToken().unwrap();
+
       const registrationPromise = register(registerForm).unwrap();
 
       notifyPromise(registrationPromise, {
@@ -210,7 +210,7 @@ const RegisterPage = () => {
         {errors.name && (
           <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
             <p
-              className="text-red-500 text-[10px] sm:text-xs font-medium px-1"
+              className="text-red-500 sm:text-xs font-semibold px-1"
               style={{
                 fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
               }}
@@ -260,7 +260,7 @@ const RegisterPage = () => {
         {errors.email && (
           <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
             <p
-              className="text-red-500 text-[10px] sm:text-xs font-medium px-1"
+              className="text-red-500 sm:text-xs font-semibold px-1"
               style={{
                 fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
               }}
@@ -339,7 +339,7 @@ const RegisterPage = () => {
           {errors.password && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 text-[10px] sm:text-xs font-medium px-1"
+                className="text-red-500 sm:text-xs font-semibold px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}
@@ -421,7 +421,7 @@ const RegisterPage = () => {
           {errors.password_confirmation && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 text-[10px] sm:text-xs font-medium px-1"
+                className="text-red-500 sm:text-xs font-semibold px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}

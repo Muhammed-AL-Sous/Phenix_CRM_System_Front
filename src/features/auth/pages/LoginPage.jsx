@@ -8,13 +8,13 @@ import { Link } from "react-router";
 import { useSelector } from "react-redux";
 
 // ========= Login Slice ========= //
-import { useLoginMutation } from "../authApiSlice";
+import { useLoginMutation, useLazyGetCsrfTokenQuery } from "../authApiSlice";
 
 // ========= Translation Hook ========= //
 import { useTranslation } from "react-i18next";
 
 // ========= Notification Toast ========= //
-import { notifyPromise } from "../../../lib/notify";
+import { notify, notifyPromise } from "../../../lib/notify";
 
 // ========= Icons ========= //
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -40,6 +40,8 @@ const LoginPage = () => {
 
   // ========= API Mutation ========= //
   const [login, { isLoading }] = useLoginMutation();
+  const [getCsrfToken, { isLoading: isCsrfLoading }] =
+    useLazyGetCsrfTokenQuery();
 
   // ========= Validate Login Form ========= //
   const validateLoginForm = () => {
@@ -57,10 +59,11 @@ const LoginPage = () => {
     if (!loginForm.password) {
       newErrors.password = "auth.password.password_required";
     } else if (
-      loginForm.password.length < 6 ||
-      loginForm.password.length > 12
+      loginForm.password.length < 8 ||
+      !/[a-zA-Z]/.test(loginForm.password) || // يجب أن تحتوي على حرف
+      !/[0-9]/.test(loginForm.password) // يجب أن تحتوي على رقم
     ) {
-      newErrors.password = "auth.password.password_length_error";
+      newErrors.password = "auth.password.password_length_letter_error";
     }
 
     setErrors(newErrors);
@@ -79,6 +82,7 @@ const LoginPage = () => {
     }
   };
 
+  // ========= Handle Submit Function ========= //
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -87,18 +91,23 @@ const LoginPage = () => {
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
+      // 1. اطلب التوكن أولاً (سيقوم السيرفر بإرسال الكوكيز للمتصفح)
+      // استدعاء يدوي لتهيئة الكوكيز قبل التسجيل
+      await getCsrfToken().unwrap();
+
       const loginPromise = login(loginForm).unwrap();
 
       notifyPromise(loginPromise, {
-        loading: "auth.login.logging_in",
-        success: "auth.login.welcome_back",
-        error: "auth.login.login_failed",
+        loading: "auth:auth.login.logging_in",
+        success: "auth:auth.login.welcome_back",
+        // error: "auth:auth.login.login_failed",
       });
 
       await loginPromise;
       // navigate('/verify-email');
     } catch (err) {
       console.error("Logging detail error:", err);
+      notify("auth:auth.error.Invalid Email Or Password", "error");
     }
   };
 
@@ -129,6 +138,7 @@ const LoginPage = () => {
     <form className="space-y-5" onSubmit={handleSubmit}>
       {/* ============= Email ============= */}
       <div className="relative mb-7">
+        {/* ======= Label Email ======= */}
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -146,6 +156,7 @@ const LoginPage = () => {
           {t("auth.email.email")}
         </label>
         <div className="relative">
+          {/* ======= Input Email ======= */}
           <input
             type="email"
             name="email"
@@ -160,10 +171,12 @@ const LoginPage = () => {
               fontWeight: "500",
             }}
           />
+
+          {/* ======= Errors Email ======= */}
           {errors.email && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 text-[10px] sm:text-xs font-medium px-1"
+                className="text-red-500 sm:text-xs font-semibold px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}
@@ -177,6 +190,7 @@ const LoginPage = () => {
 
       {/* ============= PassWord ============= */}
       <div className="relative mb-7">
+        {/* ======= Label Password ======= */}
         <label
           style={{
             fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
@@ -195,6 +209,7 @@ const LoginPage = () => {
         </label>
 
         <div className="relative">
+          {/* ======= Input Password ======= */}
           <input
             ref={passwordRef}
             name="password"
@@ -222,6 +237,8 @@ const LoginPage = () => {
         ${direction === "rtl" ? "text-right" : "text-left"}`}
             placeholder="••••••••"
           />
+
+          {/* ======= Icon Show Hide Password ======= */}
           <button
             type="button"
             onMouseDown={togglePassword}
@@ -237,10 +254,11 @@ const LoginPage = () => {
             {showPassword ? <EyeOff /> : <Eye />}
           </button>
 
+          {/* ======= Errors Password ======= */}
           {errors.password && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 text-[10px] sm:text-xs font-medium px-1"
+                className="text-red-500 sm:text-xs font-semibold px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}
@@ -302,13 +320,28 @@ const LoginPage = () => {
       {/* ============= Login Button ============= */}
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isLoading || isCsrfLoading}
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
         }}
-        className="w-full py-3 bg-red-500 hover:bg-red-600 duration-300 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 transition-all transform active:scale-[0.98] cursor-pointer"
+        className={`w-full py-3 bg-red-500 
+        hover:bg-red-600 duration-300 text-white font-bold 
+        rounded-xl shadow-lg shadow-red-500/30 transition-all transform
+         active:scale-[0.98] cursor-pointer
+           ${
+             isLoading || isCsrfLoading
+               ? "bg-slate-400 cursor-not-allowed opacity-70"
+               : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
+           }`}
       >
-        {isLoading ? t("auth.login.logging_in") : t("auth.login.login")}
+        {isLoading || isCsrfLoading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            {t("auth.common.preparing...")}
+          </span>
+        ) : (
+          t("auth.login.login")
+        )}
       </button>
 
       {/* ============= Register Button ============= */}

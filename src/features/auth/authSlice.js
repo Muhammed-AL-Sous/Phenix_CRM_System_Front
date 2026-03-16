@@ -3,19 +3,18 @@ import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: JSON.parse(localStorage.getItem("user")) || null,
+    user: null, // لا نقرأ من localStorage
+    isAuthenticated: false, // حالة منطقية للتحكم في الـ UI
   },
   reducers: {
-    setCredentials: (state, { payload }) => {
-      state.user = payload.user;
-      // نخزن بيانات المستخدم فقط للسرعة، لكن التأكد الحقيقي سيكون عبر الكوكيز
-      localStorage.setItem("user", JSON.stringify(payload.user));
+    setCredentials: (state, action) => {
+      state.user = action.payload.user ? action.payload.user : action.payload;
+      state.isAuthenticated = true;
     },
 
     logOut: (state) => {
       state.user = null;
-      localStorage.removeItem("user");
-      // ملاحظة: ستحتاج لاستدعاء دالة Logout من الباك اند لحذف الكوكي من المتصفح
+      state.isAuthenticated = false;
     },
   },
 });

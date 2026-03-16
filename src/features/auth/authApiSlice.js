@@ -28,6 +28,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
           // 2. تحديث الـ State في Redux
           dispatch(setCredentials({ user: data.data.user }));
+          // عمل Invalidate للكاش لضمان تحديث البيانات في أي مكان آخر
+          dispatch(apiSlice.util.invalidateTags(["User"]));
         } catch (err) {
           // في حال فشل الطلب لا نفعل شيئاً
         }
@@ -82,14 +84,19 @@ export const authApiSlice = apiSlice.injectEndpoints({
     // ============ Get User Data Api Query ============ //
     getUserData: builder.query({
       query: () => "/user-data",
+      // transformResponse هنا تحول الرد ليكون كائن المستخدم فقط
+      transformResponse: (response) => response?.data?.user,
       providesTags: ["User"],
       // في حال نجاح جلب البيانات (مثلاً بعد عمل Refresh) نجدد الكوكي
-      async onQueryStarted(arg, { queryFulfilled }) {
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          await queryFulfilled;
+          const { data } = await queryFulfilled; // 'data' هنا هو ما خرج من transformResponse
           document.cookie =
             "fast_check=true; path=/; max-age=86400; SameSite=Lax";
-        } catch (err) {}
+          dispatch(setCredentials(data)); // تحديث الحالة فوراً عند نجاح الـ Refresh
+        } catch (err) {
+          dispatch(logOut()); // إذا فشل الطلب، تأكد من تسجيل الخروج
+        }
       },
     }),
 

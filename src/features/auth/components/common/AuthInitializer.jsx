@@ -46,6 +46,12 @@ export default function AuthInitializer({ children }) {
   }, [data, error, dispatch]);
 
   // التحميل يظهر فقط في المرة الأولى عند فحص الهوية
+  // عند عمل "تحديث للصفحة" (Refresh)،
+  //  قد يأخذ Redux
+  //  جزءاً من الثانية لجلب بيانات المستخدم من الكوكيز أو السيرفر.
+  //  في هذه اللحظة يكون user هو null
+  // فيقوم النظام بتحويل المستخدم للوجن فجأة
+  // لذلك نستخدم
   if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-zinc-900">

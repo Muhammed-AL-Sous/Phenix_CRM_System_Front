@@ -2,7 +2,7 @@
 import { useState, useRef, useCallback } from "react";
 
 // ========= React Router ========= //
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 // ========= React Redux ========= //
 import { useSelector } from "react-redux";
@@ -44,6 +44,9 @@ const RegisterPage = () => {
 
   // ========= Translation ========= //
   const { t } = useTranslation(["auth"]);
+
+  // ========= Router ========= //
+  const navigate = useNavigate();
 
   // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);
@@ -126,8 +129,13 @@ const RegisterPage = () => {
         error: "auth:auth.register.failed_try_again",
       });
 
-      await registrationPromise;
-      // navigate('/verify-email');
+      const userData = await registrationPromise;
+      
+      if (!userData.user.is_active) {
+        // بعد النجاح، ننتقل لصفحة التحقق
+        // نمرر الإيميل في الـ state لكي لا يضطر المستخدم لكتابته مرة أخرى
+        navigate("/verify-email", { state: { email: registerForm.email } });
+      }
     } catch (err) {
       console.error("Registration detail error:", err);
       if (err.status === 422) {
@@ -210,7 +218,7 @@ const RegisterPage = () => {
         {errors.name && (
           <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
             <p
-              className="text-red-500 sm:text-xs font-semibold px-1"
+              className="text-red-500 text-xs font-semibold px-1"
               style={{
                 fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
               }}
@@ -260,7 +268,7 @@ const RegisterPage = () => {
         {errors.email && (
           <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
             <p
-              className="text-red-500 sm:text-xs font-semibold px-1"
+              className="text-red-500 text-xs font-semibold px-1"
               style={{
                 fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
               }}
@@ -339,7 +347,7 @@ const RegisterPage = () => {
           {errors.password && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 sm:text-xs font-semibold px-1"
+                className="text-red-500 text-xs font-semibold px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}
@@ -421,7 +429,7 @@ const RegisterPage = () => {
           {errors.password_confirmation && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 sm:text-xs font-semibold px-1"
+                className="text-red-500 text-xs font-semibold px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}

@@ -2,6 +2,7 @@
 import LoginPage from "../features/auth/pages/LoginPage";
 import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
+import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
 
 export const authRoutes = [
   {
@@ -13,6 +14,15 @@ export const authRoutes = [
     },
   },
   {
+    path: "forgot_password",
+    element: <ForgotPasswordPage />,
+    handle: {
+      titleKey: "auth.common.find your account",
+      subtitleKey: "auth.password.forgot_password_desc",
+    },
+  },
+
+  {
     path: "register",
     element: <RegisterPage />,
     handle: {
@@ -21,10 +31,10 @@ export const authRoutes = [
     },
   },
   {
-    path: "forgot_password",
-    element: <ForgotPasswordPage />,
+    path: "verify-email",
+    element: <VerifyEmailPage />,
     handle: {
-      titleKey: "auth.common.find your account",
+      titleKey: "auth.email.Verify_Your_Email",
       subtitleKey: "auth.password.forgot_password_desc",
     },
   },

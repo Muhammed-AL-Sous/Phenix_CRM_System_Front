@@ -21,12 +21,12 @@ import { motion, AnimatePresence } from "motion/react";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // const user = useSelector(selectCurrentUser);
+  const user = useSelector(selectCurrentUser);
   const { direction } = useSelector((state) => state.ui);
   const isRtl = direction === "rtl";
 
-  // const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
-  const sidebarLinks = ROLES_CONFIG["admin"].sidebar;
+  const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
+  // const sidebarLinks = ROLES_CONFIG["admin"].sidebar;
   const location = useLocation();
 
   /* ================= Lock Body Scroll ================= */

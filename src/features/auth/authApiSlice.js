@@ -58,6 +58,55 @@ export const authApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    // ============ verify Email Api Mutation ============ //
+    verifyEmail: builder.mutation({
+      // نمرر الـ credentials ككائن يحتوي على email و code
+      query: (credentials) => ({
+        url: "/verify-email",
+        method: "POST",
+        body: credentials, // سيرسل { email: "...", code: "..." }
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          // 1. تحديث الـ State ببيانات المستخدم الجديد (is_active: true)
+          // تأكد أن بنية البيانات القادمة من السيرفر هي data.data.user
+          if (data?.data?.user) {
+            dispatch(setCredentials({ user: data.data.user }));
+          }
+          // 2. تحديث الكوكي يدوياً (اختياري لأن السيرفر يرسله أصلاً)
+          document.cookie =
+            "fast_check=true; path=/; max-age=31536000; SameSite=Lax";
+        } catch (err) {
+          console.error("Verification Error:", err);
+        }
+      },
+    }),
+
+    // ============ Resend Verification Api Mutation ============ //
+    resendVerification: builder.mutation({
+      query: (body) => ({
+        url: "/resend-code",
+        method: "POST",
+        body, // { email }
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          // 1. تحديث الـ State ببيانات المستخدم الجديد (is_active: true)
+          // تأكد أن بنية البيانات القادمة من السيرفر هي data.data.user
+          if (data?.data?.user) {
+            dispatch(setCredentials({ user: data.data.user }));
+          }
+          // 2. تحديث الكوكي يدوياً (اختياري لأن السيرفر يرسله أصلاً)
+          document.cookie =
+            "fast_check=true; path=/; max-age=31536000; SameSite=Lax";
+        } catch (err) {
+          console.error("Verification Error:", err);
+        }
+      },
+    }),
+
     // ============ Forgot Password Api Mutation ============ //
     forgotPassword: builder.mutation({
       query: (email) => ({
@@ -129,6 +178,8 @@ export const {
   useLazyGetCsrfTokenQuery,
   useLoginMutation,
   useRegisterMutation,
+  useVerifyEmailMutation,
+  useResendVerificationMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useGetUserDataQuery,

@@ -2,7 +2,10 @@
 import { useState, useRef, useCallback } from "react";
 
 // ========= React Router ========= //
-import { Link } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
+
+// ========= Role Config ========= //
+import { ROLES_CONFIG } from "../../../routes/roles.config";
 
 // ========= React Redux ========= //
 import { useSelector } from "react-redux";
@@ -31,6 +34,10 @@ const LoginPage = () => {
 
   // ========= Refs ========= //
   const passwordRef = useRef(null);
+
+  // ========= Router ========= //
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // ========= Translation ========= //
   const { t } = useTranslation(["auth"]);
@@ -95,19 +102,47 @@ const LoginPage = () => {
       // استدعاء يدوي لتهيئة الكوكيز قبل التسجيل
       await getCsrfToken().unwrap();
 
+      // 2. تنفيذ عملية تسجيل الدخول
       const loginPromise = login(loginForm).unwrap();
 
       notifyPromise(loginPromise, {
         loading: "auth:auth.login.logging_in",
         success: "auth:auth.login.welcome_back",
-        // error: "auth:auth.login.login_failed",
       });
 
-      await loginPromise;
-      // navigate('/verify-email');
+      // 3. استلام بيانات المستخدم بعد النجاح
+      const userData = await loginPromise;
+
+      // 4. التحقق من المستخدم إذا لم يقم بتأكيد حسابه تحويله لصفحة تاكيد الحساب
+      if (!userData.user.is_active) {
+        // نمرر الإيميل في الـ state لكي لا يضطر المستخدم لكتابته مرة أخرى
+        navigate("/verify-email", { state: { email: loginForm.email } });
+      } else {
+        // 5. استخراج الـ prefix المناسب لدور المستخدم من الـ Config
+        const rolePrefix = ROLES_CONFIG[userData.role]?.prefix || "";
+
+        // 4. تحديد وجهة التوجيه:
+        // إما الصفحة التي حاول دخولها سابقاً (from) أو الداش بورد الخاص بدوره
+        const origin = location.state?.from?.pathname || `/${rolePrefix}`;
+
+        // 5. التوجيه النهائي
+        navigate(origin, { replace: true });
+      }
     } catch (err) {
       console.error("Logging detail error:", err);
-      notify("auth:auth.error.Invalid Email Or Password", "error");
+      if (
+        err.status === 403 &&
+        err.data.message.includes("Account not verified")
+      ) {
+        notify("auth:auth.error.Account_not_verified", "error");
+      } else if (
+        err.status === 401 &&
+        err.data.message.includes("Invalid Email Or Password")
+      ) {
+        notify("auth:auth.error.Invalid Email Or Password", "error");
+      } else {
+        notify("auth:auth.login.login_failed", "error");
+      }
     }
   };
 
@@ -176,7 +211,7 @@ const LoginPage = () => {
           {errors.email && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 sm:text-xs font-semibold px-1"
+                className="text-red-500 text-xs font-semibold px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}
@@ -258,7 +293,7 @@ const LoginPage = () => {
           {errors.password && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
-                className="text-red-500 sm:text-xs font-semibold px-1"
+                className="text-red-500 text-xs font-semibold px-1"
                 style={{
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}

@@ -15,6 +15,7 @@ import { generateRoleRoutes } from "./roleRouteGenerator";
 export const router = createBrowserRouter([
   // 🌐 Public Pages
   {
+    path: "/",
     element: <PublicLayout />,
     errorElement: <ErrorPage />,
     children: [...publicRoutes],
@@ -22,8 +23,13 @@ export const router = createBrowserRouter([
 
   // 🔐 Auth Pages
   {
-    element: <AuthLayout />,
-    children: [...authRoutes],
+    element: <GuestRoute />, // Protects "Auth" pages from "Members"
+    children: [
+      {
+        element: <AuthLayout />,
+        children: [...authRoutes], // هنا يوجد /login و /register
+      },
+    ],
   },
 
   // 📊 Dashboard

@@ -35,7 +35,7 @@ export const authRoutes = [
     element: <VerifyEmailPage />,
     handle: {
       titleKey: "auth.email.Verify_Your_Email",
-      subtitleKey: "auth.password.forgot_password_desc",
+      subtitleKey: "auth.email.We have sent a verification code to this email address",
     },
   },
 ];

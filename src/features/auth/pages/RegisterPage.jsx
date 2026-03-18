@@ -125,7 +125,7 @@ const RegisterPage = () => {
 
       notifyPromise(registrationPromise, {
         loading: "auth:auth.register.registering",
-        success: "auth:auth.register.welcome_message",
+        success: "auth:auth.register.register_success",
         error: "auth:auth.register.failed_try_again",
       });
 

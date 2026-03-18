@@ -6,13 +6,17 @@ import { ROLES_CONFIG } from "../routes/roles.config";
 export default function GuestRoute() {
   const user = useSelector(selectCurrentUser);
 
-  if (user) {
-    // إذا كان مسجل دخول، وجهه فوراً للداش بورد بناءً على دوره
+  // الحالة الوحيدة التي نمنع فيها المستخدم من رؤية صفحات
+  // (Login/Register/Verify):
+  // هي أن يكون مسجل دخول "ومفعّل"
+  // (is_active: true)
+  if (user && user.is_active) {
     const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
-
     return <Navigate to={`/${rolePrefix}`} replace />;
   }
 
-  // إذا لم يكن مسجل دخول، اسمح له برؤية صفحات (Login/Register)
+  // في حال كان:
+  // 1. لا يوجد يوزر (Guest حقيقي) -> يرى Login/Register
+  // 2. يوجد يوزر لكن is_active: false -> يرى صفحة Verify-Email
   return <Outlet />;
 }

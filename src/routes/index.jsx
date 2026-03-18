@@ -4,8 +4,8 @@ import { createBrowserRouter } from "react-router";
 import PublicLayout from "../components/layout/PublicLayout";
 import AuthLayout from "../features/auth/components/layout/AuthLayout";
 import DashboardLayout from "../features/dashboard/components/layout/DashboardLayout";
-
 import ErrorPage from "../pages/ErrorPage";
+import GuestRoute from "./GuestRoute";
 
 // Routes Arrays
 import { publicRoutes } from "./PublicRoutes";

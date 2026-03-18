@@ -4,11 +4,17 @@ import { useEffect, useRef, useState } from "react";
 // ========= React Router ========= //
 import { useNavigate, useLocation } from "react-router";
 
+// ========= React Redux ========= //
+import { useSelector } from "react-redux";
+
 // ========= Verify Email & Resend Verification Code Slice ========= //
 import {
   useVerifyEmailMutation,
   useResendVerificationMutation,
-} from "../api/apiSlice";
+} from "../authApiSlice";
+
+// ========= Auth Slice ========= //
+import { selectCurrentUser } from "../authSlice";
 
 // ========= Notification Toast ========= //
 import { notify, notifyPromise } from "../../../lib/notify";
@@ -22,17 +28,20 @@ import { ROLES_CONFIG } from "../../../routes/roles.config";
 const VerifyEmailPage = () => {
   // ========= States ========= //
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState("");
   const [timer, setTimer] = useState(60);
 
   const inputsRef = useRef([]);
   const navigate = useNavigate();
   const location = useLocation();
+  const { direction } = useSelector((state) => state.ui);
 
   // ========= RTK Query Hooks ========= //
   const [verifyEmail, { isLoading }] = useVerifyEmailMutation();
   const [resendVerification, { isLoading: resendLoading }] =
     useResendVerificationMutation();
+
+  // ========= Translation ========= //
+  const { t } = useTranslation(["auth"]);
 
   // حساب حالة الإرسال برمجياً (Derived State) - حل مشكلة Cascading Renders
   const canResend = timer <= 0;
@@ -54,16 +63,17 @@ const VerifyEmailPage = () => {
       sessionStorage.getItem("pending_verify_role") ||
       "",
   );
+  const user = useSelector(selectCurrentUser);
 
   // إذا دخل المستخدم الصفحة مباشرة بدون إيميل
   // (مثلاً عمل Refresh وهو مش مخزن الإيميل)
   // يفضل توجيهه لصفحة Login
   useEffect(() => {
     // إذا لم نجد الإيميل في أي مكان، فهذا يعني أن الدخول غير شرعي للصفحة
-    if (!email) {
+    if (!email && !user) {
       navigate("/login", { replace: true });
     }
-  }, [email, navigate]);
+  }, [email, user, navigate]);
 
   // ===================== Input Logic =====================
   // ========= Handle Change Function ========= //
@@ -77,11 +87,6 @@ const VerifyEmailPage = () => {
     // الانتقال للحقل التالي
     if (value && index < 5) {
       inputsRef.current[index + 1].focus();
-    }
-
-    // الإرسال التلقائي عند اكتمال الـ 6 أرقام
-    if (newCode.every((d) => d !== "")) {
-      submitCode(newCode.join(""));
     }
   };
 
@@ -102,6 +107,8 @@ const VerifyEmailPage = () => {
 
     // تركيز على آخر حقل بعد اللصق
     inputsRef.current[5]?.focus();
+
+    // إرسال تلقائي في حالة اللصق فقط
     submitCode(paste);
   };
 
@@ -109,7 +116,6 @@ const VerifyEmailPage = () => {
   // ========= Submit Code Function ========= //
   const submitCode = async (finalCode) => {
     if (isLoading) return; // منع الطلبات المتكررة
-    setError("");
 
     try {
       const verifyEmailPromise = verifyEmail({
@@ -138,7 +144,8 @@ const VerifyEmailPage = () => {
     } catch (err) {
       // التعامل مع الأخطاء الأمنية والـ Rate Limit
       const errorMessage = err?.data?.message || "Verification failed";
-      setError(errorMessage);
+
+      notify(errorMessage, "error");
 
       if (err.status !== 429) {
         notify(errorMessage, "error");
@@ -172,7 +179,8 @@ const VerifyEmailPage = () => {
     } catch (err) {
       const retryAfter = err?.data?.retry_after;
       if (retryAfter) setTimer(retryAfter);
-      setError(err?.data?.message || "Resend failed");
+      const msgError = err?.data?.message || "Resend failed";
+      notify(msgError, "error");
     }
   };
 
@@ -189,16 +197,24 @@ const VerifyEmailPage = () => {
 
   // ===================== UI Rendering =====================
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md text-center">
-        <h2 className="text-2xl font-bold mb-2">Verify Your Email</h2>
-        <p className="text-gray-500 mb-6 text-sm">
-          We sent a 6-digit code to{" "}
-          <span className="font-semibold text-gray-700">{email}</span>. It
-          expires in 15 minutes.
+    <div className="flex items-center justify-center">
+      <div className=" px-8 py-0 rounded-2xl w-full max-w-md text-center">
+        <p
+          className="text-slate-600 dark:text-slate-400 mb-6 text-sm font-semibold"
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter" }}
+        >
+          <span>{` {{ ${email} }} `}</span>
+          <span className="block mt-2 text-red-600 text-xs">
+            {" "}
+            {t("auth.email.It expires in 10 minutes.")}
+          </span>
         </p>
 
-        <div className="flex justify-between gap-2 mb-6">
+        {/* ========= Code Section ========= */}
+        <div
+          className="flex justify-between gap-2 mb-6"
+          style={{ direction: "ltr" }}
+        >
           {code.map((digit, index) => (
             <input
               key={index}
@@ -211,40 +227,47 @@ const VerifyEmailPage = () => {
               onChange={(e) => handleChange(e.target.value, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className="w-12 h-14 text-center text-2xl font-bold border-2 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all disabled:bg-gray-50 disabled:text-gray-400"
+              className="w-12 h-14 text-center text-2xl dark:text-white text-gray-700
+               font-bold border-2 rounded-xl border-gray-400
+                focus:border-red-600 focus:ring-red-500 focus:ring-2 outline-none transition-all
+                 disabled:bg-gray-50 disabled:text-gray-400 caret-red-500"
             />
           ))}
         </div>
 
-        {error && (
-          <p className="text-red-500 text-sm mb-4 bg-red-50 py-2 rounded-lg">
-            {error}
-          </p>
-        )}
-
+        {/* ========= Verify Button ========= */}
         <button
           onClick={() => submitCode(code.join(""))}
           disabled={code.some((d) => d === "") || isLoading}
-          className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
+          className="w-full bg-red-600 text-white py-3 rounded-xl
+           font-semibold hover:bg-red-700 transition active:scale-[0.98]
+            disabled:opacity-50 disabled:active:scale-100 cursor-pointer"
         >
-          {isLoading ? "Verifying..." : "Verify Account"}
+          {isLoading
+            ? t("auth.email.Verifying")
+            : t("auth.email.Verify Account")}
         </button>
 
+        {/* ========= Resend Code Section ========= */}
         <div className="mt-6 text-sm">
           {canResend ? (
             <button
               onClick={handleResend}
               disabled={resendLoading}
-              className="text-blue-600 font-medium hover:underline disabled:text-gray-400"
+              className="text-red-600 font-bold hover:underline
+               disabled:text-gray-400 cursor-pointer"
             >
-              {resendLoading ? "Sending code..." : "Resend Verification Code"}
+              {resendLoading
+                ? t("auth.email.Sending code")
+                : t("auth.email.Resend Verification Code")}
             </button>
           ) : (
-            <p className="text-gray-400">
-              Resend available in{" "}
-              <span className="text-gray-600 font-mono font-bold">
-                {timer}s
+            <p className="text-gray-500 font-bold">
+              {t("auth.email.Resend available after")}
+              <span className={`text-gray-600 font-mono inline-block mx-1`}>
+                {timer}
               </span>
+              <span>{direction === "rtl" ? "ثانية" : "s"}</span>
             </p>
           )}
         </div>

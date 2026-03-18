@@ -8,8 +8,12 @@ const authSlice = createSlice({
   },
   reducers: {
     setCredentials: (state, action) => {
-      state.user = action.payload.user ? action.payload.user : action.payload;
-      state.isAuthenticated = true;
+      const userData = action.payload.user
+        ? action.payload.user
+        : action.payload;
+      state.user = userData;
+      // المستخدم يعتبر "موثق" فقط إذا كان حسابه نشطاً
+      state.isAuthenticated = !!userData.is_active;
     },
 
     logOut: (state) => {

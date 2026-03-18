@@ -111,15 +111,26 @@ const LoginPage = () => {
       });
 
       // 3. استلام بيانات المستخدم بعد النجاح
-      const userData = await loginPromise;
+      const response = await loginPromise;
+      const { user } = response.data; // استخراج اليوزر مباشرة
 
       // 4. التحقق من المستخدم إذا لم يقم بتأكيد حسابه تحويله لصفحة تاكيد الحساب
-      if (!userData.user.is_active) {
-        // نمرر الإيميل في الـ state لكي لا يضطر المستخدم لكتابته مرة أخرى
-        navigate("/verify-email", { state: { email: loginForm.email } });
+      if (!user.is_active) {
+        // 1. التخزين في sessionStorage للتعامل مع الـ Refresh
+        // تأكد من استخدام المسميات الصحيحة القادمة من الباك إند
+        sessionStorage.setItem("pending_verify_email", user.email);
+        sessionStorage.setItem("pending_verify_role", user.role);
+
+        // 2. التوجيه مع تمرير الإيميل في الـ state (كخيار أول سريع)
+        navigate("/verify-email", {
+          state: {
+            email: user.email,
+            role: user.role,
+          },
+        });
       } else {
         // 5. استخراج الـ prefix المناسب لدور المستخدم من الـ Config
-        const rolePrefix = ROLES_CONFIG[userData.role]?.prefix || "";
+        const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
 
         // 4. تحديد وجهة التوجيه:
         // إما الصفحة التي حاول دخولها سابقاً (from) أو الداش بورد الخاص بدوره

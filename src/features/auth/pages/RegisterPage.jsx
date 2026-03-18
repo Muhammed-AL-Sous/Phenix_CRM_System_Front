@@ -129,12 +129,22 @@ const RegisterPage = () => {
         error: "auth:auth.register.failed_try_again",
       });
 
-      const userData = await registrationPromise;
-      
-      if (!userData.user.is_active) {
-        // بعد النجاح، ننتقل لصفحة التحقق
-        // نمرر الإيميل في الـ state لكي لا يضطر المستخدم لكتابته مرة أخرى
-        navigate("/verify-email", { state: { email: registerForm.email } });
+      const response = await registrationPromise;
+      const { user } = response.data; // استخراج اليوزر مباشرة
+
+      if (!user.is_active) {
+        // 1. التخزين في sessionStorage للتعامل مع الـ Refresh
+        // نستخدم registerForm.email أو userData.user.email (الأكثر دقة)
+        sessionStorage.setItem("pending_verify_email", user.email);
+        sessionStorage.setItem("pending_verify_role", user.role);
+
+        // 2. التوجيه مع تمرير البيانات في الـ state
+        navigate("/verify-email", {
+          state: {
+            email: user.email,
+            role: user.role,
+          },
+        });
       }
     } catch (err) {
       console.error("Registration detail error:", err);

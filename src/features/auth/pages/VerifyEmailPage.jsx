@@ -1,67 +1,114 @@
+// ========= React Hooks ========= //
 import { useEffect, useRef, useState } from "react";
+
+// ========= React Router ========= //
 import { useNavigate, useLocation } from "react-router";
+
+// ========= Verify Email & Resend Verification Code Slice ========= //
 import {
   useVerifyEmailMutation,
   useResendVerificationMutation,
 } from "../api/apiSlice";
-import { useDispatch } from "react-redux";
+
+// ========= Notification Toast ========= //
 import { notify, notifyPromise } from "../../../lib/notify";
+
+// ========= Translation Hook ========= //
+import { useTranslation } from "react-i18next";
+
+// ========= Roles Config  ========= //
 import { ROLES_CONFIG } from "../../../routes/roles.config";
 
 const VerifyEmailPage = () => {
+  // ========= States ========= //
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(60);
-  const [canResend, setCanResend] = useState(false);
 
   const inputsRef = useRef([]);
-  const dispatch = useDispatch();
-
   const navigate = useNavigate();
   const location = useLocation();
-  const email = location.state?.email || "";
 
-  // RTK Query Hooks
+  // ========= RTK Query Hooks ========= //
   const [verifyEmail, { isLoading }] = useVerifyEmailMutation();
   const [resendVerification, { isLoading: resendLoading }] =
     useResendVerificationMutation();
 
-  // ===================== INPUT =====================
+  // حساب حالة الإرسال برمجياً (Derived State) - حل مشكلة Cascading Renders
+  const canResend = timer <= 0;
+
+  // محاولة جلب البيانات من 3 مصادر بالترتيب:
+  // 1. الـ state (القادم من التنقل المباشر)
+  // 2. الـ sessionStorage (في حال عمل Refresh)
+  // 3. قيمة افتراضية فارغة
+  const [email] = useState(
+    () =>
+      location.state?.email ||
+      sessionStorage.getItem("pending_verify_email") ||
+      "",
+  );
+
+  const [role] = useState(
+    () =>
+      location.state?.role ||
+      sessionStorage.getItem("pending_verify_role") ||
+      "",
+  );
+
+  // إذا دخل المستخدم الصفحة مباشرة بدون إيميل
+  // (مثلاً عمل Refresh وهو مش مخزن الإيميل)
+  // يفضل توجيهه لصفحة Login
+  useEffect(() => {
+    // إذا لم نجد الإيميل في أي مكان، فهذا يعني أن الدخول غير شرعي للصفحة
+    if (!email) {
+      navigate("/login", { replace: true });
+    }
+  }, [email, navigate]);
+
+  // ===================== Input Logic =====================
+  // ========= Handle Change Function ========= //
   const handleChange = (value, index) => {
-    if (!/^[0-9]?$/.test(value)) return;
+    if (isLoading || !/^[0-9]?$/.test(value)) return;
 
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
 
+    // الانتقال للحقل التالي
     if (value && index < 5) {
       inputsRef.current[index + 1].focus();
     }
 
+    // الإرسال التلقائي عند اكتمال الـ 6 أرقام
     if (newCode.every((d) => d !== "")) {
       submitCode(newCode.join(""));
     }
   };
 
+  // ========= Handle KeyDown Function ========= //
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !code[index] && index > 0) {
       inputsRef.current[index - 1].focus();
     }
   };
 
+  // ========= Handle Paste Function ========= //
   const handlePaste = (e) => {
-    const paste = e.clipboardData.getData("text").slice(0, 6);
-    if (!/^[0-9]+$/.test(paste)) return;
+    const paste = e.clipboardData.getData("text").trim().slice(0, 6);
+    if (!/^[0-9]{6}/.test(paste)) return;
 
     const newCode = paste.split("");
     setCode(newCode);
-    inputsRef.current[5].focus();
 
+    // تركيز على آخر حقل بعد اللصق
+    inputsRef.current[5]?.focus();
     submitCode(paste);
   };
 
-  // ===================== VERIFY =====================
+  // ===================== VERIFY LOGIC =====================
+  // ========= Submit Code Function ========= //
   const submitCode = async (finalCode) => {
+    if (isLoading) return; // منع الطلبات المتكررة
     setError("");
 
     try {
@@ -75,30 +122,42 @@ const VerifyEmailPage = () => {
         success: "auth:auth.email.Email_verified_successfully",
       });
 
+      // مسح البيانات المؤقتة لأنها لم تعد مطلوبة
+      sessionStorage.removeItem("pending_verify_email");
+      sessionStorage.removeItem("pending_verify_role");
+
       const response = await verifyEmailPromise;
 
-      // 2. التوجيه للداشبورد (بناءً على دوره)
-      const rolePrefix = ROLES_CONFIG[response.data.user.role].prefix;
+      // 2. تحديد الدور: نأخذه من استجابة السيرفر (أكثر أماناً)
+      // أو نستخدم المخزن كاحتياط (fallback)
+      const userRole = response.data.user.role || role;
+
+      const rolePrefix = ROLES_CONFIG[userRole]?.prefix || "";
 
       navigate(`/${rolePrefix}`, { replace: true });
     } catch (err) {
-      notify(err.data?.message || "Verification failed", "error");
-      const retryAfter = err?.data?.retry_after;
+      // التعامل مع الأخطاء الأمنية والـ Rate Limit
+      const errorMessage = err?.data?.message || "Verification failed";
+      setError(errorMessage);
 
-      if (retryAfter) {
-        setTimer(retryAfter);
-        setCanResend(false);
+      if (err.status !== 429) {
+        notify(errorMessage, "error");
+        // تصفير الحقول عند الخطأ (ماعدا حالات تجاوز الحد) لإعادة المحاولة
+        setCode(["", "", "", "", "", ""]);
+        inputsRef.current[0]?.focus();
+      } else {
+        // إذا كان الخطأ Rate Limit (429)
+        const retryAfter = err?.data?.retry_after;
+        if (retryAfter) setTimer(retryAfter);
       }
-
-      setError(err?.data?.message || "Verification failed");
-
-      setCode(["", "", "", "", "", ""]);
-      inputsRef.current[0].focus();
     }
   };
 
-  // ===================== RESEND =====================
+  // ===================== Resend Logic =====================
+  // ========= Handle Resend Function ========= //
   const handleResend = async () => {
+    if (!canResend || resendLoading) return;
+
     try {
       const resendVerifyPromise = resendVerification({ email }).unwrap();
 
@@ -109,27 +168,17 @@ const VerifyEmailPage = () => {
 
       await resendVerifyPromise;
 
-      // إذا نجح → نعيد ضبط timer (يفضل ترجع من الباك أيضاً)
-      setTimer(60);
-      setCanResend(false);
+      setTimer(60); // إعادة المؤقت تلقائياً سيجعل canResend = false
     } catch (err) {
       const retryAfter = err?.data?.retry_after;
-
-      if (retryAfter) {
-        setTimer(retryAfter);
-        setCanResend(false);
-      }
-
+      if (retryAfter) setTimer(retryAfter);
       setError(err?.data?.message || "Resend failed");
     }
   };
 
-  // ===================== TIMER =====================
+  // ===================== Timer Effect =====================
   useEffect(() => {
-    if (timer <= 0) {
-      setCanResend(true);
-      return;
-    }
+    if (timer <= 0) return;
 
     const interval = setInterval(() => {
       setTimer((prev) => prev - 1);
@@ -138,52 +187,65 @@ const VerifyEmailPage = () => {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // ===================== UI =====================
+  // ===================== UI Rendering =====================
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md text-center">
         <h2 className="text-2xl font-bold mb-2">Verify Your Email</h2>
-        <p className="text-gray-500 mb-6">
-          Enter the 6-digit code sent to your email
+        <p className="text-gray-500 mb-6 text-sm">
+          We sent a 6-digit code to{" "}
+          <span className="font-semibold text-gray-700">{email}</span>. It
+          expires in 15 minutes.
         </p>
 
-        <div className="flex justify-between gap-2 mb-4">
+        <div className="flex justify-between gap-2 mb-6">
           {code.map((digit, index) => (
             <input
               key={index}
               type="text"
+              inputMode="numeric"
               maxLength="1"
               value={digit}
+              disabled={isLoading}
               ref={(el) => (inputsRef.current[index] = el)}
               onChange={(e) => handleChange(e.target.value, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className="w-12 h-14 text-center text-xl border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-12 h-14 text-center text-2xl font-bold border-2 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all disabled:bg-gray-50 disabled:text-gray-400"
             />
           ))}
         </div>
 
-        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm mb-4 bg-red-50 py-2 rounded-lg">
+            {error}
+          </p>
+        )}
 
         <button
           onClick={() => submitCode(code.join(""))}
           disabled={code.some((d) => d === "") || isLoading}
-          className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+          className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
         >
-          {isLoading ? "Verifying..." : "Verify"}
+          {isLoading ? "Verifying..." : "Verify Account"}
         </button>
 
-        <div className="mt-4 text-sm text-gray-500">
+        <div className="mt-6 text-sm">
           {canResend ? (
             <button
               onClick={handleResend}
               disabled={resendLoading}
-              className="text-blue-600 disabled:opacity-50"
+              className="text-blue-600 font-medium hover:underline disabled:text-gray-400"
             >
-              {resendLoading ? "Sending..." : "Resend Code"}
+              {resendLoading ? "Sending code..." : "Resend Verification Code"}
             </button>
           ) : (
-            <p>Resend available in {timer}s</p>
+            <p className="text-gray-400">
+              Resend available in{" "}
+              <span className="text-gray-600 font-mono font-bold">
+                {timer}s
+              </span>
+            </p>
           )}
         </div>
       </div>

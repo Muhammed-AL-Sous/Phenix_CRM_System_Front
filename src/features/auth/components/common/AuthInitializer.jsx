@@ -58,9 +58,6 @@ export default function AuthInitializer({ children }) {
         <div className="text-center">
           {/* Spinner متناسق مع تصميمك */}
           <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="font-[Almarai] text-slate-600 dark:text-slate-400 text-lg animate-pulse">
-            جاري تهيئة النظام...
-          </p>
         </div>
       </div>
     );

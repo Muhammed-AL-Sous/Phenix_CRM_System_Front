@@ -11,6 +11,7 @@ import GuestRoute from "./GuestRoute";
 import { publicRoutes } from "./PublicRoutes";
 import { authRoutes } from "./AuthRoutes";
 import { generateRoleRoutes } from "./roleRouteGenerator";
+import ProtectedRoute from "../components/common/ProtectedRoute";
 
 export const router = createBrowserRouter([
   // 🌐 Public Pages
@@ -34,7 +35,14 @@ export const router = createBrowserRouter([
 
   // 📊 Dashboard
   {
-    element: <DashboardLayout />,
-    children: [...generateRoleRoutes()],
+    // حماية عامة: تمنع أي شخص غير مسجل دخول من رؤية الـ Layout أصلاً
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <DashboardLayout />,
+        // هنا الـ generateRoleRoutes ستكمل حماية "الأدوار" (admin, support, الخ)
+        children: [...generateRoleRoutes()],
+      },
+    ],
   },
 ]);

@@ -24,10 +24,10 @@ export default function DashboardLayout() {
   const user = useSelector(selectCurrentUser);
   const { direction } = useSelector((state) => state.ui);
   const isRtl = direction === "rtl";
-
-  const sidebarLinks = ROLES_CONFIG[user.role].sidebar;
-  // const sidebarLinks = ROLES_CONFIG["admin"].sidebar;
   const location = useLocation();
+  // حماية من الانهيار: نتحقق من وجود المستخدم والدور قبل الوصول للـ Config
+  const roleConfig = user?.role ? ROLES_CONFIG[user.role] : null;
+  const sidebarLinks = roleConfig?.sidebar || [];
 
   /* ================= Lock Body Scroll ================= */
   useLayoutEffect(() => {
@@ -39,7 +39,8 @@ export default function DashboardLayout() {
     return () => (document.body.style.overflow = "");
   }, [isSidebarOpen]);
 
-  // if (!user) return null; // حماية إضافية
+  // إذا لم يكن هناك مستخدم، اخرج فوراً
+  if (!user) return null;
 
   return (
     <div

@@ -64,7 +64,7 @@ const VerifyEmailPage = () => {
       "",
   );
   const user = useSelector(selectCurrentUser);
-
+// console.log(user)
   // إذا دخل المستخدم الصفحة مباشرة بدون إيميل
   // (مثلاً عمل Refresh وهو مش مخزن الإيميل)
   // يفضل توجيهه لصفحة Login

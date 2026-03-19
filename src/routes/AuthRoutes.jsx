@@ -9,16 +9,16 @@ export const authRoutes = [
     path: "login",
     element: <LoginPage />,
     handle: {
-      titleKey: "auth.login.login",
-      subtitleKey: "auth.common.welcome",
+      titleKey: "common.login",
+      subtitleKey: "common.welcome",
     },
   },
   {
     path: "forgot_password",
     element: <ForgotPasswordPage />,
     handle: {
-      titleKey: "auth.common.find your account",
-      subtitleKey: "auth.password.forgot_password_desc",
+      titleKey: "common.find your account",
+      subtitleKey: "password.forgot_password_desc",
     },
   },
 
@@ -26,16 +26,16 @@ export const authRoutes = [
     path: "register",
     element: <RegisterPage />,
     handle: {
-      titleKey: "auth.register.register",
-      subtitleKey: "auth.common.Join our family today",
+      titleKey: "common.register",
+      subtitleKey: "common.Join our family today",
     },
   },
   {
     path: "verify-email",
     element: <VerifyEmailPage />,
     handle: {
-      titleKey: "auth.email.Verify_Your_Email",
-      subtitleKey: "auth.email.We have sent a verification code to this email address",
+      titleKey: "email.Verify_Your_Email",
+      subtitleKey: "code.We have sent a verification code to this email address",
     },
   },
 ];

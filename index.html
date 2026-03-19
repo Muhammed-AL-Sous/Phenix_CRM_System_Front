@@ -9,8 +9,80 @@
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Phenix Systems | أنظمة فينيكس</title>
+    <script>
+      (function () {
+        const savedMode = localStorage.getItem("mode") || "dark";
+        const savedLang = localStorage.getItem("lang") || "en";
+        const root = document.documentElement;
+
+        // تطبيق الكلاس والاتجاه
+        if (savedMode === "dark") {
+          root.classList.add("dark");
+        } else {
+          root.classList.remove("dark");
+        }
+
+        root.setAttribute("dir", savedLang === "ar" ? "rtl" : "ltr");
+        root.setAttribute("lang", savedLang);
+      })();
+    </script>
+
+    <style>
+      /* إجبار الخلفية من خلال الـ CSS الداخلي ليكون أسرع من أي ملف خارجي */
+      html.dark {
+        background-color: #18181b !important; /* لون Zinc-900 */
+        color-scheme: dark;
+      }
+
+      html:not(.dark) {
+        background-color: #f8fafc !important; /* لون Slate-50 */
+        color-scheme: light;
+      }
+
+      body {
+        margin: 0;
+        /* نضمن أن الـ body لا يملك خلفية بيضاء افتراضية */
+        background-color: transparent !important;
+      }
+
+      #initial-loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* استخدام متغيرات الـ CSS لضمان توافقها مع الـ dark mode فوراً */
+        background-color: #f8fafc;
+        z-index: 9999;
+      }
+
+      html.dark #initial-loader {
+        background-color: #18181b;
+      }
+
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid #ef4444;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        animation: rotation 1s linear infinite;
+      }
+
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="initial-loader">
+      <div class="spinner"></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

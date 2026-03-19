@@ -19,6 +19,13 @@ body {
   font-family: "Almarai", sans-serif;
 }
 
+html,
+body {
+  /* احذف الـ !important من هنا واتركها للـ index.html */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
 /* ================= Custom Scrollbar Light Mode ================= */
 ::-webkit-scrollbar {
   width: 8px;
@@ -126,7 +133,13 @@ ul {
 /* ================= Auth Pages ================= */
 
 .mesh-gradient {
-  background-color: #f8fafc;
+  background-color: transparent;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+
+  /* background-color: #f8fafc; */
+
   background-image:
     radial-gradient(at 0% 0%, rgba(239, 68, 68, 0.05) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),

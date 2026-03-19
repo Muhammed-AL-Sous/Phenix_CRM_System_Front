@@ -57,20 +57,20 @@ const LoginPage = () => {
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!loginForm.email.trim()) {
-      newErrors.email = "auth.email.email_required";
+      newErrors.email = "error.email_required";
     } else if (!emailRegex.test(loginForm.email)) {
-      newErrors.email = "auth.email.email_invalid";
+      newErrors.email = "error.email_invalid";
     }
 
     // Password validation
     if (!loginForm.password) {
-      newErrors.password = "auth.password.password_required";
+      newErrors.password = "error.password_required";
     } else if (
       loginForm.password.length < 8 ||
       !/[a-zA-Z]/.test(loginForm.password) || // يجب أن تحتوي على حرف
       !/[0-9]/.test(loginForm.password) // يجب أن تحتوي على رقم
     ) {
-      newErrors.password = "auth.password.password_length_letter_error";
+      newErrors.password = "error.password_length_letter_error";
     }
 
     setErrors(newErrors);
@@ -106,54 +106,58 @@ const LoginPage = () => {
       const loginPromise = login(loginForm).unwrap();
 
       notifyPromise(loginPromise, {
-        loading: "auth:auth.login.logging_in",
-        success: "auth:auth.login.welcome_back",
+        loading: "auth:loading.logging_in",
+        success: "auth:success.welcome_back",
       });
 
       // 3. استلام بيانات المستخدم بعد النجاح
       const response = await loginPromise;
       const { user } = response.data; // استخراج اليوزر مباشرة
 
-      // 4. التحقق من المستخدم إذا لم يقم بتأكيد حسابه تحويله لصفحة تاكيد الحساب
-      if (!user.is_active) {
-        // 1. التخزين في sessionStorage للتعامل مع الـ Refresh
-        // تأكد من استخدام المسميات الصحيحة القادمة من الباك إند
-        sessionStorage.setItem("pending_verify_email", user.email);
-        sessionStorage.setItem("pending_verify_role", user.role);
+      // 4. استخراج الـ prefix المناسب لدور المستخدم من الـ Config
+      const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
 
-        // 2. التوجيه مع تمرير الإيميل في الـ state (كخيار أول سريع)
-        navigate("/verify-email", {
-          state: {
-            email: user.email,
-            role: user.role,
-          },
-        });
-      } else {
-        // 5. استخراج الـ prefix المناسب لدور المستخدم من الـ Config
-        const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
+      // 5. تحديد وجهة التوجيه:
+      // إما الصفحة التي حاول دخولها سابقاً (from) أو الداش بورد الخاص بدوره
+      const origin = location.state?.from?.pathname || `/${rolePrefix}`;
 
-        // 4. تحديد وجهة التوجيه:
-        // إما الصفحة التي حاول دخولها سابقاً (from) أو الداش بورد الخاص بدوره
-        const origin = location.state?.from?.pathname || `/${rolePrefix}`;
-
-        // 5. التوجيه النهائي
-        navigate(origin, { replace: true });
-      }
+      // 6. التوجيه النهائي
+      navigate(origin, { replace: true });
     } catch (err) {
       console.error("Logging detail error:", err);
-      if (
-        err.status === 403 &&
-        err.data.message.includes("Account not verified")
-      ) {
-        notify("auth:auth.error.Account_not_verified", "error");
-      } else if (
-        err.status === 401 &&
-        err.data.message.includes("Invalid Email Or Password")
-      ) {
-        notify("auth:auth.error.Invalid Email Or Password", "error");
-      } else {
-        notify("auth:auth.login.login_failed", "error");
+      const status = err.status;
+      const message = err.data?.message || "";
+
+      // فحص حالة عدم التفعيل (بشكل مرن)
+      const isNotVerified =
+        status === 403 || message.toLowerCase().includes("not verified");
+
+      if (isNotVerified) {
+        // جلب بيانات المستخدم (حسب المكان الذي وضعته فيه بالباك إند)
+        // إذا استخدمت ApiResponse::error(msg, 403, ['user' => ...])
+        // ستجدها في err.data.errors.user
+        const pendingUser = err.data?.errors?.user || err.data?.user;
+
+        if (pendingUser) {
+          sessionStorage.setItem("pending_verify_email", pendingUser.email);
+          sessionStorage.setItem("pending_verify_role", pendingUser.role);
+
+          navigate("/verify-email", {
+            state: { email: pendingUser.email, role: pendingUser.role },
+          });
+
+          notify("auth:error.Account_not_verified", "error");
+          return;
+        }
       }
+
+      // معالجة الـ 401 (بيانات خاطئة)
+      if (status === 401) {
+        notify("auth:error.Invalid Email Or Password", "error");
+        return;
+      }
+
+      notify("auth:error.login_failed", "error");
     }
   };
 
@@ -199,7 +203,7 @@ const LoginPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("auth.email.email")}
+          {t("email.email")}
         </label>
         <div className="relative">
           {/* ======= Input Email ======= */}
@@ -251,7 +255,7 @@ const LoginPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("auth.password.password")}
+          {t("password.password")}
         </label>
 
         <div className="relative">
@@ -325,7 +329,7 @@ const LoginPage = () => {
           }}
           className="text-md font-medium text-slate-700 dark:text-slate-300 cursor-pointer"
         >
-          {t("auth.login.remember_me")}
+          {t("common.remember_me")}
         </label>
 
         <button
@@ -383,21 +387,21 @@ const LoginPage = () => {
         {isLoading || isCsrfLoading ? (
           <span className="flex items-center justify-center gap-2">
             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            {t("auth.common.preparing...")}
+            {t("loading.preparing...")}
           </span>
         ) : (
-          t("auth.login.login")
+          t("common.login")
         )}
       </button>
 
       {/* ============= Register Button ============= */}
       <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-        {t("auth.common.dont_have_account")}{" "}
+        {t("common.dont_have_account")}{" "}
         <Link
           to="/register"
           className="text-red-500 hover:text-red-600 transition-all duration-200 font-bold hover:underline ms-1.5"
         >
-          {t("auth.register.register")}
+          {t("common.register")}
         </Link>
       </p>
 
@@ -408,7 +412,7 @@ const LoginPage = () => {
           className="text-center text-sm text-slate-500 dark:text-slate-400
         transition-all duration-200 font-bold hover:underline"
         >
-          {t("auth.password.forgot_password")}{" "}
+          {t("password.forgot_password")}{" "}
         </p>
       </Link>
     </form>

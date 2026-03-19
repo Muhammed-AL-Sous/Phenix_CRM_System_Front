@@ -13,6 +13,18 @@ import { Toaster } from "react-hot-toast";
 const UIProvider = ({ children }) => {
   const { mode, direction, lang } = useSelector((state) => state.ui);
 
+  // داخل useEffect في UIProvider.js
+  useEffect(() => {
+    const loader = document.getElementById("initial-loader");
+    if (loader) {
+      // إضافة تأخير بسيط جداً لضمان رسم العناصر
+      setTimeout(() => {
+        loader.style.opacity = "0";
+        setTimeout(() => loader.remove(), 300);
+      }, 100);
+    }
+  }, []);
+
   useEffect(() => {
     // Tailwind Dark Mode
     const root = document.documentElement;
@@ -20,9 +32,11 @@ const UIProvider = ({ children }) => {
     if (mode === "dark") {
       root.classList.add("dark");
       root.style.colorScheme = "dark";
+      root.style.backgroundColor = "#18181b";
     } else {
       root.classList.remove("dark");
       root.style.colorScheme = "light";
+      root.style.backgroundColor = "#f8fafc";
     }
 
     // Direction

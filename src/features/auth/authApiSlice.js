@@ -68,15 +68,21 @@ export const authApiSlice = apiSlice.injectEndpoints({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-          // 1. تحديث الـ State ببيانات المستخدم الجديد (is_active: true)
-          // تأكد أن بنية البيانات القادمة من السيرفر هي data.data.user
-          if (data?.data?.user) {
-            dispatch(setCredentials({ user: data.data.user }));
+          const { data: response } = await queryFulfilled;
+
+          // التعديل هنا: بما أن ApiResponse يلف البيانات بـ data
+          // والباك إند يرسل ['user' => ...]
+          // فالمسار الصحيح هو response.data.user
+          const user = response.data?.user;
+
+          console.log("User received:", user);
+
+          if (user) {
+            dispatch(setCredentials({ user: user }));
+            // 2. تحديث الكوكي يدوياً (اختياري لأن السيرفر يرسله أصلاً)
+            document.cookie =
+              "fast_check=true; path=/; max-age=31536000; SameSite=Lax";
           }
-          // 2. تحديث الكوكي يدوياً (اختياري لأن السيرفر يرسله أصلاً)
-          document.cookie =
-            "fast_check=true; path=/; max-age=31536000; SameSite=Lax";
         } catch (err) {
           console.error("Verification Error:", err);
         }

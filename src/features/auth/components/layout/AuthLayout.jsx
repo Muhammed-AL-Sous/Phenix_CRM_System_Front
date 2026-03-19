@@ -51,12 +51,7 @@ const AuthLayout = () => {
           </Link>
         </span>
       </div>
-
-      <Suspense
-        fallback={
-          <div style={{ padding: "2rem", textAlign: "center" }}>Loading...</div>
-        }
-      >
+      <Suspense fallback={<div></div>}>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}

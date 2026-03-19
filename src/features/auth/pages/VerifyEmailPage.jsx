@@ -64,7 +64,7 @@ const VerifyEmailPage = () => {
       "",
   );
   const user = useSelector(selectCurrentUser);
-// console.log(user)
+  // console.log(user)
   // إذا دخل المستخدم الصفحة مباشرة بدون إيميل
   // (مثلاً عمل Refresh وهو مش مخزن الإيميل)
   // يفضل توجيهه لصفحة Login
@@ -78,15 +78,22 @@ const VerifyEmailPage = () => {
   // ===================== Input Logic =====================
   // ========= Handle Change Function ========= //
   const handleChange = (value, index) => {
+    // منع الإدخال إذا كان في حالة تحميل أو القيمة ليست رقماً
     if (isLoading || !/^[0-9]?$/.test(value)) return;
 
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
 
-    // الانتقال للحقل التالي
-    if (value && index < 5) {
-      inputsRef.current[index + 1].focus();
+    // إذا تم إدخال رقم وكان هناك حقل تالي
+    if (value !== "" && index < 5) {
+      // نستخدم setTimeout لضمان أن الـ React State تحديث
+      // وأصبح الحقل التالي غير مقفل (Not Disabled)
+      setTimeout(() => {
+        if (inputsRef.current[index + 1]) {
+          inputsRef.current[index + 1].focus();
+        }
+      }, 10);
     }
   };
 
@@ -99,17 +106,36 @@ const VerifyEmailPage = () => {
 
   // ========= Handle Paste Function ========= //
   const handlePaste = (e) => {
-    const paste = e.clipboardData.getData("text").trim().slice(0, 6);
-    if (!/^[0-9]{6}/.test(paste)) return;
+    // منع السلوك الافتراضي للصق
+    e.preventDefault();
+
+    const pasteData = e.clipboardData.getData("text").trim();
+    // التأكد أن البيانات الملصقة هي أرقام فقط ونأخذ أول 6 خانات
+    const paste = pasteData.slice(0, 6);
+
+    if (!/^\d+$/.test(paste)) return; // تحقق أنها أرقام فقط
 
     const newCode = paste.split("");
-    setCode(newCode);
+    // إكمال المصفوفة بStrings فارغة إذا كان النص الملصق أقل من 6 أرقام
+    const finalCode = [...newCode, ...Array(6 - newCode.length).fill("")].slice(
+      0,
+      6,
+    );
 
-    // تركيز على آخر حقل بعد اللصق
-    inputsRef.current[5]?.focus();
+    setCode(finalCode);
 
-    // إرسال تلقائي في حالة اللصق فقط
-    submitCode(paste);
+    // الانتظار قليلاً حتى يتم تحديث الحالة وتفعيل الحقول (Disabled -> Enabled)
+    setTimeout(() => {
+      const lastIndex = Math.min(paste.length - 1, 5);
+      if (inputsRef.current[lastIndex]) {
+        inputsRef.current[lastIndex].focus();
+      }
+
+      // إرسال الكود فقط إذا كان كاملاً (6 أرقام)
+      if (paste.length === 6) {
+        submitCode(paste);
+      }
+    }, 10);
   };
 
   // ===================== VERIFY LOGIC =====================
@@ -124,8 +150,8 @@ const VerifyEmailPage = () => {
       }).unwrap();
 
       notifyPromise(verifyEmailPromise, {
-        loading: "auth:auth.email.Account_is_being_verified",
-        success: "auth:auth.email.Email_verified_successfully",
+        loading: "auth:loading.Account_is_being_verified",
+        success: "auth:success.Email_verified_successfully",
       });
 
       // مسح البيانات المؤقتة لأنها لم تعد مطلوبة
@@ -144,11 +170,8 @@ const VerifyEmailPage = () => {
     } catch (err) {
       // التعامل مع الأخطاء الأمنية والـ Rate Limit
       const errorMessage = err?.data?.message || "Verification failed";
-
-      notify(errorMessage, "error");
-
       if (err.status !== 429) {
-        notify(errorMessage, "error");
+        notify("auth:error."+errorMessage, "error");
         // تصفير الحقول عند الخطأ (ماعدا حالات تجاوز الحد) لإعادة المحاولة
         setCode(["", "", "", "", "", ""]);
         inputsRef.current[0]?.focus();
@@ -169,8 +192,8 @@ const VerifyEmailPage = () => {
       const resendVerifyPromise = resendVerification({ email }).unwrap();
 
       notifyPromise(resendVerifyPromise, {
-        loading: "auth:auth.email.The verification code is being resent",
-        success: "auth:auth.email.Code resent successfully",
+        loading: "auth:loadingThe verification code is being resent",
+        success: "auth:success.Code resent successfully",
       });
 
       await resendVerifyPromise;
@@ -206,7 +229,7 @@ const VerifyEmailPage = () => {
           <span>{` {{ ${email} }} `}</span>
           <span className="block mt-2 text-red-600 text-xs">
             {" "}
-            {t("auth.email.It expires in 10 minutes.")}
+            {t("code.It expires in 10 minutes.")}
           </span>
         </p>
 
@@ -222,7 +245,8 @@ const VerifyEmailPage = () => {
               inputMode="numeric"
               maxLength="1"
               value={digit}
-              disabled={isLoading}
+              // التعديل هنا: الحقل متاح فقط إذا كان الأول أو إذا كان الذي قبله ممتلئ
+              disabled={isLoading || (index > 0 && code[index - 1] === "")}
               ref={(el) => (inputsRef.current[index] = el)}
               onChange={(e) => handleChange(e.target.value, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
@@ -230,7 +254,7 @@ const VerifyEmailPage = () => {
               className="w-12 h-14 text-center text-2xl dark:text-white text-gray-700
                font-bold border-2 rounded-xl border-gray-400
                 focus:border-red-600 focus:ring-red-500 focus:ring-2 outline-none transition-all
-                 disabled:bg-gray-50 disabled:text-gray-400 caret-red-500"
+                 dark:disabled:bg-zinc-900 disabled:bg-gray-300 disabled:text-gray-400 caret-red-500 disabled:cursor-not-allowed"
             />
           ))}
         </div>
@@ -244,8 +268,8 @@ const VerifyEmailPage = () => {
             disabled:opacity-50 disabled:active:scale-100 cursor-pointer"
         >
           {isLoading
-            ? t("auth.email.Verifying")
-            : t("auth.email.Verify Account")}
+            ? t("loading.Verifying")
+            : t("email.Verify Account")}
         </button>
 
         {/* ========= Resend Code Section ========= */}
@@ -258,12 +282,12 @@ const VerifyEmailPage = () => {
                disabled:text-gray-400 cursor-pointer"
             >
               {resendLoading
-                ? t("auth.email.Sending code")
-                : t("auth.email.Resend Verification Code")}
+                ? t("loading.Sending code")
+                : t("code.Resend Verification Code")}
             </button>
           ) : (
             <p className="text-gray-500 font-bold">
-              {t("auth.email.Resend available after")}
+              {t("code.Resend available after")}
               <span className={`text-gray-600 font-mono inline-block mx-1`}>
                 {timer}
               </span>

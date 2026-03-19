@@ -62,34 +62,34 @@ const RegisterPage = () => {
 
     // Name validation
     if (!registerForm.name.trim()) {
-      newErrors.name = "auth.name.name_required";
+      newErrors.name = "error.name_required";
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!registerForm.email.trim()) {
-      newErrors.email = "auth.email.email_required";
+      newErrors.email = "error.email_required";
     } else if (!emailRegex.test(registerForm.email)) {
-      newErrors.email = "auth.email.email_invalid";
+      newErrors.email = "error.email_invalid";
     }
 
     // Password validation
     if (!registerForm.password) {
-      newErrors.password = "auth.password.password_required";
+      newErrors.password = "error.password_required";
     } else if (
       registerForm.password.length < 8 ||
       !/[a-zA-Z]/.test(registerForm.password) || // يجب أن تحتوي على حرف
       !/[0-9]/.test(registerForm.password) // يجب أن تحتوي على رقم
     ) {
-      newErrors.password = "auth.password.password_length_letter_error";
+      newErrors.password = "error.password_length_letter_error";
     }
 
     // Confirm Password validation
     if (!registerForm.password_confirmation) {
       newErrors.password_confirmation =
-        "auth.password.confirm_password_required";
+        "error.confirm_password_required";
     } else if (registerForm.password !== registerForm.password_confirmation) {
-      newErrors.password_confirmation = "auth.password.passwords_dont_match";
+      newErrors.password_confirmation = "error.passwords_dont_match";
     }
 
     setErrors(newErrors);
@@ -124,9 +124,9 @@ const RegisterPage = () => {
       const registrationPromise = register(registerForm).unwrap();
 
       notifyPromise(registrationPromise, {
-        loading: "auth:auth.register.registering",
-        success: "auth:auth.register.register_success",
-        error: "auth:auth.register.failed_try_again",
+        loading: "auth:loading.registering",
+        success: "auth:success.register_success",
+        error: "auth:error.failed_try_again",
       });
 
       const response = await registrationPromise;
@@ -155,11 +155,11 @@ const RegisterPage = () => {
         if (serverMessage.includes("already been taken")) {
           setErrors({
             ...errors,
-            email: "auth.email.The email has already been taken.",
+            email: "error.The email has already been taken.",
           });
         } else {
           // أي خطأ Validation آخر
-          notify("auth:auth.error.validation_error", "error");
+          notify("auth:error.validation_error", "error");
         }
       }
     }
@@ -207,7 +207,7 @@ const RegisterPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("auth.name.name")}
+          {t("common.name")}
         </label>
 
         {/* ======= Input Name ======= */}
@@ -256,7 +256,7 @@ const RegisterPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("auth.email.email")}
+          {t("email.email")}
         </label>
 
         {/* ======= Input Email ======= */}
@@ -306,7 +306,7 @@ const RegisterPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("auth.password.password")}
+          {t("password.password")}
         </label>
 
         <div className="relative">
@@ -386,7 +386,7 @@ const RegisterPage = () => {
               className="w-4 h-4 relative"
             />
           </span>
-          {t("auth.password.Confirm_password")}
+          {t("password.Confirm_password")}
         </label>
 
         <div className="relative">
@@ -471,21 +471,21 @@ const RegisterPage = () => {
         {isLoading || isCsrfLoading ? (
           <span className="flex items-center justify-center gap-2">
             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            {t("auth.common.preparing...")}
+            {t("loading.preparing...")}
           </span>
         ) : (
-          t("auth.register.register")
+          t("common.register")
         )}
       </button>
 
       {/* ======= Login Link ======= */}
       <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-        {t("auth.common.already_have_account")}
+        {t("common.already_have_account")}
         <Link
           to="/login"
           className="text-red-500 transition-all duration-200 hover:text-red-600 font-bold hover:underline ms-1.5"
         >
-          {t("auth.login.login")}
+          {t("common.login")}
         </Link>
       </p>
     </form>

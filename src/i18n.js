@@ -33,7 +33,7 @@ i18n
     },
 
     react: {
-      useSuspense: false, // لتجنب مشاكل الـ Loading في البداية
+      useSuspense: true,
     },
   });
 

@@ -17,11 +17,20 @@ const UIProvider = ({ children }) => {
   useEffect(() => {
     const loader = document.getElementById("initial-loader");
     if (loader) {
-      // إضافة تأخير بسيط جداً لضمان رسم العناصر
-      setTimeout(() => {
+      // ننتظر قليلاً للتأكد من أن React رسم أول Logic
+      requestAnimationFrame(() => {
         loader.style.opacity = "0";
-        setTimeout(() => loader.remove(), 300);
-      }, 100);
+        loader.style.pointerEvents = "none"; // لمنع التفاعل معه أثناء التلاشي
+
+        // نحذفه من الـ DOM بعد انتهاء وقت الـ transition تماماً
+        const timeout = setTimeout(() => {
+          if (loader.parentNode) {
+            loader.remove();
+          }
+        }, 400); // اجعل هذا الرقم مطابقاً للـ transition في CSS
+
+        return () => clearTimeout(timeout);
+      });
     }
   }, []);
 

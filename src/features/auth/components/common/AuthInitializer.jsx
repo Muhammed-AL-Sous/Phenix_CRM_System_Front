@@ -57,7 +57,9 @@ export default function AuthInitializer({ children }) {
       <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-zinc-900">
         <div className="text-center">
           {/* Spinner متناسق مع تصميمك */}
-          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4
+           border-red-500 border-t-transparent
+            rounded-full animate-spin mx-auto"></div>
         </div>
       </div>
     );

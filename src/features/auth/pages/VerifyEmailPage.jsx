@@ -163,7 +163,7 @@ const VerifyEmailPage = () => {
       // 2. تحديد الدور: نأخذه من استجابة السيرفر (أكثر أماناً)
       // أو نستخدم المخزن كاحتياط (fallback)
       const userRole = response.data.user.role || role;
-
+      
       const rolePrefix = ROLES_CONFIG[userRole]?.prefix || "";
 
       navigate(`/${rolePrefix}`, { replace: true });
@@ -171,7 +171,7 @@ const VerifyEmailPage = () => {
       // التعامل مع الأخطاء الأمنية والـ Rate Limit
       const errorMessage = err?.data?.message || "Verification failed";
       if (err.status !== 429) {
-        notify("auth:error."+errorMessage, "error");
+        notify("auth:error." + errorMessage, "error");
         // تصفير الحقول عند الخطأ (ماعدا حالات تجاوز الحد) لإعادة المحاولة
         setCode(["", "", "", "", "", ""]);
         inputsRef.current[0]?.focus();
@@ -192,7 +192,7 @@ const VerifyEmailPage = () => {
       const resendVerifyPromise = resendVerification({ email }).unwrap();
 
       notifyPromise(resendVerifyPromise, {
-        loading: "auth:loadingThe verification code is being resent",
+        loading: "auth:loading.The verification code is being resent",
         success: "auth:success.Code resent successfully",
       });
 
@@ -267,9 +267,7 @@ const VerifyEmailPage = () => {
            font-semibold hover:bg-red-700 transition active:scale-[0.98]
             disabled:opacity-50 disabled:active:scale-100 cursor-pointer"
         >
-          {isLoading
-            ? t("loading.Verifying")
-            : t("email.Verify Account")}
+          {isLoading ? t("loading.Verifying") : t("email.Verify Account")}
         </button>
 
         {/* ========= Resend Code Section ========= */}

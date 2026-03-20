@@ -17,7 +17,7 @@ import { useLoginMutation, useLazyGetCsrfTokenQuery } from "../authApiSlice";
 import { useTranslation } from "react-i18next";
 
 // ========= Notification Toast ========= //
-import { notify, notifyPromise } from "../../../lib/notify";
+import { notify } from "../../../lib/notify";
 
 // ========= Icons ========= //
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -105,13 +105,11 @@ const LoginPage = () => {
       // 2. تنفيذ عملية تسجيل الدخول
       const loginPromise = login(loginForm).unwrap();
 
-      notifyPromise(loginPromise, {
-        loading: "auth:loading.logging_in",
-        success: "auth:success.welcome_back",
-      });
-
       // 3. استلام بيانات المستخدم بعد النجاح
       const response = await loginPromise;
+
+      notify("auth:success.welcome_back", "success");
+
       const { user } = response.data; // استخراج اليوزر مباشرة
 
       // 4. استخراج الـ prefix المناسب لدور المستخدم من الـ Config
@@ -380,14 +378,13 @@ const LoginPage = () => {
          active:scale-[0.98] cursor-pointer
            ${
              isLoading || isCsrfLoading
-               ? "bg-slate-400 cursor-not-allowed opacity-70"
+               ? "bg-red-500 cursor-not-allowed opacity-80"
                : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
            }`}
       >
         {isLoading || isCsrfLoading ? (
-          <span className="flex items-center justify-center gap-2">
-            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            {t("loading.preparing...")}
+          <span className="flex items-center justify-center">
+            <span className="w-6 h-6 block border-3 border-white border-t-transparent rounded-full animate-spin"></span>
           </span>
         ) : (
           t("common.login")

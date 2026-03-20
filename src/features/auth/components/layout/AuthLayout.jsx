@@ -30,6 +30,7 @@ const AuthLayout = () => {
 
   const title = t(currentRoute?.handle?.titleKey || "");
   const subtitle = t(currentRoute?.handle?.subtitleKey || "");
+  const description = t(currentRoute?.handle?.descriptionKey || "");
 
   return (
     <div className="min-h-screen flex items-center flex-col gap-4 justify-start mesh-gradient p-4 relative overflow-hidden">
@@ -81,11 +82,12 @@ const AuthLayout = () => {
             {/* ============= Subtitle ============= */}
             <p
               style={{
-                fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic",
+                fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
               }}
-              className="text-slate-600 dark:text-slate-400 mt-3 font-medium"
+              className="text-slate-600 dark:text-slate-400 mt-2 font-semibold"
             >
               {subtitle}
+              <span className="text-slate-600 dark:text-slate-400 mt-1 text-xs font-bold tracking-wide block">{description}</span>
             </p>
           </div>
 

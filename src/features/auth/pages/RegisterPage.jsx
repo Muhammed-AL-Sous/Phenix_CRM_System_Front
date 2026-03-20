@@ -55,6 +55,7 @@ const RegisterPage = () => {
   const [getCsrfToken, { isLoading: isCsrfLoading }] =
     useLazyGetCsrfTokenQuery();
   const [register, { isLoading }] = useRegisterMutation();
+  // let isLoading = true;
 
   // ========= Validate Register Form ========= //
   const validateRegisterForm = () => {
@@ -86,8 +87,7 @@ const RegisterPage = () => {
 
     // Confirm Password validation
     if (!registerForm.password_confirmation) {
-      newErrors.password_confirmation =
-        "error.confirm_password_required";
+      newErrors.password_confirmation = "error.confirm_password_required";
     } else if (registerForm.password !== registerForm.password_confirmation) {
       newErrors.password_confirmation = "error.passwords_dont_match";
     }
@@ -123,13 +123,10 @@ const RegisterPage = () => {
 
       const registrationPromise = register(registerForm).unwrap();
 
-      notifyPromise(registrationPromise, {
-        loading: "auth:loading.registering",
-        success: "auth:success.register_success",
-        error: "auth:error.failed_try_again",
-      });
-
       const response = await registrationPromise;
+
+      notify("auth:success.register_success", "success");
+
       const { user } = response.data; // استخراج اليوزر مباشرة
 
       if (!user.is_active) {
@@ -150,16 +147,13 @@ const RegisterPage = () => {
       console.error("Registration detail error:", err);
       if (err.status === 422) {
         const serverMessage = err.data.message;
-
-        // إذا كان الخطأ أن الإيميل مأخوذ مسبقاً
         if (serverMessage.includes("already been taken")) {
           setErrors({
             ...errors,
             email: "error.The email has already been taken.",
           });
         } else {
-          // أي خطأ Validation آخر
-          notify("auth:error.validation_error", "error");
+          notify("auth:error.failed_try_again", "error");
         }
       }
     }
@@ -464,14 +458,13 @@ const RegisterPage = () => {
               active:scale-[0.98] cursor-pointer 
                ${
                  isLoading || isCsrfLoading
-                   ? "bg-slate-400 cursor-not-allowed opacity-70"
+                   ? "bg-red-500 cursor-not-allowed opacity-80"
                    : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
                }`}
       >
         {isLoading || isCsrfLoading ? (
-          <span className="flex items-center justify-center gap-2">
-            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            {t("loading.preparing...")}
+          <span className="flex items-center justify-center">
+            <span className="w-6 h-6 block border-3 border-white border-t-transparent rounded-full animate-spin"></span>
           </span>
         ) : (
           t("common.register")

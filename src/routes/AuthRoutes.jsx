@@ -11,6 +11,7 @@ export const authRoutes = [
     handle: {
       titleKey: "common.login",
       subtitleKey: "common.welcome",
+      descriptionKey: "",
     },
   },
   {
@@ -19,6 +20,7 @@ export const authRoutes = [
     handle: {
       titleKey: "common.find your account",
       subtitleKey: "password.forgot_password_desc",
+      descriptionKey: "",
     },
   },
 
@@ -27,7 +29,8 @@ export const authRoutes = [
     element: <RegisterPage />,
     handle: {
       titleKey: "common.register",
-      subtitleKey: "common.Join our family today",
+      subtitleKey: "common.Your Journey Starts Here",
+      descriptionKey: "common.Take the first step toward an exceptional experience",
     },
   },
   {
@@ -35,7 +38,9 @@ export const authRoutes = [
     element: <VerifyEmailPage />,
     handle: {
       titleKey: "email.Verify_Your_Email",
-      subtitleKey: "code.We have sent a verification code to this email address",
+      subtitleKey:
+        "code.We have sent a verification code to this email address",
+      descriptionKey: "",
     },
   },
 ];

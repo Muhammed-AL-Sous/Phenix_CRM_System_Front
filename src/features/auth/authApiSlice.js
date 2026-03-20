@@ -22,12 +22,14 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
+
           // 1. إضافة الكوكي المساعد (ليس HttpOnly)
           document.cookie =
             "fast_check=true; path=/; max-age=86400; SameSite=Lax";
 
           // 2. تحديث الـ State في Redux
           dispatch(setCredentials({ user: data.data.user }));
+
           // عمل Invalidate للكاش لضمان تحديث البيانات في أي مكان آخر
           dispatch(apiSlice.util.invalidateTags(["User"]));
         } catch (err) {

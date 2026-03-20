@@ -149,21 +149,18 @@ const VerifyEmailPage = () => {
         code: finalCode,
       }).unwrap();
 
-      notifyPromise(verifyEmailPromise, {
-        loading: "auth:loading.Account_is_being_verified",
-        success: "auth:success.Email_verified_successfully",
-      });
-
       // مسح البيانات المؤقتة لأنها لم تعد مطلوبة
       sessionStorage.removeItem("pending_verify_email");
       sessionStorage.removeItem("pending_verify_role");
 
       const response = await verifyEmailPromise;
 
+      notify("auth:success.Email_verified_successfully", "success");
+
       // 2. تحديد الدور: نأخذه من استجابة السيرفر (أكثر أماناً)
       // أو نستخدم المخزن كاحتياط (fallback)
       const userRole = response.data.user.role || role;
-      
+
       const rolePrefix = ROLES_CONFIG[userRole]?.prefix || "";
 
       navigate(`/${rolePrefix}`, { replace: true });
@@ -267,7 +264,13 @@ const VerifyEmailPage = () => {
            font-semibold hover:bg-red-700 transition active:scale-[0.98]
             disabled:opacity-50 disabled:active:scale-100 cursor-pointer"
         >
-          {isLoading ? t("loading.Verifying") : t("email.Verify Account")}
+          {isLoading ? (
+            <span className="flex items-center justify-center">
+              <span className="w-6 h-6 block border-3 border-white border-t-transparent rounded-full animate-spin"></span>
+            </span>
+          ) : (
+            t("email.Verify Account")
+          )}
         </button>
 
         {/* ========= Resend Code Section ========= */}

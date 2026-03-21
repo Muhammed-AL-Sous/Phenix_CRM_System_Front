@@ -37,6 +37,7 @@ const ForgotPasswordPage = () => {
   // ========= Translation ========= //
   const { t } = useTranslation(["auth"]);
 
+  // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);
 
   // ========= Router ========= //
@@ -44,15 +45,20 @@ const ForgotPasswordPage = () => {
 
   // ========= Validate Forgot Password Form ========= //
   const validateForogtPassForm = () => {
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email.trim()) {
       setErrors("error.email_required");
-    } else if (!emailRegex.test(email)) {
-      setErrors("error.email_invalid");
+      return false; // توقف هنا وأعد "فشل"
     }
-    return email;
+
+    if (!emailRegex.test(email)) {
+      setErrors("error.email_invalid");
+      return false; // توقف هنا وأعد "فشل"
+    }
+
+    setErrors(""); // تنظيف الأخطاء إذا كان الإدخال صحيحاً
+    return true; // نجاح
   };
 
   // ========= Timer Count Down Function ========= //
@@ -111,7 +117,7 @@ const ForgotPasswordPage = () => {
       } else if (err.status === 404) {
         notify(t("auth:error.email_not_found"), "error");
       } else if (err.status === 422) {
-        notify(t("auth:error.validation_error"), "error");
+        notify(t("auth:error.email_not_valid"), "error");
       } else {
         notify(t("auth:error.server_error"), "error");
       }
@@ -151,7 +157,7 @@ const ForgotPasswordPage = () => {
         <div className="relative">
           {/* ======= Input Email ======= */}
           <input
-            type="email"
+            type="text"
             name="email"
             disabled={isLoading || timer > 0} // تعطيل الإدخال أثناء الإرسال أو الانتظار
             value={email}
@@ -160,8 +166,14 @@ const ForgotPasswordPage = () => {
               setEmail(e.target.value);
             }}
             autoComplete="email"
-            className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border outline-none transition-all dark:text-white focus:ring-2
-    ${errors ? "border-red-500 ring-red-500/20" : "border-slate-200 dark:border-zinc-700 focus:ring-red-500/20"}`}
+            className={`w-full px-4 py-3 rounded-xl border outline-none transition-all focus:ring-2
+    /* الألوان في الوضع العادي */
+    text-slate-700 bg-slate-50 border-slate-200 
+    /* الألوان في الوضع الليلي */
+    dark:bg-zinc-800 dark:text-white dark:border-zinc-700 
+    ${isLoading || timer > 0 ? "opacity-70 cursor-not-allowed" : ""}
+    /* حالة الخطأ */
+    ${errors ? "border-red-500 ring-red-500/20" : "focus:ring-red-500/20"}`}
             placeholder="name@company.com"
             style={{
               fontFamily: "Livvic",
@@ -199,7 +211,7 @@ const ForgotPasswordPage = () => {
      active:scale-[0.98] cursor-pointer
        ${
          isLoading || isCsrfLoading || timer > 0
-           ? "bg-red-500 cursor-not-allowed opacity-80"
+           ? "bg-red-500 cursor-not-allowed opacity-70"
            : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
        }`}
       >
@@ -227,7 +239,7 @@ const ForgotPasswordPage = () => {
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="text-blue-600 text-sm hover:underline"
+            className="text-blue-600 text-sm hover:underline cursor-pointer"
           >
             {t("auth:common.back_to_login")}
           </button>

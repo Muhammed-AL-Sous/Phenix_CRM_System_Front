@@ -29,7 +29,7 @@ const ForgotPasswordPage = () => {
   const [isSent, setIsSent] = useState(false);
   const [timer, setTimer] = useState(0);
 
-  // ========= API Mutation ========= //
+ // ========= RTK Query Hooks ========= //
   const [getCsrfToken, { isLoading: isCsrfLoading }] =
     useLazyGetCsrfTokenQuery();
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
@@ -220,10 +220,15 @@ const ForgotPasswordPage = () => {
             <span className="w-6 h-6 block border-3 border-white border-t-transparent rounded-full animate-spin"></span>
           </span>
         ) : timer > 0 ? (
-          <span className="flex items-center justify-center gap-2">
+          <span
+            className="flex items-center justify-center gap-2"
+            style={{
+              fontFamily: direction === "rtl" ? "Almarai" : "Inter",
+            }}
+          >
             {/* عرض الوقت بتنسيق 01:30 مثلاً */}
             <span>{t("auth:email.resend_in")}</span>
-            <span className="font-mono font-bold tracking-wider">
+            <span className="font-mono font-bold text-lg">
               {formatTime(timer)}
             </span>
           </span>
@@ -239,7 +244,10 @@ const ForgotPasswordPage = () => {
           <button
             type="button"
             onClick={() => navigate("/login")}
-            className="text-blue-600 text-sm hover:underline cursor-pointer"
+            className="text-blue-600 text-sm font-semibold hover:underline cursor-pointer"
+            style={{
+              fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic",
+            }}
           >
             {t("auth:common.back_to_login")}
           </button>

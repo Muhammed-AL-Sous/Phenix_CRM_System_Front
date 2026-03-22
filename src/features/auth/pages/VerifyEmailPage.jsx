@@ -1,5 +1,5 @@
 // ========= React Hooks ========= //
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // ========= React Router ========= //
 import { useNavigate, useLocation } from "react-router";
@@ -26,14 +26,30 @@ import { useTranslation } from "react-i18next";
 import { ROLES_CONFIG } from "../../../routes/roles.config";
 
 const VerifyEmailPage = () => {
-  // ========= States ========= //
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(60);
-
   const inputsRef = useRef([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { direction } = useSelector((state) => state.ui);
+  const user = useSelector(selectCurrentUser);
+
+  // ========= States ========= //
+  const [code, setCode] = useState(["", "", "", "", "", ""]);
+  const [timer, setTimer] = useState(() => {
+    // 1. الأولوية للـ SessionStorage (في حال الـ Refresh)
+    const expiry = sessionStorage.getItem("otp_expiry");
+    if (expiry) {
+      const remaining = Math.floor((parseInt(expiry) - Date.now()) / 1000);
+      if (remaining > 0) return remaining;
+    }
+
+    // 2. الأولوية الثانية للبيانات القادمة من السيرفر (Redux أو Location State)
+    const serverRetryAfter =
+      user?.retry_after || location.state?.user?.retry_after;
+    if (serverRetryAfter > 0) return serverRetryAfter;
+
+    // 3. القيمة الافتراضية
+    return 60;
+  });
 
   // ========= RTK Query Hooks ========= //
   const [verifyEmail, { isLoading }] = useVerifyEmailMutation();
@@ -43,8 +59,18 @@ const VerifyEmailPage = () => {
   // ========= Translation ========= //
   const { t } = useTranslation(["auth"]);
 
+  // ========= Update Timer Function ========= //
+  // دالة موحدة لتحديث التايمر في الـ State والـ Storage
+  // داخل المكون:
+  const updateTimerValue = useCallback((seconds) => {
+    const expiryTime = Date.now() + seconds * 1000;
+    sessionStorage.setItem("otp_expiry", expiryTime.toString());
+    setTimer(seconds);
+  }, []); // مصفوفة فارغة لأنها لا تعتمد على متغيرات خارجية متغيرة
+
   // حساب حالة الإرسال برمجياً (Derived State) - حل مشكلة Cascading Renders
-  const canResend = timer <= 0;
+  // مشتقة من التايمر مباشرة (تغني عن useEffects إضافية للتحقق)
+  const canResend = useMemo(() => timer <= 0, [timer]);
 
   // محاولة جلب البيانات من 3 مصادر بالترتيب:
   // 1. الـ state (القادم من التنقل المباشر)
@@ -63,17 +89,25 @@ const VerifyEmailPage = () => {
       sessionStorage.getItem("pending_verify_role") ||
       "",
   );
-  const user = useSelector(selectCurrentUser);
-  // console.log(user)
-  // إذا دخل المستخدم الصفحة مباشرة بدون إيميل
-  // (مثلاً عمل Refresh وهو مش مخزن الإيميل)
-  // يفضل توجيهه لصفحة Login
+
+  // ========== Effects ========== //
+
   useEffect(() => {
     // إذا لم نجد الإيميل في أي مكان، فهذا يعني أن الدخول غير شرعي للصفحة
     if (!email && !user) {
       navigate("/login", { replace: true });
     }
   }, [email, user, navigate]);
+
+  // تحديث الـ SessionStorage مرة واحدة فقط عند "ولادة" المكون إذا كان هناك وقت قادم من السيرفر
+  useEffect(() => {
+    const serverRetryAfter =
+      user?.retry_after || location.state?.user?.retry_after;
+    if (serverRetryAfter > 0) {
+      const expiryTime = Date.now() + serverRetryAfter * 1000;
+      sessionStorage.setItem("otp_expiry", expiryTime.toString());
+    }
+  }, []); // تشغيل مرة واحدة فقط عند الـ Mount
 
   // ===================== Input Logic =====================
   // ========= Handle Change Function ========= //
@@ -138,6 +172,19 @@ const VerifyEmailPage = () => {
     }, 10);
   };
 
+  // ========= Format Time Function ========= //
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+
+    // إضافة صفر على اليسار إذا كان الرقم أقل من 10 (مثلاً 09 بدلاً من 9)
+    const paddedSeconds =
+      remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
+    const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+    return `${paddedMinutes}:${paddedSeconds}`;
+  };
+
   // ===================== VERIFY LOGIC =====================
   // ========= Submit Code Function ========= //
   const submitCode = async (finalCode) => {
@@ -152,6 +199,7 @@ const VerifyEmailPage = () => {
       // مسح البيانات المؤقتة لأنها لم تعد مطلوبة
       sessionStorage.removeItem("pending_verify_email");
       sessionStorage.removeItem("pending_verify_role");
+      sessionStorage.removeItem("otp_expiry");
 
       const response = await verifyEmailPromise;
 
@@ -165,21 +213,18 @@ const VerifyEmailPage = () => {
 
       navigate(`/${rolePrefix}`, { replace: true });
     } catch (err) {
-      // التعامل مع الأخطاء الأمنية والـ Rate Limit
-      const errorMessage = err?.data?.message || "Verification failed";
-      if (err.status !== 429) {
-        notify("auth:error." + errorMessage, "error");
-        // تصفير الحقول عند الخطأ (ماعدا حالات تجاوز الحد) لإعادة المحاولة
-        setCode(["", "", "", "", "", ""]);
-        inputsRef.current[0]?.focus();
+      if (err.status === 429) {
+        const retryAfter = err?.data?.retry_after || 60;
+        updateTimerValue(retryAfter);
+        notify(t("auth:error.too_many_requests"), "error");
       } else {
-        // إذا كان الخطأ Rate Limit (429)
-        const retryAfter = err?.data?.retry_after;
-        if (retryAfter) setTimer(retryAfter);
+        const errorMessage = err?.data?.message || "Verification failed";
+        notify("auth:error." + errorMessage, "error");
+        setCode(["", "", "", "", "", ""]);
+        inputsRef.current?.focus();
       }
     }
   };
-
   // ===================== Resend Logic =====================
   // ========= Handle Resend Function ========= //
   const handleResend = async () => {
@@ -195,21 +240,34 @@ const VerifyEmailPage = () => {
 
       await resendVerifyPromise;
 
-      setTimer(60); // إعادة المؤقت تلقائياً سيجعل canResend = false
+      updateTimerValue(60); // إعادة التايمر للقيمة الافتراضية بعد النجاح
     } catch (err) {
-      const retryAfter = err?.data?.retry_after;
-      if (retryAfter) setTimer(retryAfter);
-      const msgError = err?.data?.message || "Resend failed";
-      notify(msgError, "error");
+      if (err.status === 429) {
+        const serverRetryAfter =
+          err?.data?.retry_after || err?.data?.errors?.user?.retry_after;
+        if (serverRetryAfter) {
+          updateTimerValue(serverRetryAfter);
+        }
+        notify(t("auth:error.too_many_requests"), "error");
+      } else {
+        const msgError = err?.data?.message || "Resend failed";
+        notify(msgError, "error");
+      }
     }
   };
 
   // ===================== Timer Effect =====================
   useEffect(() => {
-    if (timer <= 0) return;
+    if (timer <= 0) {
+      sessionStorage.removeItem("otp_expiry"); // تنظيف التخزين عند انتهاء الوقت
+      return;
+    }
 
     const interval = setInterval(() => {
-      setTimer((prev) => prev - 1);
+      setTimer((prev) => {
+        const nextValue = prev - 1;
+        return nextValue <= 0 ? 0 : nextValue;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
@@ -287,12 +345,11 @@ const VerifyEmailPage = () => {
                 : t("code.Resend Verification Code")}
             </button>
           ) : (
-            <p className="text-gray-500 font-bold">
+            <p className="text-gray-500 font-bold flex items-center justify-center gap-1">
               {t("code.Resend available after")}
-              <span className={`text-gray-600 font-mono inline-block mx-1`}>
-                {timer}
+              <span className="text-red-500 font-mono w-8 text-center text-lg">
+                {formatTime(timer)}
               </span>
-              <span>{direction === "rtl" ? "ثانية" : "s"}</span>
             </p>
           )}
         </div>

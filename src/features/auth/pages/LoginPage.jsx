@@ -393,7 +393,7 @@ const LoginPage = () => {
 
       {/* ============= Forgot PassWord ============= */}
 
-      <Link to="/forgot_password">
+      <Link to="/forgot-password">
         <p
           className="text-center text-sm text-slate-500 dark:text-slate-400
         transition-all duration-200 font-bold hover:underline"

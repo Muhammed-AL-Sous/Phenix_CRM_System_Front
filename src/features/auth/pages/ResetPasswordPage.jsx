@@ -1,42 +1,45 @@
 // ========= React Hooks ========= //
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 
 // ========= React Router ========= //
-import { Link, useNavigate } from "react-router";
+import { useSearchParams, useNavigate } from "react-router";
+
+// ========= Role Config ========= //
+import { ROLES_CONFIG } from "../../../routes/roles.config";
 
 // ========= React Redux ========= //
 import { useSelector } from "react-redux";
 
-// ========= Register Slice ========= //
-import { useRegisterMutation, useLazyGetCsrfTokenQuery } from "../authApiSlice";
-
-// ========= Notification Toast ========= //
-import { notify } from "../../../lib/notify";
+// ========= Reset Password Slice ========= //
+import {
+  useResetPasswordMutation,
+  useLazyGetCsrfTokenQuery,
+} from "../authApiSlice";
 
 // ========= Translation Hook ========= //
 import { useTranslation } from "react-i18next";
 
-// ========= Icons ========= //
-import {
-  Eye,
-  EyeOff,
-  UserRoundPlus,
-  Mail,
-  Lock,
-  LockKeyhole,
-} from "lucide-react";
+// ========= Notification Toast ========= //
+import { notify } from "../../../lib/notify";
 
-const RegisterPage = () => {
-  // ========= React State ========= //
+// ========= Icons ========= //
+import { Eye, EyeOff, Mail, Lock, LockKeyhole } from "lucide-react";
+
+const ResetPasswordPage = () => {
+  // ========= Router ========= //
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // ========= States ========= //
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [registerForm, setRegisterForm] = useState({
-    name: "",
-    email: "",
+  const [errors, setErrors] = useState({});
+  const [resetPasswordForm, setResetPasswordForm] = useState({
+    email: searchParams.get("email") || "",
+    token: searchParams.get("token") || "",
     password: "",
     password_confirmation: "",
   });
-  const [errors, setErrors] = useState({});
 
   // ========= Refs ========= //
   const passwordRef = useRef(null);
@@ -45,49 +48,35 @@ const RegisterPage = () => {
   // ========= Translation ========= //
   const { t } = useTranslation(["auth"]);
 
-  // ========= Router ========= //
-  const navigate = useNavigate();
-
   // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);
 
-  // ========= API Mutation ========= //
+  // ========= RTK Query Hooks ========= //
   const [getCsrfToken, { isLoading: isCsrfLoading }] =
     useLazyGetCsrfTokenQuery();
-  const [register, { isLoading }] = useRegisterMutation();
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
-  // ========= Validate Register Form ========= //
-  const validateRegisterForm = () => {
+  // ========= Validate Reset Password Form ========= //
+  const validateResetPassForm = () => {
     let newErrors = {};
 
-    // Name validation
-    if (!registerForm.name.trim()) {
-      newErrors.name = "error.name_required";
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!registerForm.email.trim()) {
-      newErrors.email = "error.email_required";
-    } else if (!emailRegex.test(registerForm.email)) {
-      newErrors.email = "error.email_invalid";
-    }
-
     // Password validation
-    if (!registerForm.password) {
+    if (!resetPasswordForm.password) {
       newErrors.password = "error.password_required";
     } else if (
-      registerForm.password.length < 8 ||
-      !/[a-zA-Z]/.test(registerForm.password) || // يجب أن تحتوي على حرف
-      !/[0-9]/.test(registerForm.password) // يجب أن تحتوي على رقم
+      resetPasswordForm.password.length < 8 ||
+      !/[a-zA-Z]/.test(resetPasswordForm.password) || // يجب أن تحتوي على حرف
+      !/[0-9]/.test(resetPasswordForm.password) // يجب أن تحتوي على رقم
     ) {
       newErrors.password = "error.password_length_letter_error";
     }
 
     // Confirm Password validation
-    if (!registerForm.password_confirmation) {
+    if (!resetPasswordForm.password_confirmation) {
       newErrors.password_confirmation = "error.confirm_password_required";
-    } else if (registerForm.password !== registerForm.password_confirmation) {
+    } else if (
+      resetPasswordForm.password !== resetPasswordForm.password_confirmation
+    ) {
       newErrors.password_confirmation = "error.passwords_dont_match";
     }
 
@@ -99,7 +88,7 @@ const RegisterPage = () => {
   // ========= Handle Change Function ========= //
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRegisterForm((prev) => ({ ...prev, [name]: value }));
+    setResetPasswordForm((prev) => ({ ...prev, [name]: value }));
 
     // مسح الخطأ الخاص بهذا الحقل فقط عند الكتابة
     if (errors[name]) {
@@ -112,41 +101,30 @@ const RegisterPage = () => {
     e.preventDefault();
 
     // التحقق المحلي أولاً
-    const isValid = validateRegisterForm();
+    const isValid = validateResetPassForm();
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
       await getCsrfToken().unwrap();
 
-      const registrationPromise = register(registerForm).unwrap();
+      const resetPassPromise = resetPassword(resetPasswordForm).unwrap();
 
-      const response = await registrationPromise;
+      const response = await resetPassPromise;
 
-      notify("auth:success.register_success", "success");
+      notify(
+        "auth:success.The password has been successfully changed",
+        "success",
+      );
 
       const { user } = response.data; // استخراج اليوزر مباشرة
 
-      if (!user.is_active) {
-        navigate("/verify-email", {
-          state: {
-            email: user.email,
-            role: user.role,
-          },
-        });
-      }
+      const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
+
+      const origin = location.state?.from?.pathname || `/${rolePrefix}`;
+
+      setTimeout(() => navigate(origin, { replace: true }), 2000);
     } catch (err) {
-      console.error("Registration detail error:", err);
-      if (err.status === 422) {
-        const serverMessage = err.data.message;
-        if (serverMessage.includes("already been taken")) {
-          setErrors({
-            ...errors,
-            email: "error.The email has already been taken.",
-          });
-        } else {
-          notify("auth:error.failed_try_again", "error");
-        }
-      }
+      notify(err.data.message, "error");
     }
   };
 
@@ -175,55 +153,6 @@ const RegisterPage = () => {
 
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>
-      {/* ============= Full Name ============= */}
-      <div className="relative mb-7">
-        {/* ======= Label Name ======= */}
-        <label
-          style={{
-            fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
-          }}
-          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
-        >
-          <span>
-            <UserRoundPlus
-              style={{
-                top: direction === "rtl" ? "-2px" : "",
-              }}
-              className="w-4 h-4 relative"
-            />
-          </span>
-          {t("common.name")}
-        </label>
-
-        {/* ======= Input Name ======= */}
-        <input
-          type="text"
-          name="name"
-          value={registerForm.name}
-          onChange={handleChange}
-          className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border outline-none transition-all dark:text-white focus:ring-2
-        ${errors.name ? "border-red-500 ring-red-500/20" : "border-slate-200 dark:border-zinc-700 focus:ring-red-500/20"}`}
-          placeholder="John Doe"
-          style={{
-            fontFamily: "Livvic",
-            fontWeight: "500",
-          }}
-        />
-        {/* ======= Errors Name ======= */}
-        {errors.name && (
-          <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
-            <p
-              className="text-red-500 text-xs font-semibold px-1"
-              style={{
-                fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
-              }}
-            >
-              {t(errors.name)}
-            </p>
-          </div>
-        )}
-      </div>
-
       {/* ============= Email ============= */}
       <div className="relative mb-7">
         {/* ======= Label Email ======= */}
@@ -252,26 +181,11 @@ const RegisterPage = () => {
             fontFamily: "Livvic",
             fontWeight: "500",
           }}
-          value={registerForm.email}
-          onChange={handleChange}
-          className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border outline-none transition-all dark:text-white focus:ring-2 
-        ${errors.email ? "border-red-500 ring-red-500/20" : "border-slate-200 dark:border-zinc-700 focus:ring-red-500/20"}`}
-          placeholder="name@company.com"
+          value={resetPasswordForm.email}
+          readOnly
+           disabled
+          className={`w-full px-4 py-3 rounded-xl text-slate-700 bg-gray-300 dark:bg-zinc-900 border border-gray-300 dark:border-transparent outline-none transition-all dark:text-white focus:ring-2`}
         />
-
-        {/* ======= Errors Email ======= */}
-        {errors.email && (
-          <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
-            <p
-              className="text-red-500 text-xs font-semibold px-1"
-              style={{
-                fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
-              }}
-            >
-              {t(errors.email)}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* ============= PassWord ============= */}
@@ -304,14 +218,13 @@ const RegisterPage = () => {
               fontFamily: "Livvic",
               fontWeight: "500",
               letterSpacing:
-                !showPassword && registerForm.password.length > 0
+                !showPassword && resetPasswordForm.password.length > 0
                   ? "0.2em"
                   : "normal",
             }}
-            value={registerForm.password}
+            value={resetPasswordForm.password}
             onChange={handleChange}
-            // ذكاء الاتجاه: LTR فقط عند وجود نص ليبقى الـ placeholder في مكانه
-            dir={registerForm.password.length > 0 ? "ltr" : "inherit"}
+            dir={resetPasswordForm.password.length > 0 ? "ltr" : "inherit"}
             className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border outline-none transition-all dark:text-white focus:ring-2 
         ${
           errors.password
@@ -385,14 +298,16 @@ const RegisterPage = () => {
               fontWeight: "500",
               letterSpacing:
                 !showConfirmPassword &&
-                registerForm.password_confirmation.length > 0
+                resetPasswordForm.password_confirmation.length > 0
                   ? "0.2em"
                   : "normal",
             }}
-            value={registerForm.password_confirmation}
+            value={resetPasswordForm.password_confirmation}
             onChange={handleChange}
             dir={
-              registerForm.password_confirmation.length > 0 ? "ltr" : "inherit"
+              resetPasswordForm.password_confirmation.length > 0
+                ? "ltr"
+                : "inherit"
             }
             className={`w-full px-4 py-3 rounded-xl text-slate-800 bg-slate-50 dark:bg-zinc-800 border outline-none transition-all dark:text-white focus:ring-2 
         ${
@@ -436,7 +351,7 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      {/* ======= Register Button ======= */}
+      {/* ======= Reset Password Button ======= */}
       <button
         type="submit"
         disabled={isLoading || isCsrfLoading}
@@ -458,22 +373,11 @@ const RegisterPage = () => {
             <span className="w-6 h-6 block border-3 border-white border-t-transparent rounded-full animate-spin"></span>
           </span>
         ) : (
-          t("common.register")
+          t("common.Confirm")
         )}
       </button>
-
-      {/* ======= Login Link ======= */}
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-        {t("common.already_have_account")}
-        <Link
-          to="/login"
-          className="text-red-500 transition-all duration-200 hover:text-red-600 font-bold hover:underline ms-1.5"
-        >
-          {t("common.login")}
-        </Link>
-      </p>
     </form>
   );
 };
 
-export default RegisterPage;
+export default ResetPasswordPage;

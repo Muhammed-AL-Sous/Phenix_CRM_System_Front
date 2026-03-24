@@ -71,8 +71,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
           const user = response.data?.user;
 
-          console.log("User received:", user);
-
           if (user) {
             dispatch(setCredentials({ user: user }));
 
@@ -115,6 +113,19 @@ export const authApiSlice = apiSlice.injectEndpoints({
           password_confirmation: data.password_confirmation,
         },
       }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+
+          document.cookie = "fast_check=true; path=/; SameSite=Lax";
+
+          dispatch(setCredentials({ user: data.data.user }));
+
+          dispatch(apiSlice.util.invalidateTags(["User"]));
+        } catch (err) {
+          // في حال فشل الطلب لا نفعل شيئاً
+        }
+      },
     }),
 
     // ============ Get User Data Api Query ============ //

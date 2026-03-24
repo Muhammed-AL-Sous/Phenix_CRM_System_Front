@@ -1,8 +1,9 @@
 // Auth Pages
-import LoginPage from "../features/auth/pages/LoginPage";
-import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
+import LoginPage from "../features/auth/pages/LoginPage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 
 export const authRoutes = [
   {
@@ -14,13 +15,24 @@ export const authRoutes = [
       descriptionKey: "",
     },
   },
+
   {
-    path: "forgot_password",
+    path: "forgot-password",
     element: <ForgotPasswordPage />,
     handle: {
       titleKey: "common.find your account",
       subtitleKey: "password.forgot_password_desc",
       descriptionKey: "",
+    },
+  },
+
+  {
+    path: "reset-password",
+    element: <ResetPasswordPage />,
+    handle: {
+      titleKey: "password.Set a New Password",
+      subtitleKey: "password.Create a new password to secure your account.",
+      descriptionKey: "password.Make sure it’s strong and unique.",
     },
   },
 

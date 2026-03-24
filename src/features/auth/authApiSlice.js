@@ -133,16 +133,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
       query: () => "/user-data",
       transformResponse: (response) => response?.data?.user,
       providesTags: ["User"],
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          document.cookie =
-            "fast_check=true; path=/; max-age=86400; SameSite=Lax";
-          dispatch(setCredentials(data));
-        } catch (err) {
-          dispatch(logOut());
-        }
-      },
     }),
 
     // ============ Logout Api Mutation ============ //
@@ -154,14 +144,17 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
+        } catch (err) {
+          console.error("Logout failed on server, cleaning up locally...", err);
+        } finally {
+          // هذه العمليات ستنفذ سواء نجح الطلب أو فشل (الحالة المثالية)
 
-          document.cookie =
-            "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-
+          // مسح بيانات المستخدم من الـ State (authSlice)
           dispatch(logOut());
 
+          // مسح كل الكاش المخزن في الـ API Slice (مهم جداً للخصوصية)
           dispatch(apiSlice.util.resetApiState());
-        } catch (err) {}
+        }
       },
     }),
   }),

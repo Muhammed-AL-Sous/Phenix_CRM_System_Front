@@ -88,7 +88,16 @@ const VerifyEmailPage = () => {
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
-    if (value && index < 5) inputsRef.current[index + 1]?.focus();
+    // إذا تم إدخال رقم وكان هناك حقل تالي
+    if (value !== "" && index < 5) {
+      // نستخدم setTimeout لضمان أن الـ React State تحديث
+      // وأصبح الحقل التالي غير مقفل (Not Disabled)
+      setTimeout(() => {
+        if (inputsRef.current[index + 1]) {
+          inputsRef.current[index + 1].focus();
+        }
+      }, 10);
+    }
   };
 
   const handleKeyDown = (e, index) => {
@@ -185,7 +194,7 @@ const VerifyEmailPage = () => {
               onChange={(e) => handleChange(e.target.value, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className="w-12 h-14 text-center text-2xl dark:text-white text-gray-700 font-bold border-2 rounded-xl border-gray-400 focus:border-red-600 focus:ring-red-500 outline-none transition-all disabled:bg-gray-300 dark:disabled:bg-zinc-900"
+              className="w-12 h-14 text-center text-2xl dark:text-white text-gray-700 font-bold border-2 rounded-xl border-gray-400 focus:border-red-600 focus:ring-2 focus:ring-red-600 outline-none transition-all disabled:bg-gray-300 dark:disabled:bg-zinc-900"
             />
           ))}
         </div>
@@ -193,10 +202,10 @@ const VerifyEmailPage = () => {
         <button
           onClick={() => submitCode(code)}
           disabled={code.includes("") || isLoading}
-          className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 disabled:opacity-50 transition-all"
+          className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 disabled:opacity-50 transition-all disabled:cursor-not-allowed cursor-pointer"
         >
           {isLoading ? (
-            <span className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin inline-block"></span>
+            <span className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin inline-block cursor-not-allowed"></span>
           ) : (
             t("email.Verify Account")
           )}
@@ -207,16 +216,22 @@ const VerifyEmailPage = () => {
             <button
               onClick={handleResend}
               disabled={resendLoading}
-              className="text-red-600 font-bold hover:underline"
+              className="text-red-600 font-bold"
             >
-              {resendLoading
-                ? t("loading.Sending code")
-                : t("code.Resend Verification Code")}
+              {resendLoading ? (
+                <span className="cursor-not-allowed">
+                  {t("loading.Sending code")}
+                </span>
+              ) : (
+                <span className="cursor-pointer hover:underline">
+                  {t("code.Resend Verification Code")}
+                </span>
+              )}
             </button>
           ) : (
             <p className="text-gray-500 font-bold">
               {t("code.Resend available after")}{" "}
-              <span className="text-red-500 font-mono text-lg">
+              <span className="text-red-500 font-mono text-lg ps-1">
                 {formatTime(timer)}
               </span>
             </p>

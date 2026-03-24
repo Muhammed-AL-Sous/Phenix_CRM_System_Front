@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 // Phenix CRM Logo
 import phenixCRMLogo from "../../../../assets/images/dashboard/phenix_logo_dashboard.png";
+import { useLogoutMutation } from "../../../auth/authApiSlice";
 
 const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
   const { t } = useTranslation(["dashboard"]);
@@ -63,6 +64,10 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
         setIsOpen(false);
       }, 1000);
     }
+  };
+  const [logout] = useLogoutMutation();
+  const handleLogout = async () => {
+    logout();
   };
 
   return (
@@ -131,13 +136,13 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
         {/* ============ Logout Button ============ */}
         <div className=" pt-4 mt-4 border-t border-gray-400 dark:border-zinc-900">
           <button
+            onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-2xl
          w-full text-slate-500 dark:text-slate-400 hover:text-red-500
           transition-all font-bold text-sm group
            hover:bg-slate-100 dark:hover:bg-white/5 hover:ps-5 cursor-pointer"
           >
             <LogOut
-              onClick={() => dispatch(logOut())}
               size={20}
               className="group-hover:scale-110 group-hover:text-red-500 transition-transform duration-300"
             />

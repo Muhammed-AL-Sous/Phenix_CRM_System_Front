@@ -45,15 +45,24 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error?.status === 401) {
-    // استخراج الرابط سواء كان string أو object
+    // 1. تحديد الـ URL بدقة
     const url = typeof args === "string" ? args : args.url;
 
-    // استثناء رابط التحقق من البيانات لمنع تسجيل الخروج اللانهائي
-    if (!url.includes("/user-data")) {
+    // 2. تجنب الروابط التي قد تسبب حلقة مفرغة (مثل جلب بيانات المستخدم)
+    const isAuthPath = url.includes("/user-data") || url.includes("/login");
+
+    if (!isAuthPath) {
+      // 3. تنظيف الحالة محلياً فوراً
       api.dispatch(logOut());
-      // مسح الكوكي المساعد عند تسجيل الخروج التلقائي بسبب انتهاء الجلسة
-      document.cookie =
-        "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      
+      // 4. مسح الكاش بالكامل لمنع ظهور بيانات قديمة لمستخدم آخر
+      api.dispatch(apiSlice.util.resetApiState());
+
+      // 5. مسح الكوكي اليدوي
+      document.cookie = "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+      // 6. توجيه المستخدم لصفحة اللوجن (اختياري لكنه يضمن استقرار الواجهة)
+      window.location.href = "/login";
     }
   }
 

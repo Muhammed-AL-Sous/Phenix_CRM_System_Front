@@ -1,70 +1,96 @@
-import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetUserDataQuery } from "../../../auth/authApiSlice";
+import { useEffect, useMemo } from "react";
+import {
+  useGetUserDataQuery,
+  useLazyGetCsrfTokenQuery,
+} from "../../../auth/authApiSlice";
 import { selectCurrentUser, setCredentials, logOut } from "../../authSlice";
 
 export default function AuthInitializer({ children }) {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
 
-  // 1. فحص وجود الكوكي المساعد (Flag) لمعرفة ما إذا كان هناك جلسة سابقة
-  // نستخدم useMemo لضمان عدم إعادة الحساب إلا عند الضرورة
   const hasFastCheck = useMemo(() => {
     return document.cookie
       .split(";")
       .some((item) => item.trim().startsWith("fast_check="));
   }, []);
 
-  // 2. تنفيذ الطلب بذكاء
-  const { data, error, isLoading } = useGetUserDataQuery(undefined, {
-    // الشرط الجوهري:
-    // "تخطى الطلب" إذا كان المستخدم موجوداً بالفعل في Redux
-    // أَوْ إذا لم يكن هناك كوكي fast_check (يعني لا توجد جلسة أصلاً)
-    skip: !!user || !hasFastCheck,
+  const hasXSRFToken = useMemo(() => {
+    return document.cookie
+      .split(";")
+      .some((item) => item.trim().startsWith("XSRF-TOKEN="));
+  }, []);
 
+  const [
+    getCsrfToken,
+    {
+      isFetching: isCsrfFetching,
+      isSuccess: isCsrfSuccess,
+      isError: isCsrfError,
+    },
+  ] = useLazyGetCsrfTokenQuery();
+
+  const csrfReady = useMemo(() => {
+    if (user) return true;
+    if (!hasFastCheck) return true;
+    if (hasXSRFToken) return true;
+    if (isCsrfSuccess || isCsrfError) return true;
+    return false;
+  }, [user, hasFastCheck, hasXSRFToken, isCsrfSuccess, isCsrfError]);
+
+  useEffect(() => {
+    if (user) return;
+    if (!hasFastCheck) return;
+    if (hasXSRFToken) return;
+    if (isCsrfSuccess || isCsrfError) return;
+
+    getCsrfToken()
+      .unwrap()
+      .then(() => {})
+      .catch(() => {});
+  }, [
+    user,
+    hasFastCheck,
+    hasXSRFToken,
+    isCsrfSuccess,
+    isCsrfError,
+    getCsrfToken,
+  ]);
+
+  const skipUserData = !!user || !csrfReady;
+  const { data, error, isLoading } = useGetUserDataQuery(undefined, {
+    skip: skipUserData,
     retryOnMountWithNoData: false,
     refetchOnFocus: false,
   });
 
   useEffect(() => {
-    // إذا نجح الطلب وجاءت بيانات المستخدم
-    if (data?.data?.user) {
-      dispatch(setCredentials({ user: data.data.user }));
+    if (data) {
+      dispatch(setCredentials(data));
     }
 
-    // إذا حدث خطأ 401 (انتهت الجلسة فعلياً رغم وجود الكوكي المساعد)
-    if (error?.status === 401) {
-      // نمسح الكوكي المساعد لأنه أصبح غير صالح
+    if (error?.status === 401 || error?.status === 419) {
       document.cookie =
         "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
       dispatch(logOut());
-    }
-    // أي خطأ آخر غير الـ 401
-    else if (error) {
-      dispatch(logOut());
+    } else if (error) {
+      console.warn("[AuthInitializer] getUserData failed", error);
     }
   }, [data, error, dispatch]);
 
-  // التحميل يظهر فقط في المرة الأولى عند فحص الهوية
-  // عند عمل "تحديث للصفحة" (Refresh)،
-  //  قد يأخذ Redux
-  //  جزءاً من الثانية لجلب بيانات المستخدم من الكوكيز أو السيرفر.
-  //  في هذه اللحظة يكون user هو null
-  // فيقوم النظام بتحويل المستخدم للوجن فجأة
-  // لذلك نستخدم
-  if (isLoading) {
+  const isAuthLoading =
+    (hasFastCheck && !csrfReady) || isLoading || isCsrfFetching;
+
+  if (isAuthLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-zinc-900">
         <div className="text-center">
-          {/* Spinner متناسق مع تصميمك */}
-          <div className="w-12 h-12 border-4
-           border-red-500 border-t-transparent
-            rounded-full animate-spin mx-auto"></div>
+          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
         </div>
       </div>
     );
   }
 
-  // بمجرد انتهاء isLoading (سواء نجح الطلب أو فشل)، يتم عرض محتوى التطبيق (children)
   return children;
 }

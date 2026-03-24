@@ -1,26 +1,49 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useLazyGetClientCreationDataQuery } from "../clientsApiSlice"; // Use RTK Query
 
 const ClientCountrySelector = () => {
   const [countries, setCountries] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { lang } = useSelector((state) => state.ui);
 
+  // Use RTK Query instead of direct axios
+  const [getClientData] = useLazyGetClientCreationDataQuery();
+
   useEffect(() => {
-    // جلب الدول بناءً على اللغة الحالية في i18next
-    axios
-      .get(`/api/countries?lang=${lang}`)
-      .then((res) => setCountries(res.data));
-  }, [lang]); // سيعاد التنفيذ تلقائياً عند تغيير اللغة
+    const fetchCountries = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const result = await getClientData({ lang }).unwrap();
+        setCountries(result.countries || []);
+      } catch (err) {
+        console.error("Failed to fetch countries:", err);
+        setError(err.data?.message || "Failed to load countries");
+        setCountries([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCountries();
+  }, [lang, getClientData]);
 
   return (
-    <select>
-      {countries.map((country) => (
-        <option key={country.id} value={country.alpha2}>
-          {country.name}
-        </option>
-      ))}
-    </select>
+    <>
+      {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+      <select disabled={isLoading}>
+        <option value="">{isLoading ? "Loading..." : "Select Country"}</option>
+        {countries.map((country) => (
+          <option key={country.id} value={country.alpha2}>
+            {country.name}
+          </option>
+        ))}
+      </select>
+    </>
   );
 };
 

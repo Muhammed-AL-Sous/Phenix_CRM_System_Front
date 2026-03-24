@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { useRegisterMutation, useLazyGetCsrfTokenQuery } from "../authApiSlice";
 
 // ========= Notification Toast ========= //
-import { notify, notifyPromise } from "../../../lib/notify";
+import { notify } from "../../../lib/notify";
 
 // ========= Translation Hook ========= //
 import { useTranslation } from "react-i18next";
@@ -55,7 +55,6 @@ const RegisterPage = () => {
   const [getCsrfToken, { isLoading: isCsrfLoading }] =
     useLazyGetCsrfTokenQuery();
   const [register, { isLoading }] = useRegisterMutation();
-  // let isLoading = true;
 
   // ========= Validate Register Form ========= //
   const validateRegisterForm = () => {
@@ -117,8 +116,6 @@ const RegisterPage = () => {
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
-      // 1. اطلب التوكن أولاً (سيقوم السيرفر بإرسال الكوكيز للمتصفح)
-      // استدعاء يدوي لتهيئة الكوكيز قبل التسجيل
       await getCsrfToken().unwrap();
 
       const registrationPromise = register(registerForm).unwrap();
@@ -130,12 +127,6 @@ const RegisterPage = () => {
       const { user } = response.data; // استخراج اليوزر مباشرة
 
       if (!user.is_active) {
-        // 1. التخزين في sessionStorage للتعامل مع الـ Refresh
-        // نستخدم registerForm.email أو userData.user.email (الأكثر دقة)
-        sessionStorage.setItem("pending_verify_email", user.email);
-        sessionStorage.setItem("pending_verify_role", user.role);
-
-        // 2. التوجيه مع تمرير البيانات في الـ state
         navigate("/verify-email", {
           state: {
             email: user.email,
@@ -326,7 +317,7 @@ const RegisterPage = () => {
           errors.password
             ? "border-red-500 ring-red-500/20"
             : "border-slate-200 dark:border-zinc-700 focus:ring-red-500/20"
-        } 
+        }
         ${direction === "rtl" ? "text-right" : "text-left"}`}
             placeholder="••••••••"
           />
@@ -408,7 +399,7 @@ const RegisterPage = () => {
           errors.password_confirmation
             ? "border-red-500 ring-red-500/20"
             : "border-slate-200 dark:border-zinc-700 focus:ring-red-500/20"
-        } 
+        }
         ${direction === "rtl" ? "text-right" : "text-left"}`}
             placeholder="••••••••"
           />

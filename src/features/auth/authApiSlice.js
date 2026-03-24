@@ -3,7 +3,6 @@ import { setCredentials, logOut } from "./authSlice.js";
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // طلب تهيئة الكوكيز (يجب تنفيذه مرة واحدة قبل اللوجن)
     getCsrfToken: builder.query({
       query: () => ({
         url: "/sanctum/csrf-cookie",
@@ -18,19 +17,19 @@ export const authApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: { ...credentials },
       }),
-      // --- إضافة الكوكي عند نجاح اللوجن ---
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
 
-          // 1. إضافة الكوكي المساعد (ليس HttpOnly)
-          document.cookie =
-            "fast_check=true; path=/; max-age=86400; SameSite=Lax";
+          if (arg.remember) {
+            document.cookie =
+              "fast_check=true; path=/; max-age=31536000; SameSite=Lax";
+          } else {
+            document.cookie = "fast_check=true; path=/; SameSite=Lax";
+          }
 
-          // 2. تحديث الـ State في Redux
           dispatch(setCredentials({ user: data.data.user }));
 
-          // عمل Invalidate للكاش لضمان تحديث البيانات في أي مكان آخر
           dispatch(apiSlice.util.invalidateTags(["User"]));
         } catch (err) {
           // في حال فشل الطلب لا نفعل شيئاً
@@ -48,11 +47,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // 1. إضافة الكوكي المساعد (ليس HttpOnly)
-          document.cookie =
-            "fast_check=true; path=/; max-age=86400; SameSite=Lax";
 
-          // 2. تحديث الـ State في Redux
+          document.cookie = "fast_check=true; path=/; SameSite=Lax";
+
           dispatch(setCredentials({ user: data.data.user }));
         } catch (err) {
           // في حال فشل الطلب لا نفعل شيئاً
@@ -72,16 +69,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
         try {
           const { data: response } = await queryFulfilled;
 
-          // التعديل هنا: بما أن ApiResponse يلف البيانات بـ data
-          // والباك إند يرسل ['user' => ...]
-          // فالمسار الصحيح هو response.data.user
           const user = response.data?.user;
 
           console.log("User received:", user);
 
           if (user) {
             dispatch(setCredentials({ user: user }));
-            // 2. تحديث الكوكي يدوياً (اختياري لأن السيرفر يرسله أصلاً)
+
             document.cookie =
               "fast_check=true; path=/; max-age=31536000; SameSite=Lax";
           }
@@ -126,18 +120,16 @@ export const authApiSlice = apiSlice.injectEndpoints({
     // ============ Get User Data Api Query ============ //
     getUserData: builder.query({
       query: () => "/user-data",
-      // transformResponse هنا تحول الرد ليكون كائن المستخدم فقط
       transformResponse: (response) => response?.data?.user,
       providesTags: ["User"],
-      // في حال نجاح جلب البيانات (مثلاً بعد عمل Refresh) نجدد الكوكي
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled; // 'data' هنا هو ما خرج من transformResponse
+          const { data } = await queryFulfilled;
           document.cookie =
             "fast_check=true; path=/; max-age=86400; SameSite=Lax";
-          dispatch(setCredentials(data)); // تحديث الحالة فوراً عند نجاح الـ Refresh
+          dispatch(setCredentials(data));
         } catch (err) {
-          dispatch(logOut()); // إذا فشل الطلب، تأكد من تسجيل الخروج
+          dispatch(logOut());
         }
       },
     }),
@@ -148,17 +140,15 @@ export const authApiSlice = apiSlice.injectEndpoints({
         url: "/logout",
         method: "POST",
       }),
-      // --- حذف الكوكي عند تسجيل الخروج ---
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          // 1. حذف الكوكي عن طريق انتهاء الصلاحية
+
           document.cookie =
             "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
 
-          // 2. تصفية الـ State
           dispatch(logOut());
-          // 3. اختياري: تصفية الـ Cache الخاص بـ RTK Query
+
           dispatch(apiSlice.util.resetApiState());
         } catch (err) {}
       },

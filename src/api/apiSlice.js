@@ -1,25 +1,43 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { logOut } from "../features/auth/authSlice";
 
+// Get backend URL from environment or use production default
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8000",
+  baseUrl: BACKEND_URL, // Now uses environment variable
   // السماح بإرسال واستقبال الكوكيز
   prepareHeaders: (headers) => {
     headers.set("Accept", "application/json");
-    // استخراج XSRF-TOKEN من الكوكيز وإضافته للهيدرز (اختياري لكنه يضمن التوافق)
-    const xsrfToken = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("XSRF-TOKEN="))
-      ?.split("=")[1];
-
+    
+    // Extract XSRF token with error handling
+    const xsrfToken = extractXSRFToken();
+    
     if (xsrfToken) {
-      // لارافيل يبحث عن هذا الهيدر في طلبات POST/PUT/DELETE
       headers.set("X-XSRF-TOKEN", decodeURIComponent(xsrfToken));
+    } else {
+      console.warn("[API] XSRF token not found in cookies - CSRF protection may be compromised");
     }
+    
     return headers;
   },
   credentials: "include", // هذه تجعل RTK Query يرسل الكوكيز في كل طلب
 });
+
+/**
+ * Safely extract XSRF token from cookies
+ * @returns {string|null} The XSRF token or null if not found
+ */
+function extractXSRFToken() {
+  try {
+    const cookies = document.cookie.split("; ");
+    const xsrfCookie = cookies.find((row) => row.startsWith("XSRF-TOKEN="));
+    return xsrfCookie ? xsrfCookie.split("=")[1] : null;
+  } catch (error) {
+    console.error("[API] Failed to extract XSRF token:", error);
+    return null;
+  }
+}
 
 // ===================================================================================
 

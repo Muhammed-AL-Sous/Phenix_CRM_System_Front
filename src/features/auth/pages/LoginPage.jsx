@@ -93,55 +93,44 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // التحقق المحلي أولاً
     const isValid = validateLoginForm();
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
-      // 1. اطلب التوكن أولاً (سيقوم السيرفر بإرسال الكوكيز للمتصفح)
-      // استدعاء يدوي لتهيئة الكوكيز قبل التسجيل
       await getCsrfToken().unwrap();
 
-      // 2. تنفيذ عملية تسجيل الدخول
       const loginPromise = login(loginForm).unwrap();
 
-      // 3. استلام بيانات المستخدم بعد النجاح
       const response = await loginPromise;
 
       notify("auth:success.welcome_back", "success");
 
-      const { user } = response.data; // استخراج اليوزر مباشرة
+      const { user } = response.data;
 
-      // 4. استخراج الـ prefix المناسب لدور المستخدم من الـ Config
       const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
 
-      // 5. تحديد وجهة التوجيه:
-      // إما الصفحة التي حاول دخولها سابقاً (from) أو الداش بورد الخاص بدوره
       const origin = location.state?.from?.pathname || `/${rolePrefix}`;
 
-      // 6. التوجيه النهائي
       navigate(origin, { replace: true });
     } catch (err) {
       console.error("Logging detail error:", err);
       const status = err.status;
       const message = err.data?.message || "";
 
-      // فحص حالة عدم التفعيل (بشكل مرن)
       const isNotVerified =
         status === 403 || message.toLowerCase().includes("not verified");
 
       if (isNotVerified) {
-        // جلب بيانات المستخدم (حسب المكان الذي وضعته فيه بالباك إند)
-        // إذا استخدمت ApiResponse::error(msg, 403, ['user' => ...])
-        // ستجدها في err.data.errors.user
+
         const pendingUser = err.data?.errors?.user || err.data?.user;
 
         if (pendingUser) {
-          sessionStorage.setItem("pending_verify_email", pendingUser.email);
-          sessionStorage.setItem("pending_verify_role", pendingUser.role);
-
           navigate("/verify-email", {
-            state: { email: pendingUser.email, role: pendingUser.role },
+            state: {
+              email: pendingUser.email,
+              role: pendingUser.role,
+              retry_after: pendingUser.retry_after,
+            },
           });
 
           notify("auth:error.Account_not_verified", "error");

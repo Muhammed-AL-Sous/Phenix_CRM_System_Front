@@ -51,6 +51,15 @@ export const clientsApiSlice = apiSlice.injectEndpoints({
       // بمجرد الحذف، نقوم بإبطال الـ LIST ليتم تحديث الجدول تلقائياً
       invalidatesTags: [{ type: "Clients", id: "LIST" }],
     }),
+
+    getClientCreationData: builder.query({
+      query: ({ lang = 'ar' } = {}) => ({
+        url: "/lookups/client-data",
+        method: "GET",
+        headers: lang ? { 'lang': lang } : {},
+      }),
+      providesTags: ["Lookup"],
+    }),
   }),
 });
 
@@ -59,4 +68,5 @@ export const {
   useAddClientMutation,
   useUpdateClientMutation,
   useDeleteClientMutation,
+  useLazyGetClientCreationDataQuery,
 } = clientsApiSlice;

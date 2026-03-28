@@ -4,7 +4,13 @@ import {
   useGetUserDataQuery,
   useLazyGetCsrfTokenQuery,
 } from "../../../auth/authApiSlice";
-import { selectCurrentUser, setCredentials, logOut } from "../../authSlice";
+import {
+  selectCurrentUser,
+  selectAuthReady,
+  setCredentials,
+  logOut,
+  setAuthReady,
+} from "../../authSlice";
 
 export default function AuthInitializer({ children }) {
   const dispatch = useDispatch();
@@ -59,11 +65,12 @@ export default function AuthInitializer({ children }) {
   ]);
 
   const skipUserData = !!user || !csrfReady;
-  const { data, error, isLoading } = useGetUserDataQuery(undefined, {
-    skip: skipUserData,
-    retryOnMountWithNoData: false,
-    refetchOnFocus: false,
-  });
+  const { data, error, isLoading, isFetching, isUninitialized } =
+    useGetUserDataQuery(undefined, {
+      skip: skipUserData,
+      retryOnMountWithNoData: false,
+      refetchOnFocus: false,
+    });
 
   useEffect(() => {
     if (data) {
@@ -79,8 +86,19 @@ export default function AuthInitializer({ children }) {
     }
   }, [data, error, dispatch]);
 
+  const isUserDataLoading =
+    !user && !data && !error && (isLoading || isFetching || isUninitialized);
+
   const isAuthLoading =
-    (hasFastCheck && !csrfReady) || isLoading || isCsrfFetching;
+    (hasFastCheck && !csrfReady) || isCsrfFetching || isUserDataLoading;
+
+  const authReady = useSelector(selectAuthReady);
+
+  useEffect(() => {
+    if (!isAuthLoading && !authReady) {
+      dispatch(setAuthReady(true));
+    }
+  }, [isAuthLoading, authReady, dispatch]);
 
   if (isAuthLoading) {
     return (

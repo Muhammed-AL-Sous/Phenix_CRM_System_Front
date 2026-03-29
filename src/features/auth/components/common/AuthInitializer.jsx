@@ -16,11 +16,11 @@ export default function AuthInitializer({ children }) {
   const dispatch = useDispatch();
   const user = useSelector(selectCurrentUser);
 
-  const hasFastCheck = useMemo(() => {
-    return document.cookie
-      .split(";")
-      .some((item) => item.trim().startsWith("fast_check="));
-  }, []);
+const hasFastCheck = useMemo(() => {
+  return document.cookie
+    .split(";")
+    .some((item) => item.trim().startsWith("fast_check="));
+}, [user]); // أضف user هنا ليعيد الحساب عند تسجيل الخروج
 
   const hasXSRFToken = useMemo(() => {
     return document.cookie
@@ -78,8 +78,7 @@ export default function AuthInitializer({ children }) {
     }
 
     if (error?.status === 401 || error?.status === 419) {
-      document.cookie =
-        "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      document.cookie = "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax; Secure";
       dispatch(logOut());
     } else if (error) {
       console.warn("[AuthInitializer] getUserData failed", error);

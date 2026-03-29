@@ -2,10 +2,7 @@
 import { useEffect } from "react";
 
 // React Redux
-import { useDispatch, useSelector } from "react-redux";
-
-// Auth Slice
-import { logOut } from "../../../auth/authSlice";
+import { useSelector } from "react-redux";
 
 // Icon
 import { LogOut, X } from "lucide-react";
@@ -28,7 +25,6 @@ import { useLogoutMutation } from "../../../auth/authApiSlice";
 
 const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
   const { t } = useTranslation(["dashboard"]);
-  const dispatch = useDispatch();
   const location = useLocation();
   const { direction } = useSelector((state) => state.ui);
   const isRtl = direction === "rtl";
@@ -65,6 +61,8 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
       }, 1000);
     }
   };
+
+  /* ================= Handle Logout ================= */
   const [logout] = useLogoutMutation();
   const handleLogout = async () => {
     logout();
@@ -247,7 +245,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
            hover:bg-slate-100 dark:hover:bg-white/5 hover:ps-5 cursor-pointer"
                 >
                   <LogOut
-                    onClick={() => dispatch(logOut())}
+                    onClick={handleLogout}
                     size={20}
                     className="group-hover:scale-110 group-hover:text-red-500 transition-transform duration-300"
                   />

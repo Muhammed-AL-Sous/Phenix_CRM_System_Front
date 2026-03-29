@@ -21,13 +21,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
 
-          if (arg.remember) {
-            document.cookie =
-              "fast_check=true; path=/; max-age=31536000; SameSite=Lax";
-          } else {
-            document.cookie = "fast_check=true; path=/; SameSite=Lax";
-          }
-
           dispatch(setCredentials({ user: data.data.user }));
 
           dispatch(apiSlice.util.invalidateTags(["User"]));
@@ -47,8 +40,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-
-          document.cookie = "fast_check=true; path=/; SameSite=Lax";
 
           dispatch(setCredentials({ user: data.data.user }));
         } catch (err) {
@@ -73,9 +64,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
           if (user) {
             dispatch(setCredentials({ user: user }));
-
-            document.cookie =
-              "fast_check=true; path=/; max-age=31536000; SameSite=Lax";
+            dispatch(apiSlice.util.invalidateTags(["User"]));
           }
         } catch (err) {
           console.error("Verification Error:", err);
@@ -117,8 +106,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
 
-          document.cookie = "fast_check=true; path=/; SameSite=Lax";
-
           dispatch(setCredentials({ user: data.data.user }));
 
           dispatch(apiSlice.util.invalidateTags(["User"]));
@@ -148,7 +135,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
           console.error("Logout failed on server, cleaning up locally...", err);
         } finally {
           // هذه العمليات ستنفذ سواء نجح الطلب أو فشل (الحالة المثالية)
-
+          document.cookie =
+            "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
           // مسح بيانات المستخدم من الـ State (authSlice)
           dispatch(logOut());
 

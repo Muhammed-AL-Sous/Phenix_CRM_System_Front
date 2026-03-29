@@ -33,11 +33,11 @@ const Navbar = () => {
   const { direction } = useSelector((state) => state.ui);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [logout] = useLogoutMutation();
   const menuRef = useRef(null);
   const toggleRef = useRef(null);
 
   /* ================= Handle Logout ================= */
+  const [logout] = useLogoutMutation();
   const handleLogout = async () => {
     logout();
   };

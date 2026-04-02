@@ -2,19 +2,20 @@
 import { useCallback, useRef, useState } from "react";
 
 // ========= React Router ========= //
-import { useSearchParams, useNavigate } from "react-router";
+import { useSearchParams, useNavigate, useLocation } from "react-router";
 
 // ========= Role Config ========= //
 import { ROLES_CONFIG } from "../../../routes/roles.config";
 
 // ========= React Redux ========= //
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 // ========= Reset Password Slice ========= //
 import {
   useResetPasswordMutation,
-  useLazyGetCsrfTokenQuery,
+  useGetCsrfCookieMutation,
 } from "../authApiSlice";
+import { setCredentials } from "../authSlice";
 
 // ========= Translation Hook ========= //
 import { useTranslation } from "react-i18next";
@@ -29,6 +30,7 @@ const ResetPasswordPage = () => {
   // ========= Router ========= //
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // ========= States ========= //
   const [showPassword, setShowPassword] = useState(false);
@@ -50,10 +52,11 @@ const ResetPasswordPage = () => {
 
   // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
 
   // ========= RTK Query Hooks ========= //
-  const [getCsrfToken, { isLoading: isCsrfLoading }] =
-    useLazyGetCsrfTokenQuery();
+  const [fetchCsrfCookie, { isLoading: isCsrfLoading }] =
+    useGetCsrfCookieMutation();
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   // ========= Validate Reset Password Form ========= //
@@ -105,7 +108,7 @@ const ResetPasswordPage = () => {
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
-      await getCsrfToken().unwrap();
+      await fetchCsrfCookie().unwrap();
 
       const resetPassPromise = resetPassword(resetPasswordForm).unwrap();
 
@@ -117,6 +120,7 @@ const ResetPasswordPage = () => {
       );
 
       const { user } = response.data; // استخراج اليوزر مباشرة
+      dispatch(setCredentials({ user }));
 
       const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
 

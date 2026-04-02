@@ -1,6 +1,6 @@
-import { apiSlice } from "../../api/apiSlice";
+import { baseApi } from "../../api/apiSlice";
 
-export const usersApiSlice = apiSlice.injectEndpoints({
+export const usersApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // 1. للمدير فقط: جلب قائمة المستخدمين
     // تحديث الـ providesTags في getUsers
@@ -39,7 +39,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     // ID الخاص بهم فقط،
     //  والباك أند (Laravel) يتأكد من الصلاحية
     updateProfile: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({ id: _id, ...data }) => ({
         url: `/profile/update`,
         method: "PUT",
         body: data,

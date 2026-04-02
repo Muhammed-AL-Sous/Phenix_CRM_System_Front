@@ -18,8 +18,6 @@ import { useSelector } from "react-redux";
 // Translation Hook
 import { useTranslation } from "react-i18next";
 
-// Main Logo
-import phenixLogo from "/public/images/phenix_common/phenix_logo.png";
 
 // Utility Components
 import LanguageToggle from "../utility/LanguageToggle";
@@ -108,7 +106,7 @@ const Navbar = () => {
             {/* ================= Logo ================= */}
             <a href="/" className="relative">
               <img
-                src={phenixLogo}
+               src="/images/phenix_common/phenix_logo.png"
                 alt="Phenix Systems Logo"
                 className="h-13"
               />

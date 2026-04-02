@@ -2,7 +2,7 @@
 import { useTranslation } from "react-i18next";
 
 // React Redux
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const ClientStats = () => {
   const { t } = useTranslation(["dashboard"]);

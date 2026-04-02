@@ -68,5 +68,5 @@ export const {
   useAddClientMutation,
   useUpdateClientMutation,
   useDeleteClientMutation,
-  useLazyGetClientCreationDataQuery,
+  useGetCsrfTokenQuery,
 } = clientsApiSlice;

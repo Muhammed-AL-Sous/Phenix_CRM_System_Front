@@ -18,9 +18,6 @@ import DashboardSidebar from "./DashboardSidebar";
 import DashboardNavbar from "./DashboardNavbar";
 
 import { motion, AnimatePresence } from "motion/react";
-import { useEffect } from "react";
-import echo from "../../../../lib/Echo";
-import { notify } from "../../../../lib/notify";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,30 +28,6 @@ export default function DashboardLayout() {
   // حماية من الانهيار: نتحقق من وجود المستخدم والدور قبل الوصول للـ Config
   const roleConfig = user?.role ? ROLES_CONFIG[user.role] : null;
   const sidebarLinks = roleConfig?.sidebar || [];
-
-  useEffect(() => {
-    if (!user?.id) return; // لا تستمع إذا لم يكن هناك مستخدم
-
-    const channel = echo.private(`user.${user.id}`);
-
-    channel
-      .subscribed(() => {
-        console.log("✅ Subscribed to private user channel");
-      })
-      .listen("UserRegistered", (e) => {
-        console.log("🔥 EVENT RECEIVED", e);
-        // ملاحظة: لا داعي لاستخدام userName من الـ Event إذا كان المستخدم هو نفسه
-        notify(`Welcome back ${e.userName}!`, "success");
-      })
-      .error((error) => {
-        console.error("Channel Error:", error);
-      });
-
-    // تنظيف عند خروج المستخدم أو إغلاق الصفحة
-    return () => {
-      echo.leaveChannel(`private-user.${user.id}`);
-    };
-  }, [user?.id]); // الاعتماد على تغير الـ ID فقط
 
   /* ================= Lock Body Scroll ================= */
   useLayoutEffect(() => {

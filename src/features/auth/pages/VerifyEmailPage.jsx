@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   useVerifyEmailMutation,
   useResendVerificationMutation,
 } from "../authApiSlice";
-import { selectCurrentUser } from "../authSlice";
+import { selectCurrentUser, setCredentials } from "../authSlice";
 import { notify, notifyPromise } from "../../../lib/notify";
 import { useTranslation } from "react-i18next";
 import { ROLES_CONFIG } from "../../../routes/roles.config";
@@ -16,6 +16,7 @@ const VerifyEmailPage = () => {
   const location = useLocation();
   const { direction } = useSelector((state) => state.ui);
   const user = useSelector(selectCurrentUser);
+  const dispatch = useDispatch();
   const { t } = useTranslation(["auth"]);
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
@@ -127,6 +128,9 @@ const VerifyEmailPage = () => {
       const response = await verifyEmail({ email, code: codeString }).unwrap();
       localStorage.removeItem("otp_expiry");
       notify("auth:success.Email_verified_successfully", "success");
+      if (response.data?.user) {
+        dispatch(setCredentials({ user: response.data.user }));
+      }
       const userRole = response.data?.user?.role || role;
       const prefix = ROLES_CONFIG[userRole]?.prefix || "";
       navigate(`/${prefix}`, { replace: true });

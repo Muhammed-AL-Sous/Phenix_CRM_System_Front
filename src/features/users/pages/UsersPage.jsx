@@ -16,7 +16,7 @@ const UsersPage = () => {
       await deleteUser(userId).unwrap();
       notify("auth:success.user_deleted", "success");
       refetch();
-    } catch (error) {
+    } catch (_error) {
       notify("auth:error.delete_failed", "error");
     }
   };

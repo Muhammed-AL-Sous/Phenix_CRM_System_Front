@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import phenixLogo from "../../../public/images/phenix_common/phenix_logo.png";
 
 // Translation Hook
 import { useTranslation } from "react-i18next";
@@ -65,7 +64,11 @@ const Footer = () => {
           "
           >
             <Link to="/" className="inline-block">
-              <img src={phenixLogo} alt="Phenix" className="h-25" />
+              <img
+                src="/images/phenix_common/phenix_logo.png"
+                alt="Phenix"
+                className="h-25"
+              />
             </Link>
             <p
               style={{

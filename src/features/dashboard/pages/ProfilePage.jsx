@@ -22,7 +22,7 @@ const ProfilePage = () => {
     try {
       await updateProfile({ id: user.id, ...formData }).unwrap();
       notify("auth:success.profile_updated", "success");
-    } catch (error) {
+    } catch (_error) {
       notify("auth:error.update_failed", "error");
     }
   };

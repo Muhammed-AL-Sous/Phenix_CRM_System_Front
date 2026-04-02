@@ -1,37 +1,38 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  user: null,
+  token: null,
+  isAuthenticated: false,
+  authReady: false,
+};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: null, // لا نقرأ من localStorage
-    isAuthenticated: false, // حالة منطقية للتحكم في الـ UI
-    isAuthReady: false, // تأكد أننا لا نوجه قبل اكتمال التحقق
-  },
+  initialState,
   reducers: {
     setCredentials: (state, action) => {
-      const userData = action.payload.user
-        ? action.payload.user
-        : action.payload;
-      state.user = userData;
-      // المستخدم يعتبر "موثق" فقط إذا كان حسابه نشطاً
-      state.isAuthenticated = !!userData.is_active;
-      state.isAuthReady = true;
+      const { user, token } = action.payload;
+      state.user = user;
+      state.token = token;
+      state.isAuthenticated = !!user;
     },
-
     logOut: (state) => {
       state.user = null;
+      state.token = null;
       state.isAuthenticated = false;
-      state.isAuthReady = true;
     },
     setAuthReady: (state, action) => {
-      state.isAuthReady = action.payload;
+      state.authReady = action.payload;
     },
   },
 });
 
 export const { setCredentials, logOut, setAuthReady } = authSlice.actions;
 
-export default authSlice.reducer;
-
+// ✅ Selectors
 export const selectCurrentUser = (state) => state.auth.user;
-export const selectAuthReady = (state) => state.auth.isAuthReady;
+export const selectAuthReady = (state) => state.auth.authReady;
+export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
+
+export default authSlice.reducer;

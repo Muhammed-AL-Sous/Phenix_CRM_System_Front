@@ -8,10 +8,11 @@ import { Link, useNavigate, useLocation } from "react-router";
 import { ROLES_CONFIG } from "../../../routes/roles.config";
 
 // ========= React Redux ========= //
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 // ========= Login Slice ========= //
-import { useLoginMutation, useLazyGetCsrfTokenQuery } from "../authApiSlice";
+import { useLoginMutation, useGetCsrfTokenQuery } from "../authApiSlice";
+import { setCredentials } from "../authSlice";
 
 // ========= Translation Hook ========= //
 import { useTranslation } from "react-i18next";
@@ -44,11 +45,11 @@ const LoginPage = () => {
 
   // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
 
   // ========= API Mutation ========= //
   const [login, { isLoading }] = useLoginMutation();
-  const [getCsrfToken, { isLoading: isCsrfLoading }] =
-    useLazyGetCsrfTokenQuery();
+  const { isLoading: isCsrfLoading } = useGetCsrfTokenQuery();
 
   // ========= Validate Login Form ========= //
   const validateLoginForm = () => {
@@ -97,7 +98,6 @@ const LoginPage = () => {
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
-      await getCsrfToken().unwrap();
 
       const loginPromise = login(loginForm).unwrap();
 
@@ -106,6 +106,7 @@ const LoginPage = () => {
       notify("auth:success.welcome_back", "success");
 
       const { user } = response.data;
+      dispatch(setCredentials({ user }));
 
       const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
 
@@ -121,7 +122,6 @@ const LoginPage = () => {
         status === 403 || message.toLowerCase().includes("not verified");
 
       if (isNotVerified) {
-
         const pendingUser = err.data?.errors?.user || err.data?.user;
 
         if (pendingUser) {

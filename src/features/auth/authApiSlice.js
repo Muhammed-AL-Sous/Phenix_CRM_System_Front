@@ -1,49 +1,102 @@
-import { apiSlice } from "../../api/apiSlice";
-import { setCredentials, logOut } from "./authSlice.js";
+// src/services/authApiSlice.js (أو src/auth/authApiSlice.js حسب مسارك)
+import { baseApi } from "../../api/apiSlice"; // ✅ تأكد من المسار الصحيح
+import { logOut } from "./authSlice";
 
-export const authApiSlice = apiSlice.injectEndpoints({
+// دالة مساعدة لجلب CSRF cookie
+async function fetchCsrfCookie() {
+  try {
+    const response = await fetch("/sanctum/csrf-cookie", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Failed to fetch CSRF cookie:", error);
+    throw error;
+  }
+}
+
+// ⭐ إضافة endpoints للـ baseApi
+export const authApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // ✅ CSRF Token كـ Query
     getCsrfToken: builder.query({
-      query: () => ({
-        url: "/sanctum/csrf-cookie",
-        method: "GET",
-      }),
+      queryFn: async () => {
+        try {
+          await fetchCsrfCookie();
+          return {
+            data: {
+              success: true,
+              message: "CSRF token retrieved successfully",
+            },
+          };
+        } catch (error) {
+          return {
+            error: {
+              status: "FETCH_ERROR",
+              error: error.message,
+              data: "Failed to retrieve CSRF token",
+            },
+          };
+        }
+      },
+      keepUnusedDataFor: 0, // لا نريد caching
     }),
 
-    // ============ Login Api Mutation ============ //
-    login: builder.mutation({
-      query: (credentials) => ({
-        url: "/login",
-        method: "POST",
-        body: { ...credentials },
-      }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+    // ✅ CSRF Token كـ Mutation (للاستخدام اليدوي)
+    getCsrfCookie: builder.mutation({
+      queryFn: async () => {
         try {
-          const { data } = await queryFulfilled;
-
-          dispatch(setCredentials({ user: data.data.user }));
-
-          dispatch(apiSlice.util.invalidateTags(["User"]));
-        } catch (err) {
-          // في حال فشل الطلب لا نفعل شيئاً
+          await fetchCsrfCookie();
+          return { data: { success: true } };
+        } catch (error) {
+          return { error: { status: "FETCH_ERROR", error: error.message } };
         }
       },
     }),
 
-    // ============ Register Api Mutation ============ //
-    register: builder.mutation({
-      query: (userInfo) => ({
-        url: "/register",
-        method: "POST",
-        body: { ...userInfo },
+    // ✅ جلب بيانات المستخدم الحالي
+    getUserData: builder.query({
+      query: () => ({
+        url: "/user-data",
+        method: "GET",
       }),
+      providesTags: ["User"],
+      // إعداد خاص للتعامل مع أخطاء 401/419
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          data: response.data,
+          error: response.data?.message || "خطأ في جلب بيانات المستخدم",
+        };
+      },
+    }),
+
+    // ✅ تسجيل الدخول
+    login: builder.mutation({
+      query: (credentials) => ({
+        url: "/login",
+        method: "POST",
+        body: credentials,
+      }),
+      invalidatesTags: ["User"],
+      // قبل تسجيل الدخول، تأكد من وجود CSRF token
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-
-          dispatch(setCredentials({ user: data.data.user }));
-        } catch (err) {
-          // في حال فشل الطلب لا نفعل شيئاً
+          await queryFulfilled;
+          // بعد تسجيل الدخول الناجح، جلب بيانات المستخدم
+          dispatch(authApiSlice.util.invalidateTags(["User"]));
+        } catch (error) {
+          console.error("Login failed:", error);
         }
       },
     }),
@@ -56,18 +109,14 @@ export const authApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: credentials, // سيرسل { email: "...", code: "..." }
       }),
+      invalidatesTags: ["User"],
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data: response } = await queryFulfilled;
-
-          const user = response.data?.user;
-
-          if (user) {
-            dispatch(setCredentials({ user: user }));
-            dispatch(apiSlice.util.invalidateTags(["User"]));
-          }
-        } catch (err) {
-          console.error("Verification Error:", err);
+          await queryFulfilled;
+          // بعد تسجيل الدخول الناجح، جلب بيانات المستخدم
+          dispatch(authApiSlice.util.invalidateTags(["User"]));
+        } catch (error) {
+          console.error("Login failed:", error);
         }
       },
     }),
@@ -83,10 +132,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
     // ============ Forgot Password Api Mutation ============ //
     forgotPassword: builder.mutation({
-      query: (email) => ({
+      query: (emailOrPayload) => ({
         url: "/forgot-password",
         method: "POST",
-        body: { email },
+        body:
+          typeof emailOrPayload === "string"
+            ? { email: emailOrPayload }
+            : emailOrPayload,
       }),
     }),
 
@@ -102,61 +154,65 @@ export const authApiSlice = apiSlice.injectEndpoints({
           password_confirmation: data.password_confirmation,
         },
       }),
+      invalidatesTags: ["User"],
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          const { data } = await queryFulfilled;
-
-          dispatch(setCredentials({ user: data.data.user }));
-
-          dispatch(apiSlice.util.invalidateTags(["User"]));
-        } catch (err) {
-          // في حال فشل الطلب لا نفعل شيئاً
+          await queryFulfilled;
+          // بعد تسجيل الدخول الناجح، جلب بيانات المستخدم
+          dispatch(authApiSlice.util.invalidateTags(["User"]));
+        } catch (error) {
+          console.error("Login failed:", error);
         }
       },
     }),
 
-    // ============ Get User Data Api Query ============ //
-    getUserData: builder.query({
-      query: () => "/user-data",
-      transformResponse: (response) => response?.data?.user,
-      providesTags: ["User"],
+    // ✅ تسجيل حساب جديد
+    register: builder.mutation({
+      query: (userData) => ({
+        url: "/register",
+        method: "POST",
+        body: userData,
+      }),
+      invalidatesTags: ["User"],
     }),
 
-    // ============ Logout Api Mutation ============ //
+    // ✅ تسجيل الخروج
     logout: builder.mutation({
       query: () => ({
         url: "/logout",
         method: "POST",
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      // لا نستخدم invalidatesTags: قد يعيد استدعاء getUserData قبل المسح
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-        } catch (err) {
-          console.error("Logout failed on server, cleaning up locally...", err);
-        } finally {
-          // هذه العمليات ستنفذ سواء نجح الطلب أو فشل (الحالة المثالية)
+          dispatch(logOut());
+          dispatch(baseApi.util.resetApiState());
           document.cookie =
             "fast_check=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Lax";
-          // مسح بيانات المستخدم من الـ State (authSlice)
-          dispatch(logOut());
-
-          // مسح كل الكاش المخزن في الـ API Slice (مهم جداً للخصوصية)
-          dispatch(apiSlice.util.resetApiState());
+        } catch (error) {
+          console.error("Logout failed:", error);
         }
       },
     }),
   }),
+  // ⭐ هذا مهم لضمان override الـ existing endpoints
+  overrideExisting: false,
 });
 
+// ✅ تصدير جميع الـ hooks بالأسماء الصحيحة
 export const {
   useGetCsrfTokenQuery,
-  useLazyGetCsrfTokenQuery,
+  useGetCsrfCookieMutation,
+  useGetUserDataQuery,
   useLoginMutation,
   useRegisterMutation,
+  useLogoutMutation,
   useVerifyEmailMutation,
   useResendVerificationMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
-  useGetUserDataQuery,
-  useLogoutMutation,
 } = authApiSlice;
+
+// ✅ تصدير الـ slice نفسه (قد نحتاجه)
+export default authApiSlice;

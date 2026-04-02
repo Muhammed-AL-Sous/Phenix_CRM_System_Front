@@ -15,7 +15,7 @@ import { notify } from "../../../lib/notify.js";
 
 // ========= Forgot Password Slice ========= //
 import {
-  useLazyGetCsrfTokenQuery,
+  useGetCsrfCookieMutation,
   useForgotPasswordMutation,
 } from "../authApiSlice.js";
 
@@ -30,8 +30,8 @@ const ForgotPasswordPage = () => {
   const [timer, setTimer] = useState(0);
 
  // ========= RTK Query Hooks ========= //
-  const [getCsrfToken, { isLoading: isCsrfLoading }] =
-    useLazyGetCsrfTokenQuery();
+  const [fetchCsrfCookie, { isLoading: isCsrfLoading }] =
+    useGetCsrfCookieMutation();
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   // ========= Translation ========= //
@@ -97,7 +97,7 @@ const ForgotPasswordPage = () => {
     if (!isValid || timer > 0) return; // منع الإرسال إذا كان العداد يعمل
 
     try {
-      await getCsrfToken().unwrap();
+      await fetchCsrfCookie().unwrap();
 
       await forgotPassword(email.trim()).unwrap();
 

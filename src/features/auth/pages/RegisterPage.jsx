@@ -8,7 +8,10 @@ import { Link, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 
 // ========= Register Slice ========= //
-import { useRegisterMutation, useLazyGetCsrfTokenQuery } from "../authApiSlice";
+import {
+  useRegisterMutation,
+  useGetCsrfCookieMutation,
+} from "../authApiSlice";
 
 // ========= Notification Toast ========= //
 import { notify } from "../../../lib/notify";
@@ -52,8 +55,8 @@ const RegisterPage = () => {
   const { direction } = useSelector((state) => state.ui);
 
   // ========= API Mutation ========= //
-  const [getCsrfToken, { isLoading: isCsrfLoading }] =
-    useLazyGetCsrfTokenQuery();
+  const [fetchCsrfCookie, { isLoading: isCsrfLoading }] =
+    useGetCsrfCookieMutation();
   const [register, { isLoading }] = useRegisterMutation();
 
   // ========= Validate Register Form ========= //
@@ -116,7 +119,7 @@ const RegisterPage = () => {
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
-      await getCsrfToken().unwrap();
+      await fetchCsrfCookie().unwrap();
 
       const registrationPromise = register(registerForm).unwrap();
 

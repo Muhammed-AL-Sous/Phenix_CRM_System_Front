@@ -116,7 +116,7 @@ export const authApiSlice = baseApi.injectEndpoints({
           // بعد تسجيل الدخول الناجح، جلب بيانات المستخدم
           dispatch(authApiSlice.util.invalidateTags(["User"]));
         } catch (error) {
-          console.error("Login failed:", error);
+          console.error("verify Email failed:", error);
         }
       },
     }),
@@ -161,7 +161,7 @@ export const authApiSlice = baseApi.injectEndpoints({
           // بعد تسجيل الدخول الناجح، جلب بيانات المستخدم
           dispatch(authApiSlice.util.invalidateTags(["User"]));
         } catch (error) {
-          console.error("Login failed:", error);
+          console.error("Reset Password failed:", error);
         }
       },
     }),

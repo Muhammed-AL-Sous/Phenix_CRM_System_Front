@@ -1,17 +1,16 @@
-// src/components/auth/AuthInitializer.jsx
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo } from "react";
 import {
   useGetUserDataQuery,
-  useGetCsrfCookieMutation, // استخدام mutation للـ CSRF
-} from "../../../auth/authApiSlice"; // ✅ تأكد من المسار
+  useGetCsrfCookieMutation,
+} from "../../../auth/authApiSlice";
 import {
   selectCurrentUser,
   selectAuthReady,
   setCredentials,
   logOut,
   setAuthReady,
-} from "../../authSlice"; // ✅ تأكد من المسار
+} from "../../authSlice";
 
 export default function AuthInitializer({ children }) {
   const dispatch = useDispatch();
@@ -31,7 +30,7 @@ export default function AuthInitializer({ children }) {
       .some((item) => item.trim().startsWith("XSRF-TOKEN="));
   }, []);
 
-  // ✅ استخدام mutation للـ CSRF
+  
   const [
     getCsrfCookie,
     {

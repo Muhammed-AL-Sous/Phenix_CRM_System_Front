@@ -1,37 +1,43 @@
-// src/services/baseApi.js
+// baseApi.js — إضافة retry للـ 419
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 function getCsrfToken() {
   const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-  if (match) {
-    return decodeURIComponent(match[1]);
-  }
-  return null;
+  return match ? decodeURIComponent(match[1]) : null;
 }
+
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl: import.meta.env.VITE_API_URL || "/api",
+  credentials: "include",
+  prepareHeaders: (headers) => {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) headers.set("X-XSRF-TOKEN", csrfToken);
+    headers.set("Accept", "application/json");
+    headers.set("X-Requested-With", "XMLHttpRequest");
+    // احذف Content-Type من هنا — RTK يضبطه تلقائياً حسب نوع الـ body
+    return headers;
+  },
+});
+
+// معالجة 419 (CSRF mismatch) تلقائياً
+const baseQueryWith419Handler = async (args, api, extraOptions) => {
+  let result = await rawBaseQuery(args, api, extraOptions);
+
+  if (result.error?.status === 419) {
+    // تجديد CSRF ثم إعادة المحاولة مرة واحدة
+    await fetch("/sanctum/csrf-cookie", {
+      credentials: "include",
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    });
+    result = await rawBaseQuery(args, api, extraOptions);
+  }
+
+  return result;
+};
 
 export const baseApi = createApi({
   reducerPath: "api",
-
-  baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_URL || "/api",
-    credentials: "include",
-
-    prepareHeaders: (headers) => {
-      const csrfToken = getCsrfToken();
-      if (csrfToken) {
-        headers.set("X-XSRF-TOKEN", csrfToken);
-      }
-
-      headers.set("Accept", "application/json");
-      headers.set("Content-Type", "application/json");
-      headers.set("X-Requested-With", "XMLHttpRequest");
-
-      return headers;
-    },
-  }),
-
+  baseQuery: baseQueryWith419Handler,
   tagTypes: ["User", "Auth"],
-
-  // ⭐ هذا مهم - نعرف endpoints فارغة هنا
   endpoints: () => ({}),
 });

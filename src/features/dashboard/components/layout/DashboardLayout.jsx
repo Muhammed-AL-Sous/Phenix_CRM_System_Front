@@ -1,5 +1,5 @@
 // React Hooks
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect } from "react";
 
 // React Redux
 import { useSelector } from "react-redux";
@@ -19,6 +19,11 @@ import DashboardNavbar from "./DashboardNavbar";
 
 import { motion, AnimatePresence } from "motion/react";
 
+// Echo Library
+import echo from "../../../../lib/echo";
+import { shouldShowBroadcastToast } from "../../../../lib/broadcastNotifyDedupe";
+import { notify } from "../../../../lib/notify";
+
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const user = useSelector(selectCurrentUser);
@@ -28,6 +33,27 @@ export default function DashboardLayout() {
   // حماية من الانهيار: نتحقق من وجود المستخدم والدور قبل الوصول للـ Config
   const roleConfig = user?.role ? ROLES_CONFIG[user.role] : null;
   const sidebarLinks = roleConfig?.sidebar || [];
+
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
+    const channel = echo.private(`App.Models.User.${userId}`);
+
+    channel.notification((notification) => {
+      if (!shouldShowBroadcastToast(notification)) {
+        return;
+      }
+      notify(notification.message || "إشعار جديد", "success");
+    });
+
+    return () => {
+      echo.leave(`private-App.Models.User.${userId}`);
+    };
+  }, [userId]);
 
   /* ================= Lock Body Scroll ================= */
   useLayoutEffect(() => {

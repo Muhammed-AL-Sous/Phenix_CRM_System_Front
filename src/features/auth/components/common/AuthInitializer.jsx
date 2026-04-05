@@ -60,11 +60,9 @@ export default function AuthInitializer({ children }) {
     // لا نعيد المحاولة إذا تم بالفعل
     if (isCsrfSuccess || isCsrfError) return;
 
-    console.log("🔄 Fetching CSRF token...");
     getCsrfCookie()
       .unwrap()
       .then(() => {
-        console.log("✅ CSRF token fetched successfully");
       })
       .catch((error) => {
         console.warn("❌ CSRF token fetch failed:", error);
@@ -94,7 +92,6 @@ export default function AuthInitializer({ children }) {
       // Laravel قد يرجع البيانات في user أو في data.user
       const userInfo = userData.user || userData.data?.user || userData;
 
-      console.log("✅ User data received:", userInfo);
       dispatch(setCredentials({ user: userInfo }));
 
       // إضافة fast_check cookie للمرات القادمة
@@ -105,8 +102,6 @@ export default function AuthInitializer({ children }) {
   // معالجة أخطاء بيانات المستخدم
   useEffect(() => {
     if (userError) {
-      console.log("❌ User data error:", userError);
-
       if (userError.status === 401 || userError.status === 419) {
         // مستخدم غير مصرح له - مسح الكوكيز وتسجيل الخروج
         document.cookie =
@@ -141,7 +136,6 @@ export default function AuthInitializer({ children }) {
 
   useEffect(() => {
     if (!isAuthLoading && !authReady) {
-      console.log("✅ Auth initialization complete");
       dispatch(setAuthReady(true));
     }
   }, [isAuthLoading, authReady, dispatch]);

@@ -98,6 +98,38 @@ export const ROLES_CONFIG = {
     ],
   },
 
+  manager: {
+    prefix: "manager",
+    statsComponent: AdminStats,
+
+    sidebar: [
+      { icon: LayoutDashboard, label: "dashboard", to: "/manager" },
+      { icon: Tickets, label: "tickets", to: "/manager/tickets" },
+      { icon: ListTodo, label: "tasks", to: "/manager/tasks" },
+      { icon: Users, label: "users", to: "/manager/users" },
+      { icon: MessageCircleMore, label: "chat", to: "/manager/chat" },
+      { icon: UserStar, label: "ratings", to: "/manager/ratings" },
+      {
+        icon: Crown,
+        label: "prospective_clients",
+        to: "/manager/prospective-clients",
+      },
+      { icon: ChartNoAxesCombined, label: "reports", to: "/manager/reports" },
+      { icon: Settings, label: "settings", to: "/manager/settings" },
+    ],
+
+    routes: [
+      { path: "", element: DashboardPage },
+      { path: "tickets", element: TicketsPage },
+      { path: "tasks", element: TasksPage },
+      { path: "profile", element: ProfilePage },
+      { path: "users", element: UsersPage },
+      { path: "chat", element: ChatPage },
+      { path: "ratings", element: RatingsPage },
+      { path: "prospective-clients", element: ProspectiveClientsPage },
+    ],
+  },
+
   support: {
     prefix: "support",
     statsComponent: SupportStats,

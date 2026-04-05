@@ -21,6 +21,9 @@ import AuthInitializer from "./features/auth/components/common/AuthInitializer";
 // Provider For Lang & Mode & Direction
 import UIProvider from "./providers/UIProvider";
 
+// Echo Library
+import "./lib/echo";
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>

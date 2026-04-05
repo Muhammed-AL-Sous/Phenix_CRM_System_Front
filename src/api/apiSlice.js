@@ -7,7 +7,7 @@ function getCsrfToken() {
 }
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_URL || "/api",
+  baseUrl: "/api",
   credentials: "include",
   prepareHeaders: (headers) => {
     const csrfToken = getCsrfToken();

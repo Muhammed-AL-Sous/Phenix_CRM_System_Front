@@ -3,6 +3,7 @@ import {
   useGetClientsQuery,
   useDeleteClientMutation,
 } from "../clientsApiSlice";
+import { RouteSuspenseFallback, Spinner } from "../../../components/common/GlobalLoader";
 
 export default function ClientsTable() {
   const [search, setSearch] = useState("");
@@ -39,7 +40,7 @@ export default function ClientsTable() {
       </div>
 
       {isLoading ? (
-        <p>جاري تحميل البيانات لأول مرة...</p>
+        <RouteSuspenseFallback className="min-h-[50vh]" />
       ) : (
         <table
           className={`w-full border-collapse ${isFetching ? "opacity-50" : ""}`}
@@ -70,7 +71,11 @@ export default function ClientsTable() {
           </tbody>
         </table>
       )}
-      {isFetching && <p className="text-sm text-blue-500">جاري التحديث...</p>}
+      {isFetching && (
+        <p className="flex items-center gap-2 mt-2 text-red-500">
+          <Spinner size="sm" />
+        </p>
+      )}
     </div>
   );
 }

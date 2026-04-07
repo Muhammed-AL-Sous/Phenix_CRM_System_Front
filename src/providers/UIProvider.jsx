@@ -13,27 +13,6 @@ import { Toaster } from "react-hot-toast";
 const UIProvider = ({ children }) => {
   const { mode, direction, lang } = useSelector((state) => state.ui);
 
-  // داخل useEffect في UIProvider.js
-  useEffect(() => {
-    const loader = document.getElementById("initial-loader");
-    if (loader) {
-      // ننتظر قليلاً للتأكد من أن React رسم أول Logic
-      requestAnimationFrame(() => {
-        loader.style.opacity = "0";
-        loader.style.pointerEvents = "none"; // لمنع التفاعل معه أثناء التلاشي
-
-        // نحذفه من الـ DOM بعد انتهاء وقت الـ transition تماماً
-        const timeout = setTimeout(() => {
-          if (loader.parentNode) {
-            loader.remove();
-          }
-        }, 400); // اجعل هذا الرقم مطابقاً للـ transition في CSS
-
-        return () => clearTimeout(timeout);
-      });
-    }
-  }, []);
-
   useEffect(() => {
     // Tailwind Dark Mode
     const root = document.documentElement;

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import { RouteSuspenseFallback } from "../components/common/GlobalLoader";
 import { ROLES_CONFIG } from "./roles.config";
 
 export const generateRoleRoutes = () => {
@@ -9,7 +10,7 @@ export const generateRoleRoutes = () => {
     children: config.routes.map((route) => ({
       path: route.path,
       element: (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<RouteSuspenseFallback />}>
           <route.element />
         </Suspense>
       ),

@@ -1,4 +1,5 @@
 import { useAddClientMutation, useGetClientsQuery } from "../clientsApiSlice";
+import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
 
 export default function CRMPage() {
   // بمجرد تحميل الصفحة، يتم جلب البيانات وتخزينها بالكاش بـ Tag "clients"
@@ -14,7 +15,7 @@ export default function CRMPage() {
   return (
     <div>
       {isLoading ? (
-        <p>جاري التحديث...</p>
+        <RouteSuspenseFallback className="min-h-[50vh]" />
       ) : (
         <ul>
           {clients?.map((c) => (

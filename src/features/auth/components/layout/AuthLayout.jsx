@@ -20,6 +20,8 @@ import { useTranslation } from "react-i18next";
 // Icon
 import { House } from "lucide-react";
 
+import { RouteSuspenseFallback } from "../../../../components/common/GlobalLoader";
+
 const AuthLayout = () => {
   const { direction } = useSelector((state) => state.ui);
   const { t } = useTranslation("auth");
@@ -52,7 +54,7 @@ const AuthLayout = () => {
           </Link>
         </span>
       </div>
-      <Suspense fallback={<div></div>}>
+      <Suspense fallback={<RouteSuspenseFallback />}>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}

@@ -4,6 +4,7 @@ import {
   selectCurrentUser,
   selectAuthReady,
 } from "../../features/auth/authSlice";
+import GlobalLoader from "./GlobalLoader";
 
 export default function ProtectedRoute({ allowedRoles }) {
   const user = useSelector(selectCurrentUser);
@@ -11,8 +12,7 @@ export default function ProtectedRoute({ allowedRoles }) {
   const location = useLocation();
 
   if (!authReady) {
-    // في مرحلة التحقق من الجلسة للمرة الأولى، نمنع الريديركت ليقلل اللمعة
-    return null;
+    return <GlobalLoader />;
   }
 
   if (!user) {

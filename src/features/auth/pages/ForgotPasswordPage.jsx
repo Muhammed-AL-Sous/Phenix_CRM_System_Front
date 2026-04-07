@@ -1,17 +1,9 @@
-// ========= React Hooks ========= //
+// ========= React ========= //
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
-// ========= Translation Hook ========= //
-import { useTranslation } from "react-i18next";
-
-// ========= React Redux ========= //
+// ========= Redux ========= //
 import { useSelector } from "react-redux";
-
-// Icons
-import { BadgeCheck, Mail } from "lucide-react";
-
-// ========= Notification Toast ========= //
-import { notify } from "../../../lib/notify.js";
 
 // ========= Forgot Password Slice ========= //
 import {
@@ -19,8 +11,14 @@ import {
   useForgotPasswordMutation,
 } from "../authApiSlice.js";
 
-// ========= React Router ========= //
-import { useNavigate } from "react-router";
+// ========= Icons ========= //
+import { BadgeCheck, Mail } from "lucide-react";
+
+// ========= External Libraries ========= //
+import { useTranslation } from "react-i18next";
+import { notify } from "../../../lib/notify.js";
+
+import { Spinner } from "../../../components/common/GlobalLoader";
 
 const ForgotPasswordPage = () => {
   // ========= States ========= //
@@ -29,7 +27,7 @@ const ForgotPasswordPage = () => {
   const [isSent, setIsSent] = useState(false);
   const [timer, setTimer] = useState(0);
 
- // ========= RTK Query Hooks ========= //
+  // ========= RTK Query Hooks ========= //
   const [fetchCsrfCookie, { isLoading: isCsrfLoading }] =
     useGetCsrfCookieMutation();
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
@@ -217,7 +215,7 @@ const ForgotPasswordPage = () => {
       >
         {isLoading || isCsrfLoading ? (
           <span className="flex items-center justify-center">
-            <span className="w-6 h-6 block border-3 border-white border-t-transparent rounded-full animate-spin"></span>
+            <Spinner size="sm" variant="onPrimary" />
           </span>
         ) : timer > 0 ? (
           <span

@@ -1,5 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useMemo } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
+import GlobalLoader, {
+  removeInitialLoader,
+} from "../../../../components/common/GlobalLoader";
 import {
   useGetUserDataQuery,
   useGetCsrfCookieMutation,
@@ -134,26 +137,15 @@ export default function AuthInitializer({ children }) {
   // إشعار Redux أن Auth جاهز
   const authReady = useSelector(selectAuthReady);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    removeInitialLoader();
     if (!isAuthLoading && !authReady) {
       dispatch(setAuthReady(true));
     }
   }, [isAuthLoading, authReady, dispatch]);
 
-  // عرض شاشة التحميل
   if (isAuthLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-slate-50 dark:bg-zinc-900">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">
-            {isCsrfFetching && "جارٍ تحضير الجلسة..."}
-            {isUserDataLoading && "جارٍ التحقق من الهوية..."}
-            {hasFastCheck && !csrfReady && "جارٍ تحديث البيانات..."}
-          </p>
-        </div>
-      </div>
-    );
+    return <GlobalLoader />;
   }
 
   return children;

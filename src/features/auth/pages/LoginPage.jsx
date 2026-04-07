@@ -1,27 +1,25 @@
-// ========= React Hooks ========= //
+// ========= React ========= //
 import { useState, useRef, useCallback } from "react";
-
-// ========= React Router ========= //
 import { Link, useNavigate, useLocation } from "react-router";
+
+// ========= Redux ========= //
+import { useSelector, useDispatch } from "react-redux";
 
 // ========= Role Config ========= //
 import { ROLES_CONFIG } from "../../../routes/roles.config";
-
-// ========= React Redux ========= //
-import { useSelector, useDispatch } from "react-redux";
 
 // ========= Login Slice ========= //
 import { useLoginMutation, useGetCsrfTokenQuery } from "../authApiSlice";
 import { setCredentials } from "../authSlice";
 
-// ========= Translation Hook ========= //
+// ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
-
-// ========= Notification Toast ========= //
 import { notify } from "../../../lib/notify";
 
 // ========= Icons ========= //
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+
+import { Spinner } from "../../../components/common/GlobalLoader";
 
 const LoginPage = () => {
   // ========= React State ========= //
@@ -373,7 +371,7 @@ const LoginPage = () => {
       >
         {isLoading || isCsrfLoading ? (
           <span className="flex items-center justify-center">
-            <span className="w-6 h-6 block border-3 border-white border-t-transparent rounded-full animate-spin"></span>
+            <Spinner size="sm" variant="onPrimary" />
           </span>
         ) : (
           t("common.login")

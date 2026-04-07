@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useGetUsersQuery, useDeleteUserMutation } from "../usersApiSlice";
 import { notify } from "../../../lib/notify";
+import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
 import UsersTable from "../components/UsersTable";
 import UsersModal from "../components/UsersModal";
 
@@ -21,7 +22,7 @@ const UsersPage = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <RouteSuspenseFallback className="min-h-[50vh]" />;
 
   return (
     <div className="users-page">

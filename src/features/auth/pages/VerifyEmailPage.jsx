@@ -1,14 +1,23 @@
+// ========= React ========= //
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+
+// ======== Auth API Slice & Slice ========= //
 import {
   useVerifyEmailMutation,
   useResendVerificationMutation,
 } from "../authApiSlice";
 import { selectCurrentUser, setCredentials } from "../authSlice";
+
+// ======== Role Config ========= //
+import { ROLES_CONFIG } from "../../../routes/roles.config";
+
+// ========= External Libraries ========= //
 import { notify, notifyPromise } from "../../../lib/notify";
 import { useTranslation } from "react-i18next";
-import { ROLES_CONFIG } from "../../../routes/roles.config";
+
+import { Spinner } from "../../../components/common/GlobalLoader";
 
 const VerifyEmailPage = () => {
   const inputsRef = useRef([]);
@@ -209,7 +218,11 @@ const VerifyEmailPage = () => {
           className="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 disabled:opacity-50 transition-all disabled:cursor-not-allowed cursor-pointer"
         >
           {isLoading ? (
-            <span className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin inline-block cursor-not-allowed"></span>
+            <Spinner
+              size="sm"
+              variant="onPrimary"
+              className="cursor-not-allowed"
+            />
           ) : (
             t("email.Verify Account")
           )}

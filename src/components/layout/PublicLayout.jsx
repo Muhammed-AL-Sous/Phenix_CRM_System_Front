@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import { ParticleBackground } from "../utility/ParticleBackground";
 import ScrollToTopButton from "../utility/ScrollToTopButton";
 import ParticleNetwork from "../utility/ParticleNetwork";
+import { RouteSuspenseFallback } from "../common/GlobalLoader";
 
 // React & Redux
 import { Suspense } from "react";
@@ -26,13 +27,7 @@ const PublicLayout = () => {
 
       <Navbar />
       <main className="relative z-10">
-        <Suspense
-          fallback={
-            <div style={{ padding: "2rem", textAlign: "center" }}>
-              Loading...
-            </div>
-          }
-        >
+        <Suspense fallback={<RouteSuspenseFallback />}>
           <Outlet />
         </Suspense>
       </main>

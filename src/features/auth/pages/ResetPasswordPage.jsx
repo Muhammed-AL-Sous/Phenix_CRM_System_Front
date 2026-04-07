@@ -1,14 +1,12 @@
-// ========= React Hooks ========= //
+// ========= React ========= //
 import { useCallback, useRef, useState } from "react";
-
-// ========= React Router ========= //
 import { useSearchParams, useNavigate, useLocation } from "react-router";
+
+// ========= Redux ========= //
+import { useSelector, useDispatch } from "react-redux";
 
 // ========= Role Config ========= //
 import { ROLES_CONFIG } from "../../../routes/roles.config";
-
-// ========= React Redux ========= //
-import { useSelector, useDispatch } from "react-redux";
 
 // ========= Reset Password Slice ========= //
 import {
@@ -17,14 +15,14 @@ import {
 } from "../authApiSlice";
 import { setCredentials } from "../authSlice";
 
-// ========= Translation Hook ========= //
+// ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
-
-// ========= Notification Toast ========= //
 import { notify } from "../../../lib/notify";
 
 // ========= Icons ========= //
 import { Eye, EyeOff, Mail, Lock, LockKeyhole } from "lucide-react";
+
+import { Spinner } from "../../../components/common/GlobalLoader";
 
 const ResetPasswordPage = () => {
   // ========= Router ========= //
@@ -187,7 +185,7 @@ const ResetPasswordPage = () => {
           }}
           value={resetPasswordForm.email}
           readOnly
-           disabled
+          disabled
           className={`w-full px-4 py-3 rounded-xl text-slate-700 bg-gray-300 dark:bg-zinc-900 border border-gray-300 dark:border-transparent outline-none transition-all dark:text-white focus:ring-2`}
         />
       </div>
@@ -374,7 +372,7 @@ const ResetPasswordPage = () => {
       >
         {isLoading || isCsrfLoading ? (
           <span className="flex items-center justify-center">
-            <span className="w-6 h-6 block border-3 border-white border-t-transparent rounded-full animate-spin"></span>
+            <Spinner size="sm" variant="onPrimary" />
           </span>
         ) : (
           t("common.Confirm")

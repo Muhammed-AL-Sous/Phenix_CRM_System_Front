@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../auth/authSlice";
 import { useUpdateProfileMutation } from "../../users/usersApiSlice";
 import { notify } from "../../../lib/notify";
+import { Spinner } from "../../../components/common/GlobalLoader";
 
 const ProfilePage = () => {
   const user = useSelector(selectCurrentUser);
@@ -47,7 +48,14 @@ const ProfilePage = () => {
           disabled
         />
         <button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : "Save Changes"}
+          {isLoading ? (
+            <span className="inline-flex items-center gap-2">
+              <Spinner size="sm" />
+              Saving...
+            </span>
+          ) : (
+            "Save Changes"
+          )}
         </button>
       </form>
     </div>

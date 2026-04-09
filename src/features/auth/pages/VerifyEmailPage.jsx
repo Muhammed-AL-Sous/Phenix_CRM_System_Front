@@ -11,7 +11,7 @@ import {
 import { selectCurrentUser, setCredentials } from "../authSlice";
 
 // ======== Role Config ========= //
-import { ROLES_CONFIG } from "../../../routes/roles.config";
+import { getPostAuthDestination } from "../../../lib/postAuthRedirect";
 
 // ========= External Libraries ========= //
 import { notify, notifyPromise } from "../../../lib/notify";
@@ -58,11 +58,6 @@ const VerifyEmailPage = () => {
     () => location.state?.email || user?.email || "",
     [location.state, user],
   );
-  const role = useMemo(
-    () => location.state?.role || user?.role || "",
-    [location.state, user],
-  );
-
   const updateTimer = useCallback((seconds) => {
     const newNow = Date.now();
     const newExpiry = newNow + seconds * 1000;
@@ -140,9 +135,12 @@ const VerifyEmailPage = () => {
       if (response.data?.user) {
         dispatch(setCredentials({ user: response.data.user }));
       }
-      const userRole = response.data?.user?.role || role;
-      const prefix = ROLES_CONFIG[userRole]?.prefix || "";
-      navigate(`/${prefix}`, { replace: true });
+      const verifiedUser = response.data?.user;
+      if (verifiedUser) {
+        navigate(getPostAuthDestination(verifiedUser), { replace: true });
+      } else {
+        navigate("/login", { replace: true });
+      }
     } catch (err) {
       if (err.status === 429) {
         updateTimer(err.data?.retry_after || 60);

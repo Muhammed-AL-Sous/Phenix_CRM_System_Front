@@ -1,12 +1,11 @@
-import { apiSlice } from "../../app/api/apiSlice";
+import { baseApi } from "../../api/apiSlice";
 
-export const clientsApiSlice = apiSlice.injectEndpoints({
+export const clientsApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // جلب العملاء مع دعم البحث (Filter)
     getClients: builder.query({
       query: (searchTerm) => ({
         url: "/clients",
-        params: { search: searchTerm }, // سيرسل الطلب كـ /clients?search=abc
+        params: { search: searchTerm },
       }),
       providesTags: (result) =>
         result
@@ -17,50 +16,52 @@ export const clientsApiSlice = apiSlice.injectEndpoints({
           : [{ type: "Clients", id: "LIST" }],
     }),
 
-    // 2. إضافة عميل جديد
     addClient: builder.mutation({
       query: (newClient) => ({
         url: "/clients",
         method: "POST",
         body: newClient,
       }),
-      // هنا السحر: "أبطل صلاحية" أي بيانات تحمل وسام Clients
-      // هذا سيجعل RTK Query يعيد جلب القائمة من Laravel تلقائياً
-      invalidatesTags: [{ type: "Clients", id: "LIST" }],
+      invalidatesTags: [{ type: "Clients", id: "LIST" }, "User", "Lookup"],
     }),
 
-    // 3. تحديث عميل
     updateClient: builder.mutation({
       query: (data) => ({
         url: `/clients/${data.id}`,
         method: "PUT",
         body: data,
       }),
-      // نبطل وسام العميل المحدد فقط والقائمة كاملة
       invalidatesTags: (result, error, arg) => [
         { type: "Clients", id: arg.id },
+        { type: "Clients", id: "LIST" },
       ],
     }),
 
-    // حذف عميل
     deleteClient: builder.mutation({
       query: (id) => ({
         url: `/clients/${id}`,
         method: "DELETE",
       }),
-      // بمجرد الحذف، نقوم بإبطال الـ LIST ليتم تحديث الجدول تلقائياً
       invalidatesTags: [{ type: "Clients", id: "LIST" }],
     }),
 
     getClientCreationData: builder.query({
-      query: ({ lang = 'ar' } = {}) => ({
+      query: ({ lang = "ar" } = {}) => ({
         url: "/lookups/client-data",
         method: "GET",
-        headers: lang ? { 'lang': lang } : {},
+        headers: lang ? { lang } : {},
       }),
       providesTags: ["Lookup"],
     }),
+
+    getCitiesForCountry: builder.query({
+      query: ({ countryId, lang = "ar" }) => ({
+        url: `/lookups/countries/${countryId}/cities`,
+        params: { lang },
+      }),
+    }),
   }),
+  overrideExisting: true,
 });
 
 export const {
@@ -68,5 +69,8 @@ export const {
   useAddClientMutation,
   useUpdateClientMutation,
   useDeleteClientMutation,
-  useGetCsrfTokenQuery,
+  useGetClientCreationDataQuery,
+  useLazyGetClientCreationDataQuery,
+  useGetCitiesForCountryQuery,
+  useLazyGetCitiesForCountryQuery,
 } = clientsApiSlice;

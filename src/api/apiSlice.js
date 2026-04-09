@@ -1,4 +1,3 @@
-// baseApi.js — إضافة retry للـ 419
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 function getCsrfToken() {
@@ -14,17 +13,14 @@ const rawBaseQuery = fetchBaseQuery({
     if (csrfToken) headers.set("X-XSRF-TOKEN", csrfToken);
     headers.set("Accept", "application/json");
     headers.set("X-Requested-With", "XMLHttpRequest");
-    // احذف Content-Type من هنا — RTK يضبطه تلقائياً حسب نوع الـ body
     return headers;
   },
 });
 
-// معالجة 419 (CSRF mismatch) تلقائياً
 const baseQueryWith419Handler = async (args, api, extraOptions) => {
   let result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error?.status === 419) {
-    // تجديد CSRF ثم إعادة المحاولة مرة واحدة
     await fetch("/sanctum/csrf-cookie", {
       credentials: "include",
       headers: { "X-Requested-With": "XMLHttpRequest" },
@@ -38,6 +34,6 @@ const baseQueryWith419Handler = async (args, api, extraOptions) => {
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWith419Handler,
-  tagTypes: ["User", "Auth"],
+  tagTypes: ["User", "Auth", "Clients", "Lookup"],
   endpoints: () => ({}),
 });

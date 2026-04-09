@@ -68,6 +68,23 @@ export default function DashboardLayout() {
   // إذا لم يكن هناك مستخدم، اخرج فوراً
   if (!user) return null;
 
+  const isClientOnboarding =
+    user.role === "client" &&
+    (location.pathname === "/client/complete-profile" ||
+      location.pathname.endsWith("/client/complete-profile"));
+
+  if (isClientOnboarding) {
+    return (
+      <div
+        className="min-h-screen bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
+      >
+        <main className="mesh-gradient flex-1 overflow-y-auto p-4 md:p-8 lg:p-10">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div
       className="min-h-screen bg-slate-50 dark:bg-black

@@ -6,7 +6,7 @@ import { useSearchParams, useNavigate, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
 // ========= Role Config ========= //
-import { ROLES_CONFIG } from "../../../routes/roles.config";
+import { getPostAuthDestination } from "../../../lib/postAuthRedirect";
 
 // ========= Reset Password Slice ========= //
 import {
@@ -117,14 +117,14 @@ const ResetPasswordPage = () => {
         "success",
       );
 
-      const { user } = response.data; // استخراج اليوزر مباشرة
+      const { user } = response.data;
       dispatch(setCredentials({ user }));
 
-      const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
+      const destination = getPostAuthDestination(user, {
+        fallbackPath: location.state?.from?.pathname,
+      });
 
-      const origin = location.state?.from?.pathname || `/${rolePrefix}`;
-
-      setTimeout(() => navigate(origin, { replace: true }), 2000);
+      setTimeout(() => navigate(destination, { replace: true }), 2000);
     } catch (err) {
       notify(err.data.message, "error");
     }

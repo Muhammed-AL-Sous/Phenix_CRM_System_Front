@@ -14,31 +14,63 @@ import { useLogoutMutation } from "../../features/auth/authApiSlice";
 
 // React Redux
 import { useSelector } from "react-redux";
+import {
+  selectCurrentUser,
+  selectAuthReady,
+} from "../../features/auth/authSlice";
 
 // Translation Hook
 import { useTranslation } from "react-i18next";
 
+import { ROLES_CONFIG } from "../../routes/roles.config";
 
 // Utility Components
 import LanguageToggle from "../utility/LanguageToggle";
 import ThemeToggle from "../utility/ThemeToggle";
 
 // Icons
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 
 const Navbar = () => {
   const { t } = useTranslation("navbar");
   const { direction } = useSelector((state) => state.ui);
+  const user = useSelector(selectCurrentUser);
+  const authReady = useSelector(selectAuthReady);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const menuRef = useRef(null);
   const toggleRef = useRef(null);
 
-  /* ================= Handle Logout ================= */
   const [logout] = useLogoutMutation();
+
   const handleLogout = async () => {
-    logout();
+    try {
+      await logout().unwrap();
+    } catch {
+      /* session may already be cleared */
+    }
+    setIsMobileOpen(false);
   };
+
+  /** مسجّل ومفعّل، وملف الزبون مكتمل إن وُجد */
+  const isFullyOnboarded =
+    authReady &&
+    user &&
+    user.is_active &&
+    (user.role !== "client" || user.requires_client_profile !== true);
+
+  const needsClientProfile =
+    authReady &&
+    user &&
+    user.is_active &&
+    user.role === "client" &&
+    user.requires_client_profile === true;
+
+  const dashboardHref = user
+    ? `/${ROLES_CONFIG[user.role]?.prefix || "client"}`
+    : "/";
+
+  const completeProfileHref = "/client/complete-profile";
 
   /* ================= Scroll Effect ================= */
 
@@ -88,6 +120,12 @@ const Navbar = () => {
     { name: "what's_new", path: "/what's_new" },
   ];
 
+  const authButtonClass =
+    "px-4 py-2 bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-full text-white font-medium shadow-red-500 cursor-pointer hover:shadow-xl hover:shadow-[#ff6b6b]/30 transition-all duration-300 transform hover:-translate-y-1";
+
+  const logoutButtonClass =
+    "inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white font-medium hover:bg-slate-100 dark:hover:bg-white/10 transition-all duration-300";
+
   return (
     <nav
       className={`fixed w-full top-0 z-50 px-4 transition-all duration-300 ${
@@ -106,7 +144,7 @@ const Navbar = () => {
             {/* ================= Logo ================= */}
             <a href="/" className="relative">
               <img
-               src="/images/phenix_common/phenix_logo.png"
+                src="/images/phenix_common/phenix_logo.png"
                 alt="Phenix Systems Logo"
                 className="h-13"
               />
@@ -114,7 +152,7 @@ const Navbar = () => {
             </a>
 
             {/* ================= Desktop Links ================= */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center gap-6 flex-wrap justify-end">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -129,36 +167,65 @@ const Navbar = () => {
                 </Link>
               ))}
 
-              {/* ================= Change Language Button ================= */}
               <LanguageToggle />
-
-              {/* ================= Change Mode Buttons ================= */}
               <ThemeToggle />
 
-              <Link to="/login">
-                <button
+              {isFullyOnboarded && (
+                <>
+                  <Link
+                    to={dashboardHref}
+                    style={{
+                      fontFamily: direction === "rtl" ? "Almarai" : "Inter",
+                    }}
+                    className={`inline-flex items-center gap-2 ${authButtonClass}`}
+                  >
+                    <LayoutDashboard size={18} />
+                    {t("dashboard")}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    style={{
+                      fontFamily: direction === "rtl" ? "Almarai" : "Inter",
+                    }}
+                    className={logoutButtonClass}
+                  >
+                    <LogOut size={18} className="text-[#ed1c24]" />
+                    {t("logout")}
+                  </button>
+                </>
+              )}
+
+              {needsClientProfile && (
+                <Link
+                  to={completeProfileHref}
                   style={{
                     fontFamily: direction === "rtl" ? "Almarai" : "Inter",
                   }}
-                  className="px-4 py-2 bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-full text-white font-medium
-                   shadow-red-500  cursor-pointer
-                   hover:shadow-xl hover:shadow-[#ff6b6b]/30 transition-all duration-300 transform hover:-translate-y-1"
+                  className={authButtonClass}
                 >
-                  {t("get_Started")}
-                </button>
-              </Link>
-              <button onClick={handleLogout}>تسجيل الخروج</button>
+                  {t("continue_registration")}
+                </Link>
+              )}
+
+              {!isFullyOnboarded && !needsClientProfile && (
+                <Link to="/login">
+                  <button
+                    style={{
+                      fontFamily: direction === "rtl" ? "Almarai" : "Inter",
+                    }}
+                    className={authButtonClass}
+                  >
+                    {t("get_Started")}
+                  </button>
+                </Link>
+              )}
             </div>
 
             {/* Mobile Toggle */}
             <div className="md:hidden flex items-center gap-2">
-              {/* ================= Change Language Button ================= */}
               <LanguageToggle />
-
-              {/* ================= Change Mode Buttons ================= */}
               <ThemeToggle />
-
-              {/* ================= Toggle Button ================= */}
               <button
                 ref={toggleRef}
                 onClick={() => setIsMobileOpen((prev) => !prev)}
@@ -177,7 +244,7 @@ const Navbar = () => {
         className={`md:hidden absolute top-full left-0 w-full
           bg-white dark:bg-[#0a0a0a] dark:backdrop-blur-2xl shadow-xl transition-all
             duration-300 ease-in-out overflow-hidden ${
-              isMobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+              isMobileOpen ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
             }`}
       >
         <div className="px-4 py-6 space-y-4 flex flex-col items-center">
@@ -193,19 +260,64 @@ const Navbar = () => {
             </Link>
           ))}
 
-          <Link
-            to="/login"
-            className="w-full"
-            onClick={() => setIsMobileOpen(false)}
-          >
-            <button
-              style={{ fontFamily: direction === "rtl" ? "Almarai" : "Inter" }}
-              className="w-full font-bold bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-lg text-white hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer px-6 py-3"
+          {isFullyOnboarded && (
+            <>
+              <Link
+                to={dashboardHref}
+                className="w-full"
+                onClick={() => setIsMobileOpen(false)}
+              >
+                <button
+                  type="button"
+                  style={{ fontFamily: direction === "rtl" ? "Almarai" : "Inter" }}
+                  className="w-full font-bold bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-lg text-white hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer px-6 py-3 inline-flex items-center justify-center gap-2"
+                >
+                  <LayoutDashboard size={20} />
+                  {t("dashboard")}
+                </button>
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                style={{ fontFamily: direction === "rtl" ? "Almarai" : "Inter" }}
+                className="w-full font-medium rounded-lg border border-slate-300 dark:border-white/20 text-gray-800 dark:text-white px-6 py-3 inline-flex items-center justify-center gap-2"
+              >
+                <LogOut size={20} className="text-[#ed1c24]" />
+                {t("logout")}
+              </button>
+            </>
+          )}
+
+          {needsClientProfile && (
+            <Link
+              to={completeProfileHref}
+              className="w-full"
+              onClick={() => setIsMobileOpen(false)}
             >
-              {t("get_Started")}
-            </button>
-          </Link>
-          <button onClick={handleLogout}>تسجيل الخروج</button>
+              <button
+                type="button"
+                style={{ fontFamily: direction === "rtl" ? "Almarai" : "Inter" }}
+                className="w-full font-bold bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-lg text-white hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer px-6 py-3"
+              >
+                {t("continue_registration")}
+              </button>
+            </Link>
+          )}
+
+          {!isFullyOnboarded && !needsClientProfile && (
+            <Link
+              to="/login"
+              className="w-full"
+              onClick={() => setIsMobileOpen(false)}
+            >
+              <button
+                style={{ fontFamily: direction === "rtl" ? "Almarai" : "Inter" }}
+                className="w-full font-bold bg-linear-to-r from-[#ed1c24] to-[#ed1c29] rounded-lg text-white hover:shadow-lg hover:shadow-[#ff6b6b]/30 transition-all cursor-pointer px-6 py-3"
+              >
+                {t("get_Started")}
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

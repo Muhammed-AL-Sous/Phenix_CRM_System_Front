@@ -1,0 +1,31 @@
+{
+  "title": "أكمل ملف شركتك",
+  "subtitle": "نحتاج بعض التفاصيل قبل أن تتمكن من استخدام لوحة تحكم الزبون.",
+  "fields": {
+    "company_name": "اسم الشركة",
+    "contact_name": "اسم جهة الاتصال",
+    "phone": "الهاتف",
+    "address": "العنوان",
+    "country": "الدولة",
+    "city": "المدينة / المنطقة",
+    "business_activity": "نشاط العمل",
+    "job_title": "المسمى الوظيفي"
+  },
+  "placeholders": {
+    "select_country": "اختر الدولة",
+    "select_country_first": "اختر الدولة أولاً",
+    "loading_cities": "جاري التحميل…",
+    "select_city": "اختر المدينة",
+    "select": "اختر"
+  },
+  "actions": {
+    "save_and_continue": "حفظ ومتابعة",
+    "saving": "جاري الحفظ…"
+  },
+  "success": {
+    "saved": "تم حفظ الملف بنجاح."
+  },
+  "errors": {
+    "save_failed": "تعذر حفظ الملف. يرجى المحاولة لاحقاً."
+  }
+}

@@ -1,8 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useLayoutEffect, useMemo } from "react";
-import GlobalLoader, {
-  removeInitialLoader,
-} from "../../../../components/common/GlobalLoader";
+import GlobalLoader from "../../../../components/common/GlobalLoader";
+import { removeInitialLoader } from "../../../../components/common/removeInitialLoader";
 import {
   useGetUserDataQuery,
   useGetCsrfCookieMutation,

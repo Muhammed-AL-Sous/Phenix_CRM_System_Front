@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 
 const SupportStats = () => {
-  const { t } = useTranslation(["dashboard"]);
+  const { t } = useTranslation("dashboard");
   const { direction } = useSelector((state) => state.ui);
   return (
     <div style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter" }}>

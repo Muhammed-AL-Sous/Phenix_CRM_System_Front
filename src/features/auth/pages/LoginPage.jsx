@@ -6,7 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
 // ========= Role Config ========= //
-import { ROLES_CONFIG } from "../../../routes/roles.config";
+import { getPostAuthDestination } from "../../../lib/postAuthRedirect";
 
 // ========= Login Slice ========= //
 import { useLoginMutation, useGetCsrfTokenQuery } from "../authApiSlice";
@@ -106,11 +106,11 @@ const LoginPage = () => {
       const { user } = response.data;
       dispatch(setCredentials({ user }));
 
-      const rolePrefix = ROLES_CONFIG[user.role]?.prefix || "";
+      const destination = getPostAuthDestination(user, {
+        fallbackPath: location.state?.from?.pathname,
+      });
 
-      const origin = location.state?.from?.pathname || `/${rolePrefix}`;
-
-      navigate(origin, { replace: true });
+      navigate(destination, { replace: true });
     } catch (err) {
       console.error("Logging detail error:", err);
       const status = err.status;

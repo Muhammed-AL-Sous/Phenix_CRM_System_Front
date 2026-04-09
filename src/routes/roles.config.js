@@ -61,6 +61,10 @@ const ClientStats = lazy(
   () => import("../features/clients/components/ClientStats.jsx"),
 );
 
+const CompleteClientProfilePage = lazy(
+  () => import("../features/clients/pages/CompleteClientProfilePage.jsx"),
+);
+
 const ProspectiveClientsPage = lazy(
   () => import("../features/clients/pages/ProspectiveClientsPage.jsx"),
 );
@@ -178,6 +182,7 @@ export const ROLES_CONFIG = {
     ],
 
     routes: [
+      { path: "complete-profile", element: CompleteClientProfilePage },
       { path: "", element: DashboardPage },
       { path: "profile", element: ProfilePage },
       { path: "tickets", element: TicketsPage },

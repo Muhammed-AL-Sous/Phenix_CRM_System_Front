@@ -1,6 +1,1 @@
-export {
-  default,
-  Spinner,
-  removeInitialLoader,
-  RouteSuspenseFallback,
-} from "./GlobalLoader";
+export { default, Spinner, RouteSuspenseFallback } from "./GlobalLoader";

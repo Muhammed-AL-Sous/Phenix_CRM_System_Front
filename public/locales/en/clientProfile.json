@@ -1,0 +1,31 @@
+{
+  "title": "Complete your company profile",
+  "subtitle": "A few details are required before you can use the client dashboard.",
+  "fields": {
+    "company_name": "Company name",
+    "contact_name": "Contact name",
+    "phone": "Phone",
+    "address": "Address",
+    "country": "Country",
+    "city": "City / region",
+    "business_activity": "Business activity",
+    "job_title": "Job title"
+  },
+  "placeholders": {
+    "select_country": "Select country",
+    "select_country_first": "Select country first",
+    "loading_cities": "Loading…",
+    "select_city": "Select city",
+    "select": "Select"
+  },
+  "actions": {
+    "save_and_continue": "Save and continue",
+    "saving": "Saving…"
+  },
+  "success": {
+    "saved": "Profile saved successfully."
+  },
+  "errors": {
+    "save_failed": "Could not save profile. Please try again."
+  }
+}

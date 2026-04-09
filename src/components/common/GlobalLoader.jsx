@@ -1,5 +1,3 @@
-import React from "react";
-
 const SIZE_CLASS = {
   sm: "w-6 h-6 border-[3px]",
   md: "w-10 h-10 border-4",
@@ -36,7 +34,7 @@ export function Spinner({
 export default function GlobalLoader({ message, className = "" }) {
   return (
     <div
-      className={`fixed inset-0 z-[10000] flex items-center justify-center bg-slate-50 dark:bg-zinc-900 ${className}`}
+      className={`fixed inset-0 z-10000 flex items-center justify-center bg-slate-50 dark:bg-zinc-900 ${className}`}
     >
       <div className="text-center px-4">
         <Spinner size="lg" className="mx-auto block" />
@@ -62,12 +60,4 @@ export function RouteSuspenseFallback({ className = "" }) {
       <Spinner size="lg" />
     </div>
   );
-}
-
-/** إزالة لودر الـ HTML الأولي (#initial-loader) بعد أن يتحكم React بالواجهة */
-export function removeInitialLoader() {
-  const el = document.getElementById("initial-loader");
-  if (el?.parentNode) {
-    el.remove();
-  }
 }

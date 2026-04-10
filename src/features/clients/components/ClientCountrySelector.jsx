@@ -38,7 +38,7 @@ const ClientCountrySelector = () => {
       <select disabled={isLoading}>
         <option value="">{isLoading ? "Loading..." : "Select Country"}</option>
         {countries.map((country) => (
-          <option key={country.id} value={country.alpha2}>
+          <option key={country.id} value={country.id}>
             {country.name}
           </option>
         ))}

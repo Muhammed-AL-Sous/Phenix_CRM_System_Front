@@ -10,6 +10,7 @@ import {
 import { selectCurrentUser, setCredentials } from "../../auth/authSlice";
 import toast from "react-hot-toast";
 import { Spinner } from "../../../components/common/GlobalLoader";
+import FormListbox from "../../../components/utility/FormListbox";
 import { Building2, MapPin, Phone, User } from "lucide-react";
 
 const initialForm = {
@@ -32,16 +33,26 @@ export default function CompleteClientProfilePage() {
   const isRtl = direction === "rtl";
 
   const [form, setForm] = useState(initialForm);
+  const [logoFile, setLogoFile] = useState(null);
 
   const { data: lookup, isLoading: lookupLoading } = useGetClientCreationDataQuery(
     { lang: lang || "ar" },
   );
 
-  const countryId = form.country_id ? Number(form.country_id) : null;
+  const countryId =
+    form.country_id !== "" &&
+    form.country_id != null &&
+    !Number.isNaN(Number(form.country_id))
+      ? Number(form.country_id)
+      : null;
 
-  const { data: cities = [], isFetching: citiesLoading } = useGetCitiesForCountryQuery(
+  const {
+    data: cities = [],
+    isFetching: citiesFetching,
+    isError: citiesError,
+  } = useGetCitiesForCountryQuery(
     { countryId, lang: lang || "ar" },
-    { skip: !countryId },
+    { skip: !countryId, refetchOnMountOrArgChange: true },
   );
 
   const [addClient, { isLoading: submitting }] = useAddClientMutation();
@@ -60,11 +71,17 @@ export default function CompleteClientProfilePage() {
     if (!countryId) {
       return t("placeholders.select_country_first");
     }
-    if (citiesLoading) {
+    if (citiesFetching) {
       return t("placeholders.loading_cities");
     }
+    if (citiesError) {
+      return t("placeholders.select_city");
+    }
+    if (Array.isArray(cities) && cities.length === 0) {
+      return t("placeholders.no_cities");
+    }
     return t("placeholders.select_city");
-  }, [countryId, citiesLoading, t]);
+  }, [countryId, citiesFetching, citiesError, cities, t]);
 
   const formValid = useMemo(() => {
     return (
@@ -81,29 +98,49 @@ export default function CompleteClientProfilePage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => {
-      const next = { ...prev, [name]: value };
-      if (name === "country_id") {
-        next.subdivision_id = "";
-      }
-      return next;
-    });
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCountryChange = (value) => {
+    setForm((prev) => ({
+      ...prev,
+      country_id: value,
+      subdivision_id: "",
+    }));
+  };
+
+  const handleCityChange = (value) => {
+    setForm((prev) => ({ ...prev, subdivision_id: value }));
+  };
+
+  const handleBusinessActivityChange = (value) => {
+    setForm((prev) => ({ ...prev, business_activity_id: value }));
+  };
+
+  const handleJobTitleChange = (value) => {
+    setForm((prev) => ({ ...prev, job_title_id: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formValid || submitting) return;
 
-    const payload = {
-      company_name: form.company_name.trim(),
-      client_name: form.client_name.trim(),
-      phone: form.phone.trim(),
-      address: form.address.trim(),
-      country_id: Number(form.country_id),
-      subdivision_id: Number(form.subdivision_id),
-      business_activity_id: Number(form.business_activity_id),
-      job_title_id: Number(form.job_title_id),
-    };
+    const payload = new FormData();
+    payload.append("company_name", form.company_name.trim());
+    payload.append("client_name", form.client_name.trim());
+    payload.append("phone", form.phone.trim());
+    payload.append("address", form.address.trim());
+    payload.append("country_id", String(Number(form.country_id)));
+    payload.append("subdivision_id", String(Number(form.subdivision_id)));
+    payload.append(
+      "business_activity_id",
+      String(Number(form.business_activity_id)),
+    );
+    payload.append("job_title_id", String(Number(form.job_title_id)));
+
+    if (logoFile) {
+      payload.append("company_logo", logoFile);
+    }
 
     try {
       const res = await addClient(payload).unwrap();
@@ -220,19 +257,15 @@ export default function CompleteClientProfilePage() {
             >
               {t("fields.country")}
             </label>
-            <select
-              name="country_id"
+            <FormListbox
               value={form.country_id}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition focus:ring-2 focus:ring-red-500/30 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-            >
-              <option value="">{t("placeholders.select_country")}</option>
-              {countries.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+              onChange={handleCountryChange}
+              options={countries}
+              placeholder={t("placeholders.select_country")}
+              filterPlaceholder={t("placeholders.filter_list")}
+              filterEmptyLabel={t("placeholders.no_search_results")}
+              emptyLabel={t("placeholders.select_country")}
+            />
           </div>
           <div>
             <label
@@ -241,20 +274,25 @@ export default function CompleteClientProfilePage() {
             >
               {t("fields.city")}
             </label>
-            <select
-              name="subdivision_id"
+            <FormListbox
               value={form.subdivision_id}
-              onChange={handleChange}
-              disabled={!countryId || citiesLoading}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition focus:ring-2 focus:ring-red-500/30 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-            >
-              <option value="">{cityPlaceholder}</option>
-              {cities.map((city) => (
-                <option key={city.id} value={city.id}>
-                  {city.name}
-                </option>
-              ))}
-            </select>
+              onChange={handleCityChange}
+              options={cities}
+              placeholder={cityPlaceholder}
+              disabled={!countryId || citiesFetching}
+              loading={Boolean(countryId && citiesFetching)}
+              emptyLabel={t("placeholders.no_cities")}
+              filterPlaceholder={t("placeholders.filter_list")}
+              filterEmptyLabel={t("placeholders.no_search_results")}
+            />
+            {citiesError && countryId ? (
+              <p
+                className="mt-2 text-sm text-red-600 dark:text-red-400"
+                style={{ fontFamily: isRtl ? "Vazirmatn" : "Inter" }}
+              >
+                {t("errors.cities_load_failed")}
+              </p>
+            ) : null}
           </div>
         </div>
 
@@ -266,19 +304,15 @@ export default function CompleteClientProfilePage() {
             >
               {t("fields.business_activity")}
             </label>
-            <select
-              name="business_activity_id"
+            <FormListbox
               value={form.business_activity_id}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition focus:ring-2 focus:ring-red-500/30 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-            >
-              <option value="">{t("placeholders.select")}</option>
-              {businessActivities.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
+              onChange={handleBusinessActivityChange}
+              options={businessActivities}
+              placeholder={t("placeholders.select")}
+              emptyLabel={t("placeholders.select")}
+              filterPlaceholder={t("placeholders.filter_list")}
+              filterEmptyLabel={t("placeholders.no_search_results")}
+            />
           </div>
           <div>
             <label
@@ -287,20 +321,48 @@ export default function CompleteClientProfilePage() {
             >
               {t("fields.job_title")}
             </label>
-            <select
-              name="job_title_id"
+            <FormListbox
               value={form.job_title_id}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 outline-none transition focus:ring-2 focus:ring-red-500/30 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-            >
-              <option value="">{t("placeholders.select")}</option>
-              {jobTitles.map((j) => (
-                <option key={j.id} value={j.id}>
-                  {j.name}
-                </option>
-              ))}
-            </select>
+              onChange={handleJobTitleChange}
+              options={jobTitles}
+              placeholder={t("placeholders.select")}
+              emptyLabel={t("placeholders.select")}
+              filterPlaceholder={t("placeholders.filter_list")}
+              filterEmptyLabel={t("placeholders.no_search_results")}
+            />
           </div>
+        </div>
+
+        <div>
+          <label
+            className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300"
+            style={{ fontFamily: isRtl ? "Vazirmatn" : "Inter" }}
+          >
+            {t("fields.company_logo")}
+          </label>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/jpg,image/webp"
+            onChange={(e) => {
+              const f = e.target.files?.[0] || null;
+              if (!f) {
+                setLogoFile(null);
+                return;
+              }
+              // 512 KB server limit; keep a small client guard too
+              if (f.size > 512 * 1024) {
+                toast.error(t("errors.logo_too_large"));
+                e.target.value = "";
+                setLogoFile(null);
+                return;
+              }
+              setLogoFile(f);
+            }}
+            className="block w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 file:me-4 file:rounded-lg file:border-0 file:bg-red-600 file:px-3 file:py-2 file:text-white file:font-semibold hover:file:bg-red-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-slate-100"
+          />
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            Max size: 512KB. PNG/JPG/WebP.
+          </p>
         </div>
 
         <button

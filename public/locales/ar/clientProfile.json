@@ -6,6 +6,7 @@
     "contact_name": "اسم جهة الاتصال",
     "phone": "الهاتف",
     "address": "العنوان",
+    "company_logo": "شعار الشركة (اختياري)",
     "country": "الدولة",
     "city": "المدينة / المنطقة",
     "business_activity": "نشاط العمل",
@@ -15,8 +16,11 @@
     "select_country": "اختر الدولة",
     "select_country_first": "اختر الدولة أولاً",
     "loading_cities": "جاري التحميل…",
+    "no_cities": "لا توجد مدن/مناطق لهذا البلد",
     "select_city": "اختر المدينة",
-    "select": "اختر"
+    "select": "اختر",
+    "filter_list": "بحث…",
+    "no_search_results": "لا توجد نتائج"
   },
   "actions": {
     "save_and_continue": "حفظ ومتابعة",
@@ -26,6 +30,8 @@
     "saved": "تم حفظ الملف بنجاح."
   },
   "errors": {
-    "save_failed": "تعذر حفظ الملف. يرجى المحاولة لاحقاً."
+    "save_failed": "تعذر حفظ الملف. يرجى المحاولة لاحقاً.",
+    "logo_too_large": "يجب ألا يتجاوز حجم الشعار 512KB.",
+    "cities_load_failed": "تعذر تحميل المدن. حاول مرة أخرى."
   }
 }

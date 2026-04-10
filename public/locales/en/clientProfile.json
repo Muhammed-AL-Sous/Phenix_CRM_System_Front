@@ -6,6 +6,7 @@
     "contact_name": "Contact name",
     "phone": "Phone",
     "address": "Address",
+    "company_logo": "Company logo (optional)",
     "country": "Country",
     "city": "City / region",
     "business_activity": "Business activity",
@@ -15,8 +16,11 @@
     "select_country": "Select country",
     "select_country_first": "Select country first",
     "loading_cities": "Loading…",
+    "no_cities": "No cities/regions found for this country",
     "select_city": "Select city",
-    "select": "Select"
+    "select": "Select",
+    "filter_list": "Search…",
+    "no_search_results": "No matches"
   },
   "actions": {
     "save_and_continue": "Save and continue",
@@ -26,6 +30,8 @@
     "saved": "Profile saved successfully."
   },
   "errors": {
-    "save_failed": "Could not save profile. Please try again."
+    "save_failed": "Could not save profile. Please try again.",
+    "logo_too_large": "Logo must be 512KB or smaller.",
+    "cities_load_failed": "Could not load cities. Please try again."
   }
 }

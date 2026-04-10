@@ -26,6 +26,13 @@ export default defineConfig(({ mode }) => {
         changeOrigin: true,
         secure: false,
       },
+      // Laravel Reverb (Pusher protocol): same port as the Vite dev server so
+      // pusher-js can use ws/wss against localhost:5173 while Reverb runs on 8080.
+      "/app": {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: true,
+        ws: true,
+      },
     },
   },
   base: "/",

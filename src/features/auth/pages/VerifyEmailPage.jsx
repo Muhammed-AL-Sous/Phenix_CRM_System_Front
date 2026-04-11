@@ -11,7 +11,7 @@ import {
 import { selectCurrentUser, setCredentials } from "../authSlice";
 
 // ======== Role Config ========= //
-import { getPostAuthDestination } from "../../../lib/postAuthRedirect";
+import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 
 // ========= External Libraries ========= //
 import { notify, notifyPromise } from "../../../lib/notify";
@@ -143,7 +143,7 @@ const VerifyEmailPage = () => {
       }
     } catch (err) {
       if (err.status === 429) {
-        updateTimer(err.data?.retry_after || 60);
+        updateTimer(err.data?.errors?.retry_after || 60);
       } else {
         notify(
           "auth:error." + (err.data?.message || "Verification failed"),
@@ -164,9 +164,10 @@ const VerifyEmailPage = () => {
         success: "auth:success.Code resent successfully",
       });
       const response = await promise;
-      updateTimer(response?.data?.retry_after || 60);
+      updateTimer(response?.data?.user?.retry_after ?? 60);
     } catch (err) {
-      if (err.status === 429) updateTimer(err.data?.retry_after || 60);
+      if (err.status === 429)
+        updateTimer(err.data?.errors?.retry_after || 60);
       notify(err.data?.message || "Resend failed", "error");
     }
   };

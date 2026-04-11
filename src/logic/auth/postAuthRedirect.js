@@ -1,4 +1,4 @@
-import { ROLES_CONFIG } from "../routes/roles.config";
+import { ROLES_CONFIG } from "../../routes/roles.config";
 
 /**
  * Where to send the user after login, verify-email, or password reset.

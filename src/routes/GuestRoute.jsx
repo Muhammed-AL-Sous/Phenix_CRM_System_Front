@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../features/auth/authSlice";
-import { getPostAuthDestination } from "../lib/postAuthRedirect";
+import { getPostAuthDestination } from "../logic/auth/postAuthRedirect";
 
 export default function GuestRoute() {
   const user = useSelector(selectCurrentUser);

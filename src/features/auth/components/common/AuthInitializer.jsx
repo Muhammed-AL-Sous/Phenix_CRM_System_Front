@@ -90,10 +90,8 @@ export default function AuthInitializer({ children }) {
 
   // معالجة استجابة بيانات المستخدم
   useEffect(() => {
-    if (userData?.user || userData?.data?.user) {
-      // Laravel قد يرجع البيانات في user أو في data.user
-      const userInfo = userData.user || userData.data?.user || userData;
-
+    const userInfo = userData?.data?.user;
+    if (userInfo) {
       dispatch(setCredentials({ user: userInfo }));
 
       // إضافة fast_check cookie للمرات القادمة

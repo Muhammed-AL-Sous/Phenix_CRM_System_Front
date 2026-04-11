@@ -16,7 +16,7 @@ import { BadgeCheck, Mail } from "lucide-react";
 
 // ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
-import { notify } from "../../../lib/notify.js";
+import { notify } from "../../../lib/notify";
 
 import { Spinner } from "../../../components/common/GlobalLoader";
 
@@ -107,7 +107,7 @@ const ForgotPasswordPage = () => {
     } catch (err) {
       if (err.status === 429) {
         // قراءة الثواني القادمة من Laravel (مثلاً 60 أو 900 ثانية)
-        const waitSeconds = err.data?.retry_after || 60;
+        const waitSeconds = err.data?.errors?.retry_after || 60;
         // إذا كان لارافيل قد حظر المستخدم فعلياً (RateLimiter)
         notify(t("auth:error.too_many_requests"), "error");
         // تشغيل العداد بناءً على تعليمات السيرفر

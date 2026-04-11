@@ -17,10 +17,12 @@ const UsersPage = () => {
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: users = [], isLoading, refetch, error } = useGetUsersQuery(
-    undefined,
-    { skip: !canFetchUsers },
-  );
+  const {
+    data: users = [],
+    isLoading,
+    refetch,
+    error,
+  } = useGetUsersQuery(undefined, { skip: !canFetchUsers });
   const [deleteUser] = useDeleteUserMutation();
 
   const handleDelete = async (userId) => {

@@ -21,7 +21,7 @@ import { motion, AnimatePresence } from "motion/react";
 
 // Echo Library
 import echo from "../../../../lib/echo";
-import { shouldShowBroadcastToast } from "../../../../lib/broadcastNotifyDedupe";
+import { shouldShowBroadcastToast } from "../../../../logic/broadcastNotifyDedupe";
 import { notify } from "../../../../lib/notify";
 
 export default function DashboardLayout() {

@@ -6,7 +6,7 @@ import { useSearchParams, useNavigate, useLocation } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 
 // ========= Role Config ========= //
-import { getPostAuthDestination } from "../../../lib/postAuthRedirect";
+import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 
 // ========= Reset Password Slice ========= //
 import {

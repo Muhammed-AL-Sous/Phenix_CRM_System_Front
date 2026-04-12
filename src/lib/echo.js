@@ -37,23 +37,35 @@ function reverbClientOptions() {
   };
 }
 
-const echo = new Echo({
-  broadcaster: "reverb",
-  key: import.meta.env.VITE_REVERB_APP_KEY,
-  ...reverbClientOptions(),
-  enabledTransports: ["ws", "wss"],
-  authEndpoint: "/api/broadcasting/auth", // ✅ يمر عبر الـ proxy
-  auth: {
-    withCredentials: true,
-    headers: {
-      "X-Requested-With": "XMLHttpRequest",
-      Accept: "application/json",
-      get "X-XSRF-TOKEN"() {
-        const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-        return match ? decodeURIComponent(match[1]) : "";
-      },
-    },
-  },
-});
+/**
+ * لا ننشئ Echo عند تحميل الوحدة: الاستيراد من main كان يفتح WebSocket
+ * قبل جاهزية proxy الـ Vite (/app → Reverb) في أول تحميل، فيظهر خطأ ثم
+ * ينجح بعد إعادة التحميل. التهيئة الكسولة + تأخير الاشتراك في الواجهة تحل ذلك.
+ */
+let echoInstance;
 
-export default echo;
+export function getEcho() {
+  if (!echoInstance) {
+    echoInstance = new Echo({
+      broadcaster: "reverb",
+      key: import.meta.env.VITE_REVERB_APP_KEY,
+      ...reverbClientOptions(),
+      enabledTransports: ["ws", "wss"],
+      authEndpoint: "/api/broadcasting/auth", // ✅ يمر عبر الـ proxy
+      auth: {
+        withCredentials: true,
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          Accept: "application/json",
+          get "X-XSRF-TOKEN"() {
+            const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+            return match ? decodeURIComponent(match[1]) : "";
+          },
+        },
+      },
+    });
+  }
+  return echoInstance;
+}
+
+export default getEcho;

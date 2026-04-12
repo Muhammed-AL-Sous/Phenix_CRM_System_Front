@@ -19,8 +19,8 @@ import DashboardNavbar from "./DashboardNavbar";
 
 import { motion, AnimatePresence } from "motion/react";
 
-// Echo Library
-import echo from "../../../../lib/echo";
+// Echo Library (تهيئة كسولة — لا WebSocket عند أول سطر من التطبيق)
+import getEcho from "../../../../lib/echo";
 import { shouldShowBroadcastToast } from "../../../../logic/broadcastNotifyDedupe";
 import { notify } from "../../../../lib/notify";
 
@@ -41,17 +41,32 @@ export default function DashboardLayout() {
       return;
     }
 
-    const channel = echo.private(`App.Models.User.${userId}`);
+    let cancelled = false;
+    let subscribed = false;
+    const delayMs = import.meta.env.DEV ? 180 : 0;
 
-    channel.notification((notification) => {
-      if (!shouldShowBroadcastToast(notification)) {
-        return;
-      }
-      notify(notification.message || "إشعار جديد", "success");
-    });
+    const timer = window.setTimeout(() => {
+      if (cancelled) return;
+
+      const echo = getEcho();
+      const channel = echo.private(`App.Models.User.${userId}`);
+
+      channel.notification((notification) => {
+        if (!shouldShowBroadcastToast(notification)) {
+          return;
+        }
+        notify(notification.message || "إشعار جديد", "success");
+      });
+
+      subscribed = true;
+    }, delayMs);
 
     return () => {
-      echo.leave(`private-App.Models.User.${userId}`);
+      cancelled = true;
+      window.clearTimeout(timer);
+      if (subscribed) {
+        getEcho().leave(`private-App.Models.User.${userId}`);
+      }
     };
   }, [userId]);
 

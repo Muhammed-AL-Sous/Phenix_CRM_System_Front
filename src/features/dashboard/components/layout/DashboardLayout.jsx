@@ -70,15 +70,19 @@ export default function DashboardLayout() {
     };
   }, [userId]);
 
-  /* ================= Lock Body Scroll ================= */
+  /* ================= Single Scroll Container (Dashboard) ================= */
   useLayoutEffect(() => {
-    if (isSidebarOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => (document.body.style.overflow = "");
-  }, [isSidebarOpen]);
+    // Avoid double scrollbars: let the dashboard <main> be the only scroller.
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+    };
+  }, []);
 
   // إذا لم يكن هناك مستخدم، اخرج فوراً
   if (!user) return null;
@@ -91,9 +95,9 @@ export default function DashboardLayout() {
   if (isClientOnboarding) {
     return (
       <div
-        className="min-h-screen bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
+        className="h-dvh overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
       >
-        <main className="mesh-gradient flex-1 overflow-y-auto p-4 md:p-8 lg:p-10">
+        <main className="mesh-gradient no-scroll-anchor flex-1 overflow-y-auto overscroll-contain p-4 md:p-8 lg:p-10">
           <Outlet />
         </main>
       </div>
@@ -102,8 +106,7 @@ export default function DashboardLayout() {
 
   return (
     <div
-      className="min-h-screen bg-slate-50 dark:bg-black
-     flex selection:bg-red-500/30"
+      className="h-dvh overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
     >
       {/* ============== Dashboard SideBar ============== */}
       <DashboardSidebar
@@ -121,7 +124,7 @@ export default function DashboardLayout() {
         <DashboardNavbar toggleSidebar={() => setIsSidebarOpen(true)} />
 
         {/* ============== Dashboard Content ============== */}
-        <main className="overflow-y-auto mesh-gradient flex-1 p-4 md:p-8 lg:p-10 relative overflow-x-hidden">
+        <main className="mesh-gradient no-scroll-anchor flex-1 overflow-y-auto overscroll-contain p-4 md:p-8 lg:p-10 relative overflow-x-hidden">
           {/* ============== Page Transition Animation ============== */}
           <AnimatePresence mode="wait">
             <motion.div

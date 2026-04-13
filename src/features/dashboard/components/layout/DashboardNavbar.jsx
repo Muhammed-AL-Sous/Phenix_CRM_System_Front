@@ -23,7 +23,6 @@ import { selectCurrentUser } from "../../../auth/authSlice";
 import { useLogoutMutation } from "../../../auth/authApiSlice";
 import { useNavigate } from "react-router";
 import { ROLES_CONFIG } from "../../../../routes/roles.config";
-import { notify } from "../../../../lib/notify";
 
 const DashboardNavbar = ({ toggleSidebar }) => {
   const { t } = useTranslation("dashboard");
@@ -110,7 +109,7 @@ const DashboardNavbar = ({ toggleSidebar }) => {
             size={22}
             className="text-gray-700 dark:text-white group-hover:text-red-500"
           />
-          <span className="absolute top-3 end-3 w-2.5 h-2.5 bg-red-500 rounded-full border-[3px] border-white dark:border-zinc-950" />
+          <span className="absolute top-3 inset-e-3 w-2.5 h-2.5 bg-red-500 rounded-full border-[3px] border-white dark:border-zinc-950" />
         </button>
 
         <div className="h-10 w-px bg-slate-200 dark:bg-zinc-800 mx-2" />
@@ -129,7 +128,7 @@ const DashboardNavbar = ({ toggleSidebar }) => {
               <div
                 className={`hidden sm:block ${isRTL ? "text-left" : "text-right"}`}
               >
-                <p className="text-sm font-black text-slate-900 dark:text-white leading-tight max-w-[10rem] truncate">
+                <p className="text-sm font-black text-slate-900 dark:text-white leading-tight max-w-40 truncate">
                   {displayName}
                 </p>
                 <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">

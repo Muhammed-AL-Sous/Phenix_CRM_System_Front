@@ -36,7 +36,7 @@ export default function AuthInitializer({ children }) {
   const [
     getCsrfCookie,
     {
-      isFetching: isCsrfFetching,
+      isLoading: isCsrfLoading,
       isSuccess: isCsrfSuccess,
       isError: isCsrfError,
       error: csrfError,
@@ -64,8 +64,6 @@ export default function AuthInitializer({ children }) {
 
     getCsrfCookie()
       .unwrap()
-      .then(() => {
-      })
       .catch((error) => {
         console.warn("❌ CSRF token fetch failed:", error);
       });
@@ -129,7 +127,7 @@ export default function AuthInitializer({ children }) {
     (isUserLoading || isUserFetching || isUserUninitialized);
 
   const isAuthLoading =
-    (hasFastCheck && !csrfReady) || isCsrfFetching || isUserDataLoading;
+    (hasFastCheck && !csrfReady) || isCsrfLoading || isUserDataLoading;
 
   // إشعار Redux أن Auth جاهز
   const authReady = useSelector(selectAuthReady);

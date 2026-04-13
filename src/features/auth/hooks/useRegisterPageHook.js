@@ -1,12 +1,14 @@
 // ========= React ========= //
 import { useState, useRef, useCallback } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 
 // ========= Redux ========= //
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 // ========= Register Slice ========= //
-import { useRegisterMutation, useGetCsrfCookieMutation } from "../authApiSlice";
+import { useRegisterMutation } from "../authApiSlice";
+import { setCredentials } from "../authSlice";
+import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 
 // ========= External Libraries ========= //
 import { notify } from "../../../lib/notify";
@@ -29,13 +31,13 @@ const useRegisterPageHook = () => {
 
   // ========= Router ========= //
   const navigate = useNavigate();
+  const location = useLocation();
 
   // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);
+  const dispatch = useDispatch();
 
   // ========= API Mutation ========= //
-  const [fetchCsrfCookie, { isLoading: isCsrfLoading }] =
-    useGetCsrfCookieMutation();
   const [register, { isLoading }] = useRegisterMutation();
 
   // ========= Validate Register Form ========= //
@@ -98,24 +100,33 @@ const useRegisterPageHook = () => {
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
-      await fetchCsrfCookie().unwrap();
-
       const registrationPromise = register(registerForm).unwrap();
 
       const response = await registrationPromise;
 
       notify("auth:success.register_success", "success");
 
-      const { user } = response.data; // استخراج اليوزر مباشرة
+      const { user } = response.data;
 
-      if (!user.is_active) {
-        navigate("/verify-email", {
+      const destination = getPostAuthDestination(user, {
+        fallbackPath: location.state?.from?.pathname,
+      });
+
+      // حساب جديد غير مفعّل: التحقق أولاً (نفس قاعدة postAuthRedirect)
+      if (destination === "/verify-email") {
+        navigate(destination, {
+          replace: true,
           state: {
             email: user.email,
             role: user.role,
+            retry_after: user.retry_after,
           },
         });
+        return;
       }
+
+      dispatch(setCredentials({ user }));
+      navigate(destination, { replace: true });
     } catch (err) {
       console.error("Registration detail error:", err);
       if (err.status === 422) {
@@ -163,7 +174,6 @@ const useRegisterPageHook = () => {
     errors,
     direction,
     isLoading,
-    isCsrfLoading,
     handleChange,
     handleSubmit,
     handleToggle,

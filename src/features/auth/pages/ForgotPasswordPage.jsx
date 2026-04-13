@@ -6,10 +6,7 @@ import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 
 // ========= Forgot Password Slice ========= //
-import {
-  useGetCsrfCookieMutation,
-  useForgotPasswordMutation,
-} from "../authApiSlice.js";
+import { useForgotPasswordMutation } from "../authApiSlice.js";
 
 // ========= Icons ========= //
 import { BadgeCheck, Mail } from "lucide-react";
@@ -28,8 +25,6 @@ const ForgotPasswordPage = () => {
   const [timer, setTimer] = useState(0);
 
   // ========= RTK Query Hooks ========= //
-  const [fetchCsrfCookie, { isLoading: isCsrfLoading }] =
-    useGetCsrfCookieMutation();
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   // ========= Translation ========= //
@@ -95,8 +90,6 @@ const ForgotPasswordPage = () => {
     if (!isValid || timer > 0) return; // منع الإرسال إذا كان العداد يعمل
 
     try {
-      await fetchCsrfCookie().unwrap();
-
       await forgotPassword(email.trim()).unwrap();
 
       notify("auth:success.reset_link_sent", "success");
@@ -199,7 +192,7 @@ const ForgotPasswordPage = () => {
 
       <button
         type="submit"
-        disabled={isLoading || isCsrfLoading || timer > 0}
+        disabled={isLoading || timer > 0}
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
         }}
@@ -208,12 +201,12 @@ const ForgotPasswordPage = () => {
     rounded-3xl shadow-lg shadow-red-500/30 transition-all transform
      active:scale-[0.98] cursor-pointer
        ${
-         isLoading || isCsrfLoading || timer > 0
+         isLoading || timer > 0
            ? "bg-red-500 cursor-not-allowed opacity-70"
            : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
        }`}
       >
-        {isLoading || isCsrfLoading ? (
+        {isLoading ? (
           <span className="flex items-center justify-center">
             <Spinner size="sm" variant="onPrimary" />
           </span>

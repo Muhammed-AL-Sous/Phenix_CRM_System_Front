@@ -23,6 +23,7 @@ import { selectCurrentUser } from "../../../auth/authSlice";
 import { useLogoutMutation } from "../../../auth/authApiSlice";
 import { useNavigate } from "react-router";
 import { ROLES_CONFIG } from "../../../../routes/roles.config";
+import { notify } from "../../../../lib/notify";
 
 const DashboardNavbar = ({ toggleSidebar }) => {
   const { t } = useTranslation("dashboard");

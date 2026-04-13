@@ -1,6 +1,6 @@
 // ========= React ========= //
 import { useState, useRef, useCallback } from "react";
-import { Link, useNavigate, useLocation } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 
 // ========= Redux ========= //
 import { useSelector, useDispatch } from "react-redux";
@@ -9,17 +9,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 
 // ========= Login Slice ========= //
-import { useLoginMutation, useGetCsrfTokenQuery } from "../authApiSlice";
+import { useLoginMutation } from "../authApiSlice";
 import { setCredentials } from "../authSlice";
 
 // ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
 import { notify } from "../../../lib/notify";
 
-// ========= Icons ========= //
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-
-import { Spinner } from "../../../components/common/GlobalLoader";
 
 const useLoginPageHook = () => {
   // ========= React State ========= //
@@ -47,7 +43,6 @@ const useLoginPageHook = () => {
 
   // ========= API Mutation ========= //
   const [login, { isLoading }] = useLoginMutation();
-  const { isLoading: isCsrfLoading } = useGetCsrfTokenQuery();
 
   // ========= Validate Login Form ========= //
   const validateLoginForm = () => {
@@ -173,7 +168,7 @@ const useLoginPageHook = () => {
     loginForm,
     setLoginForm,
     errors,
-    isLoading: isLoading || isCsrfLoading,
+    isLoading,
     direction,
     t,
     passwordRef,

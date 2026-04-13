@@ -40,6 +40,7 @@ const UIProvider = ({ children }) => {
       <Toaster
         position="top-center"
         toastOptions={{
+          duration: 4000,
           // استخدام الفونت الخاص بك بناءً على اللغة
           className: direction === "rtl" ? "font-[Vazirmatn]" : "font-[Inter]",
           style: {

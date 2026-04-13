@@ -1,5 +1,4 @@
-// src/services/authApiSlice.js (أو src/auth/authApiSlice.js حسب مسارك)
-import { baseApi } from "../../api/apiSlice"; // ✅ تأكد من المسار الصحيح
+import { baseApi } from "../../api/apiSlice";
 import { logOut } from "./authSlice";
 
 // دالة مساعدة لجلب CSRF cookie
@@ -20,7 +19,7 @@ async function fetchCsrfCookie() {
 
     return response;
   } catch (error) {
-    console.error("Failed to fetch CSRF cookie:", error);
+    console.error("Failed to Fetch CSRF Cookie : ", error);
     throw error;
   }
 }
@@ -28,31 +27,7 @@ async function fetchCsrfCookie() {
 // ⭐ إضافة endpoints للـ baseApi
 export const authApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // ✅ CSRF Token كـ Query
-    getCsrfToken: builder.query({
-      queryFn: async () => {
-        try {
-          await fetchCsrfCookie();
-          return {
-            data: {
-              success: true,
-              message: "CSRF token retrieved successfully",
-            },
-          };
-        } catch (error) {
-          return {
-            error: {
-              status: "FETCH_ERROR",
-              error: error.message,
-              data: "Failed to retrieve CSRF token",
-            },
-          };
-        }
-      },
-      keepUnusedDataFor: 0, // لا نريد caching
-    }),
-
-    // ✅ CSRF Token كـ Mutation (للاستخدام اليدوي)
+    /** جلب cookie الـ CSRF من Laravel Sanctum (يُستخدم من AuthInitializer والنماذج عند الحاجة) */
     getCsrfCookie: builder.mutation({
       queryFn: async () => {
         try {
@@ -70,6 +45,7 @@ export const authApiSlice = baseApi.injectEndpoints({
         url: "/user-data",
         method: "GET",
       }),
+      // عندك query مثل `getUserData` مع `providesTags: ["User"]` — يعني “هذه النتيجة **تمثل** حالة المستخدم”.
       providesTags: ["User"],
       // إعداد خاص للتعامل مع أخطاء 401/419
       transformErrorResponse: (response) => {
@@ -88,37 +64,18 @@ export const authApiSlice = baseApi.injectEndpoints({
         method: "POST",
         body: credentials,
       }),
+      // عندك mutation مثل `login` مع `invalidatesTags: ["User"]` — يعني “بعد النجاح، **ما عاد** نعتمد النسخة القديمة من بيانات المستخدم؛ أعد التزامن”.
       invalidatesTags: ["User"],
-      // قبل تسجيل الدخول، تأكد من وجود CSRF token
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          // بعد تسجيل الدخول الناجح، جلب بيانات المستخدم
-          dispatch(authApiSlice.util.invalidateTags(["User"]));
-        } catch (error) {
-          console.error("Login failed:", error);
-        }
-      },
     }),
 
     // ============ verify Email Api Mutation ============ //
     verifyEmail: builder.mutation({
-      // نمرر الـ credentials ككائن يحتوي على email و code
       query: (credentials) => ({
         url: "/verify-email",
         method: "POST",
-        body: credentials, // سيرسل { email: "...", code: "..." }
+        body: credentials,
       }),
       invalidatesTags: ["User"],
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          // بعد تسجيل الدخول الناجح، جلب بيانات المستخدم
-          dispatch(authApiSlice.util.invalidateTags(["User"]));
-        } catch (error) {
-          console.error("verify Email failed:", error);
-        }
-      },
     }),
 
     // ============ Resend Verification Api Mutation ============ //
@@ -155,15 +112,6 @@ export const authApiSlice = baseApi.injectEndpoints({
         },
       }),
       invalidatesTags: ["User"],
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          // بعد تسجيل الدخول الناجح، جلب بيانات المستخدم
-          dispatch(authApiSlice.util.invalidateTags(["User"]));
-        } catch (error) {
-          console.error("Reset Password failed:", error);
-        }
-      },
     }),
 
     // ✅ تسجيل حساب جديد
@@ -202,7 +150,6 @@ export const authApiSlice = baseApi.injectEndpoints({
 
 // ✅ تصدير جميع الـ hooks بالأسماء الصحيحة
 export const {
-  useGetCsrfTokenQuery,
   useGetCsrfCookieMutation,
   useGetUserDataQuery,
   useLoginMutation,

@@ -9,10 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 
 // ========= Reset Password Slice ========= //
-import {
-  useResetPasswordMutation,
-  useGetCsrfCookieMutation,
-} from "../authApiSlice";
+import { useResetPasswordMutation } from "../authApiSlice";
 import { setCredentials } from "../authSlice";
 
 // ========= External Libraries ========= //
@@ -53,8 +50,6 @@ const ResetPasswordPage = () => {
   const dispatch = useDispatch();
 
   // ========= RTK Query Hooks ========= //
-  const [fetchCsrfCookie, { isLoading: isCsrfLoading }] =
-    useGetCsrfCookieMutation();
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   // ========= Validate Reset Password Form ========= //
@@ -106,8 +101,6 @@ const ResetPasswordPage = () => {
     if (!isValid) return; // توقف هنا ولا ترسل للسيرفر
 
     try {
-      await fetchCsrfCookie().unwrap();
-
       const resetPassPromise = resetPassword(resetPasswordForm).unwrap();
 
       const response = await resetPassPromise;
@@ -356,7 +349,7 @@ const ResetPasswordPage = () => {
       {/* ======= Reset Password Button ======= */}
       <button
         type="submit"
-        disabled={isLoading || isCsrfLoading}
+        disabled={isLoading}
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
         }}
@@ -365,12 +358,12 @@ const ResetPasswordPage = () => {
               rounded-xl shadow-lg shadow-red-500/30 transition-all transform 
               active:scale-[0.98] cursor-pointer 
                ${
-                 isLoading || isCsrfLoading
+                 isLoading
                    ? "bg-red-500 cursor-not-allowed opacity-80"
                    : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
                }`}
       >
-        {isLoading || isCsrfLoading ? (
+        {isLoading ? (
           <span className="flex items-center justify-center">
             <Spinner size="sm" variant="onPrimary" />
           </span>

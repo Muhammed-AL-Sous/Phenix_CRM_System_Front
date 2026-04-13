@@ -28,7 +28,6 @@ const RegisterPage = () => {
     errors,
     direction,
     isLoading,
-    isCsrfLoading,
     handleChange,
     handleSubmit,
     handleToggle,
@@ -305,7 +304,7 @@ const RegisterPage = () => {
       {/* ======= Register Button ======= */}
       <button
         type="submit"
-        disabled={isLoading || isCsrfLoading}
+        disabled={isLoading}
         style={{
           fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
         }}
@@ -314,12 +313,12 @@ const RegisterPage = () => {
               rounded-xl shadow-lg shadow-red-500/30 transition-all transform 
               active:scale-[0.98] cursor-pointer 
                ${
-                 isLoading || isCsrfLoading
+                 isLoading
                    ? "bg-red-500 cursor-not-allowed opacity-80"
                    : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
                }`}
       >
-        {isLoading || isCsrfLoading ? (
+        {isLoading ? (
           <span className="flex items-center justify-center">
             <Spinner size="sm" variant="onPrimary" />
           </span>

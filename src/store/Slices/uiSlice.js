@@ -32,7 +32,6 @@ const uiSlice = createSlice({
     setLang: (state, action) => {
       state.lang = action.payload;
       state.direction = action.payload === "ar" ? "rtl" : "ltr";
-
       localStorage.setItem("lang", state.lang);
     },
   },

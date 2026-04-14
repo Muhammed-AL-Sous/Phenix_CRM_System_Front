@@ -26,7 +26,7 @@ const useVerifyEmailPageHook = () => {
 
   const { direction } = useSelector((state) => state.ui);
 
-  const { t } = useTranslation(["auth"]);
+  const { t } = useTranslation("auth");
 
   const [code, setCode] = useState(["", "", "", "", "", ""]);
 

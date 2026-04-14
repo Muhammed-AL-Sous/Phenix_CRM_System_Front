@@ -22,7 +22,7 @@ const useForgotPasswordPageHook = () => {
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   // ========= Translation ========= //
-  const { t } = useTranslation(["auth"]);
+  const { t } = useTranslation("auth");
 
   // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);

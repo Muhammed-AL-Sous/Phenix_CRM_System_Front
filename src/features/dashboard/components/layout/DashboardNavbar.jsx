@@ -50,10 +50,10 @@ const DashboardNavbar = ({ toggleSidebar }) => {
 
   return (
     <header
-      className="h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between sticky top-0 z-30
+      className="h-[72px] min-h-[72px] md:h-[80px] md:min-h-[80px] shrink-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between sticky top-0 z-30
      shadow-xl glass px-2 md:px-4"
     >
-      <div className="flex items-center gap-6 flex-1">
+      <div className="flex items-center gap-4 md:gap-6 flex-1">
         {/* ============ Toggle SideBar Button ============ */}
         <button
           onClick={toggleSidebar}
@@ -87,13 +87,13 @@ const DashboardNavbar = ({ toggleSidebar }) => {
         {/* ============ Lang & Mode Button ============ */}
         <div className="flex items-center">
           <span
-            style={{ width: "46px", height: "46px", padding: "12px" }}
+            style={{ width: "40px", height: "40px", padding: "10px" }}
             className="flex justify-center items-center rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 relative group transition-all"
           >
             <ThemeToggle />
           </span>
           <span
-            style={{ width: "46px", height: "46px", padding: "12px" }}
+            style={{ width: "40px", height: "40px", padding: "10px" }}
             className="rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 relative group transition-all"
           >
             <LanguageToggle />
@@ -103,22 +103,22 @@ const DashboardNavbar = ({ toggleSidebar }) => {
         {/* ============ Notification Button ============ */}
         <button
           type="button"
-          className="p-3 rounded-2xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 relative group transition-all"
+          className="p-2.5 rounded-2xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 relative group transition-all"
         >
           <Bell
             size={22}
             className="text-gray-700 dark:text-white group-hover:text-red-500"
           />
-          <span className="absolute top-3 inset-e-3 w-2.5 h-2.5 bg-red-500 rounded-full border-[3px] border-white dark:border-zinc-950" />
+          <span className="absolute top-2.5 inset-e-2.5 w-2.5 h-2.5 bg-red-500 rounded-full border-[3px] border-white dark:border-zinc-950" />
         </button>
 
-        <div className="h-10 w-px bg-slate-200 dark:bg-zinc-800 mx-2" />
+        <div className="h-9 w-px bg-slate-200 dark:bg-zinc-800 mx-2" />
 
         <Dropdown
           align={isRTL ? "left" : "right"}
           trigger={
             <div className="flex items-center gap-4 ps-2 cursor-pointer">
-              <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-slate-200 to-slate-300 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center overflow-hidden border-2 border-white dark:border-zinc-800 shadow-lg">
+              <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-slate-200 to-slate-300 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center overflow-hidden border-2 border-white dark:border-zinc-800 shadow-lg">
                 <User
                   size={24}
                   className="text-slate-500 dark:text-slate-400"

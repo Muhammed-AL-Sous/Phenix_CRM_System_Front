@@ -21,6 +21,7 @@ const FormListbox = ({
   filterPlaceholder = "",
 }) => {
   const [open, setOpen] = useState(false);
+  const [openUp, setOpenUp] = useState(false);
   const [filter, setFilter] = useState("");
   const rootRef = useRef(null);
   const { direction } = useSelector((state) => state.ui);
@@ -41,6 +42,28 @@ const FormListbox = ({
     setOpen(false);
     setFilter("");
   }, []);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const updatePlacement = () => {
+      const el = rootRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // Heuristic: if not enough room below, open upwards.
+      // 320px ~ dropdown (mt + panel + safe space).
+      const shouldOpenUp = window.innerHeight - rect.bottom < 320;
+      setOpenUp(shouldOpenUp);
+    };
+
+    updatePlacement();
+    window.addEventListener("resize", updatePlacement);
+    // Capture scroll events from any scroll container.
+    window.addEventListener("scroll", updatePlacement, true);
+    return () => {
+      window.removeEventListener("resize", updatePlacement);
+      window.removeEventListener("scroll", updatePlacement, true);
+    };
+  }, [open]);
 
   useEffect(() => {
     const onDoc = (e) => {
@@ -98,13 +121,13 @@ const FormListbox = ({
         {open && !disabled && !loading && (
           <motion.div
             dir={isRtl ? "rtl" : "ltr"}
-            initial={{ opacity: 0, y: -5 }}
+            initial={{ opacity: 0, y: openUp ? 5 : -5 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
+            exit={{ opacity: 0, y: openUp ? 5 : -5 }}
             transition={{ duration: 0.2 }}
-            className={`absolute z-50 mt-2 max-h-72 w-full overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 backdrop-blur-xl dark:bg-zinc-900 dark:ring-white/10 ${
-              isRtl ? "right-0" : "left-0"
-            }`}
+            className={`absolute z-50 max-h-72 w-full overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 backdrop-blur-xl dark:bg-zinc-900 dark:ring-white/10 ${
+              openUp ? "bottom-full mb-2" : "top-full mt-2"
+            } ${isRtl ? "right-0" : "left-0"}`}
             role="listbox"
           >
             {options.length > 12 && (

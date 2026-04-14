@@ -16,7 +16,6 @@ import { setCredentials } from "../authSlice";
 import { useTranslation } from "react-i18next";
 import { notify } from "../../../lib/notify";
 
-
 const useLoginPageHook = () => {
   // ========= React State ========= //
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +34,7 @@ const useLoginPageHook = () => {
   const location = useLocation();
 
   // ========= Translation ========= //
-  const { t } = useTranslation(["auth"]);
+  const { t } = useTranslation("auth");
 
   // ========= Redux ========= //
   const { direction } = useSelector((state) => state.ui);

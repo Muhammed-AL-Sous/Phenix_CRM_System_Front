@@ -12,6 +12,7 @@ import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 
 // ========= External Libraries ========= //
 import { notify } from "../../../lib/notify";
+import { useTranslation } from "react-i18next";
 
 const useRegisterPageHook = () => {
   // ========= React State ========= //
@@ -39,6 +40,9 @@ const useRegisterPageHook = () => {
 
   // ========= API Mutation ========= //
   const [register, { isLoading }] = useRegisterMutation();
+
+  // ========= Translation ========= //
+  const { t } = useTranslation("auth");
 
   // ========= Validate Register Form ========= //
   const validateRegisterForm = () => {
@@ -171,6 +175,7 @@ const useRegisterPageHook = () => {
     showPassword,
     showConfirmPassword,
     registerForm,
+    t,
     errors,
     direction,
     isLoading,

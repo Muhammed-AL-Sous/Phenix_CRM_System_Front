@@ -1,9 +1,6 @@
 // ========= React ========= //
 import { Link } from "react-router";
 
-// ========= External Libraries ========= //
-import { useTranslation } from "react-i18next";
-
 // ========= Icons ========= //
 import {
   Eye,
@@ -25,6 +22,7 @@ const RegisterPage = () => {
     showPassword,
     showConfirmPassword,
     registerForm,
+    t,
     errors,
     direction,
     isLoading,
@@ -34,9 +32,6 @@ const RegisterPage = () => {
     passwordRef,
     passwordConfirmRef,
   } = useRegisterPageHook();
-
-  // ========= Translation ========= //
-  const { t } = useTranslation(["auth"]);
 
   return (
     <form className="space-y-3" onSubmit={handleSubmit}>

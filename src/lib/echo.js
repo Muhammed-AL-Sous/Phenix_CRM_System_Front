@@ -26,7 +26,8 @@ function reverbClientOptions() {
       wsHost: hostname,
       wsPort: port,
       wssPort: port,
-      forceTLS: scheme === "https",
+      // في dev على http://localhost:5173 نريد ws فقط لتجنب محاولة wss التي تُظهر خطأ مزعج بالكونسول.
+      forceTLS: protocol === "https:" ? true : false,
     };
   }
   return {
@@ -46,11 +47,16 @@ let echoInstance;
 
 export function getEcho() {
   if (!echoInstance) {
+    const isDevHttp =
+      import.meta.env.DEV &&
+      typeof window !== "undefined" &&
+      window.location.protocol === "http:";
+
     echoInstance = new Echo({
       broadcaster: "reverb",
       key: import.meta.env.VITE_REVERB_APP_KEY,
       ...reverbClientOptions(),
-      enabledTransports: ["ws", "wss"],
+      enabledTransports: isDevHttp ? ["ws"] : ["ws", "wss"],
       authEndpoint: "/api/broadcasting/auth", // ✅ يمر عبر الـ proxy
       auth: {
         withCredentials: true,

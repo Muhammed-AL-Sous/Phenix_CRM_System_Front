@@ -4,7 +4,7 @@ import { useGetUsersQuery, useDeleteUserMutation } from "../usersApiSlice";
 
 export default function UserManagement() {
   const user = useSelector(selectCurrentUser);
-  const { data: users } = useGetUsersQuery(undefined, {
+  const { data: users } = useGetUsersQuery({ scope: "admin" }, {
     skip: user.role !== "admin", // تخطي الطلب إذا لم يكن مديراً
   });
   const [deleteUser] = useDeleteUserMutation();

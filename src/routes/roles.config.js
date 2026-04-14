@@ -10,6 +10,10 @@ const ProfilePage = lazy(
 );
 
 const UsersPage = lazy(() => import("../features/users/pages/UsersPage.jsx"));
+const StaffPage = lazy(() => import("../features/staff/pages/StaffPage.jsx"));
+const ClientsPage = lazy(
+  () => import("../features/clients/pages/ClientsPage.jsx"),
+);
 
 const TasksPage = lazy(() => import("../features/tasks/pages/TasksPage.jsx"));
 
@@ -78,7 +82,8 @@ export const ROLES_CONFIG = {
       { icon: LayoutDashboard, label: "dashboard", to: "/admin" },
       { icon: Tickets, label: "tickets", to: "/admin/tickets" },
       { icon: ListTodo, label: "tasks", to: "/admin/tasks" },
-      { icon: Users, label: "users", to: "/admin/users" },
+      { icon: Users, label: "staff", to: "/admin/staff" },
+      { icon: Handshake, label: "clients", to: "/admin/clients" },
       { icon: MessageCircleMore, label: "chat", to: "/admin/chat" },
       { icon: UserStar, label: "ratings", to: "/admin/ratings" },
       {
@@ -95,7 +100,8 @@ export const ROLES_CONFIG = {
       { path: "tickets", element: TicketsPage },
       { path: "tasks", element: TasksPage },
       { path: "profile", element: ProfilePage },
-      { path: "users", element: UsersPage },
+      { path: "staff", element: StaffPage },
+      { path: "clients", element: ClientsPage },
       { path: "chat", element: ChatPage },
       { path: "ratings", element: RatingsPage },
       { path: "prospective-clients", element: ProspectiveClientsPage },
@@ -110,7 +116,7 @@ export const ROLES_CONFIG = {
       { icon: LayoutDashboard, label: "dashboard", to: "/manager" },
       { icon: Tickets, label: "tickets", to: "/manager/tickets" },
       { icon: ListTodo, label: "tasks", to: "/manager/tasks" },
-      { icon: Users, label: "users", to: "/manager/users" },
+      { icon: Handshake, label: "clients", to: "/manager/clients" },
       { icon: MessageCircleMore, label: "chat", to: "/manager/chat" },
       { icon: UserStar, label: "ratings", to: "/manager/ratings" },
       {
@@ -127,7 +133,7 @@ export const ROLES_CONFIG = {
       { path: "tickets", element: TicketsPage },
       { path: "tasks", element: TasksPage },
       { path: "profile", element: ProfilePage },
-      { path: "users", element: UsersPage },
+      { path: "clients", element: ClientsPage },
       { path: "chat", element: ChatPage },
       { path: "ratings", element: RatingsPage },
       { path: "prospective-clients", element: ProspectiveClientsPage },
@@ -142,7 +148,7 @@ export const ROLES_CONFIG = {
       { icon: LayoutDashboard, label: "dashboard", to: "/support" },
       { icon: Tickets, label: "tickets", to: "/support/tickets" },
       { icon: ListTodo, label: "tasks", to: "/support/tasks" },
-      { icon: Users, label: "users", to: "/support/users" },
+      { icon: Handshake, label: "clients", to: "/support/clients" },
       { icon: UserStar, label: "ratings", to: "/support/ratings" },
       {
         icon: Crown,
@@ -157,7 +163,7 @@ export const ROLES_CONFIG = {
       { path: "profile", element: ProfilePage },
       { path: "tickets", element: TicketsPage },
       { path: "tasks", element: TasksPage },
-      { path: "users", element: UsersPage },
+      { path: "clients", element: ClientsPage },
       { path: "ratings", element: RatingsPage },
       { path: "prospective-clients", element: ProspectiveClientsPage },
       { path: "chat", element: ChatPage },

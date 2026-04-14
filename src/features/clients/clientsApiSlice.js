@@ -2,6 +2,21 @@ import { baseApi } from "../../api/apiSlice";
 
 export const clientsApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    // ✅ لوحة التحكم: جلب كل الزبائن مع ملفاتهم (ClientResource + pagination envelope)
+    getAdminClients: builder.query({
+      query: () => "/staff/users/clients",
+      transformResponse: (response) =>
+        Array.isArray(response?.data?.data) ? response.data.data : [],
+      providesTags: (result) =>
+        result?.length
+          ? [
+              ...result.map(({ id }) => ({ type: "Clients", id })),
+              { type: "Clients", id: "ADMIN_LIST" },
+            ]
+          : [{ type: "Clients", id: "ADMIN_LIST" }],
+    }),
+
+    // ✅ (غير مستخدم بالداش حالياً) قائمة clients العامة
     getClients: builder.query({
       query: (searchTerm) => ({
         url: "/clients",
@@ -84,6 +99,7 @@ export const clientsApiSlice = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetAdminClientsQuery,
   useGetClientsQuery,
   useAddClientMutation,
   useUpdateClientMutation,

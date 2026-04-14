@@ -73,7 +73,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
       {/* ============= Desktop Sidebar (Fixed) ============= */}
       <aside
         className={cn(
-          "hidden lg:flex fixed top-0 h-screen w-80 flex-col p-6 z-40",
+          "hidden lg:flex fixed top-0 h-screen w-80 flex-col p-6 pb-3 z-40",
           "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800 shadow-sm",
           isRtl ? "right-0 border-l" : "left-0 border-r",
         )}
@@ -132,7 +132,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
         </nav>
 
         {/* ============ Logout Button ============ */}
-        <div className=" pt-4 mt-4 border-t border-gray-400 dark:border-zinc-900">
+        <div className="border-t border-gray-400 dark:border-zinc-900 px-3 pt-2">
           <button
             type="button"
             onClick={handleLogout}
@@ -169,7 +169,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
               animate="open"
               exit="closed"
               className={cn(
-                "fixed top-0 h-screen w-70 sm:w-80 p-6 z-60 lg:hidden shadow-2xl",
+                "fixed top-0 h-screen w-70 sm:w-80 p-6 pb-3 z-60 lg:hidden shadow-2xl",
                 "bg-white dark:bg-zinc-950 flex flex-col",
                 isRtl ? "right-0" : "left-0",
               )}
@@ -238,11 +238,11 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
               </nav>
 
               {/* ============ Logout Button ============ */}
-              <div className=" pt-4 mt-4 border-t border-gray-400 dark:border-zinc-900">
+              <div className="px-3 pt-2 border-t border-gray-400 dark:border-zinc-900">
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl
+                  className="flex items-center gap-3 px-4 py-4 rounded-2xl
          w-full text-slate-500 dark:text-slate-400 hover:text-red-500
           transition-all font-bold text-sm group
            hover:bg-slate-100 dark:hover:bg-white/5 hover:ps-5 cursor-pointer"

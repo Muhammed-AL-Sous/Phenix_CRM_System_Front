@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useLayoutEffect, useMemo } from "react";
 import GlobalLoader from "../../../../components/common/GlobalLoader";
-import { removeInitialLoader } from "../../../../components/common/removeInitialLoader";
 import {
   useGetUserDataQuery,
   useGetCsrfCookieMutation,
@@ -133,7 +132,6 @@ export default function AuthInitializer({ children }) {
   const authReady = useSelector(selectAuthReady);
 
   useLayoutEffect(() => {
-    removeInitialLoader();
     if (!isAuthLoading && !authReady) {
       dispatch(setAuthReady(true));
     }

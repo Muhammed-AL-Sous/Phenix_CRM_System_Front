@@ -7,12 +7,12 @@ import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
 import UsersTable from "../components/UsersTable";
 import UsersModal from "../components/UsersModal";
 
-const STAFF_ROLES = new Set(["admin", "manager", "support"]);
+const ADMIN_ONLY = new Set(["admin"]);
 
 const UsersPage = () => {
   const currentUser = useSelector(selectCurrentUser);
   const canFetchUsers = useMemo(
-    () => STAFF_ROLES.has(currentUser?.role),
+    () => ADMIN_ONLY.has(currentUser?.role),
     [currentUser?.role],
   );
 
@@ -22,7 +22,10 @@ const UsersPage = () => {
     isLoading,
     refetch,
     error,
-  } = useGetUsersQuery(undefined, { skip: !canFetchUsers });
+  } = useGetUsersQuery(
+    { scope: currentUser?.role },
+    { skip: !canFetchUsers },
+  );
   const [deleteUser] = useDeleteUserMutation();
 
   const handleDelete = async (userId) => {

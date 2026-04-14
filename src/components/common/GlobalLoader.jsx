@@ -1,7 +1,7 @@
 const SIZE_CLASS = {
-  sm: "w-6 h-6 border-[3px]",
-  md: "w-10 h-10 border-4",
-  lg: "w-12 h-12 border-4",
+  sm: "h-5 w-5 border-2",
+  md: "h-8 w-8 border-[3px]",
+  lg: "h-12 w-12 border-4",
 };
 
 const VARIANT_CLASS = {
@@ -9,43 +9,22 @@ const VARIANT_CLASS = {
   onPrimary: "border-white border-t-transparent",
 };
 
-const SIZE_STYLE = {
-  sm: { sizePx: 24, borderPx: 3 },
-  md: { sizePx: 40, borderPx: 4 },
-  lg: { sizePx: 48, borderPx: 4 },
-};
-
-const VARIANT_STYLE = {
-  primary: { borderColor: "#ef4444", borderTopColor: "transparent" }, // red-500
-  onPrimary: { borderColor: "#ffffff", borderTopColor: "transparent" },
-};
-
-/**
- * دوّامة موحّدة — للأزرار والتحميل المضمّن
- */
 export function Spinner({
   size = "md",
   variant = "primary",
   className = "",
   ...rest
 }) {
-  const s = SIZE_STYLE[size] ?? SIZE_STYLE.md;
-  const v = VARIANT_STYLE[variant] ?? VARIANT_STYLE.primary;
   return (
     <span
       role="status"
-      aria-hidden="true"
-      style={{
-        width: `${s.sizePx}px`,
-        height: `${s.sizePx}px`,
-        minWidth: `${s.sizePx}px`,
-        minHeight: `${s.sizePx}px`,
-        borderStyle: "solid",
-        borderWidth: `${s.borderPx}px`,
-        borderColor: v.borderColor,
-        borderTopColor: v.borderTopColor,
-      }}
-      className={`inline-block rounded-full animate-spin ${SIZE_CLASS[size]} ${VARIANT_CLASS[variant]} ${className}`}
+      aria-label="Loading"
+      className={[
+        "inline-block shrink-0 rounded-full animate-spin",
+        SIZE_CLASS[size] ?? SIZE_CLASS.md,
+        VARIANT_CLASS[variant] ?? VARIANT_CLASS.primary,
+        className,
+      ].join(" ")}
       {...rest}
     />
   );
@@ -57,19 +36,17 @@ export function Spinner({
 export default function GlobalLoader({ message, className = "" }) {
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-      className={`z-10000 bg-slate-50 dark:bg-zinc-900 ${className}`}
+      className={[
+        "fixed inset-0 z-[9999]",
+        "flex items-center justify-center",
+        "bg-slate-50 dark:bg-zinc-900",
+        className,
+      ].join(" ")}
     >
       <div className="text-center px-4">
         <Spinner size="lg" className="mx-auto block" />
         {message ? (
-          <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
+          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400 sm:text-base">
             {message}
           </p>
         ) : null}

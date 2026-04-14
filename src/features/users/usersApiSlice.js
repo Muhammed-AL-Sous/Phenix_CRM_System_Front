@@ -1,13 +1,36 @@
 import { baseApi } from "../../api/apiSlice";
 
+const USERS_SCOPE_BASE_PATH = {
+  // Admin-only listing endpoints live under `/api/admin/*`
+  admin: "/admin/users",
+  // Shared staff endpoints live under `/api/staff/*`
+  manager: "/staff/users",
+  support: "/staff/users",
+};
+
+function isStaffScope(scope) {
+  return scope === "admin" || scope === "manager" || scope === "support";
+}
+
+function resolveUsersBasePath(scope) {
+  if (scope && USERS_SCOPE_BASE_PATH[scope]) return USERS_SCOPE_BASE_PATH[scope];
+  return "/users";
+}
+
 export const usersApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: () => "/admin/users",
+      /**
+       * scope:
+       * - admin/manager/support: مسارات لوحات التحكم
+       * - غير ذلك: fallback لمسار عام (إن وُجد في الـ API)
+       */
+      query: (arg) => resolveUsersBasePath(arg?.scope),
       transformResponse: (response) => {
-        if (Array.isArray(response?.data)) {
-          return response.data;
-        }
+        // Paginated envelope: { data: { data: [...] } }
+        if (Array.isArray(response?.data?.data)) return response.data.data;
+        // Non-paginated envelope: { data: [...] }
+        if (Array.isArray(response?.data)) return response.data;
         return [];
       },
       providesTags: (result) =>
@@ -20,12 +43,23 @@ export const usersApiSlice = baseApi.injectEndpoints({
     }),
 
     addUser: builder.mutation({
-      query: (userData) => ({
-        url: "/admin/users",
-        method: "POST",
-        body: userData,
-      }),
-      invalidatesTags: ["User"],
+      queryFn: async (arg, _api, _extraOptions, baseQuery) => {
+        const { scope, ...userData } = arg || {};
+        if (!isStaffScope(scope)) {
+          return {
+            error: {
+              status: 403,
+              data: { message: "Forbidden: only staff can create users." },
+            },
+          };
+        }
+        return baseQuery({
+          url: resolveUsersBasePath(scope),
+          method: "POST",
+          body: userData,
+        });
+      },
+      invalidatesTags: [{ type: "User", id: "LIST" }],
     }),
 
     deleteUser: builder.mutation({
@@ -33,7 +67,10 @@ export const usersApiSlice = baseApi.injectEndpoints({
         url: `/admin/users/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: (result, error, id) => [
+        { type: "User", id: "LIST" },
+        { type: "User", id },
+      ],
     }),
 
     updateProfile: builder.mutation({
@@ -42,7 +79,10 @@ export const usersApiSlice = baseApi.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: (result, error, { id }) => [
+        { type: "User", id },
+        { type: "User", id: "LIST" },
+      ],
     }),
 
     getDashboardStats: builder.query({
@@ -51,11 +91,22 @@ export const usersApiSlice = baseApi.injectEndpoints({
     }),
 
     updateUser: builder.mutation({
-      query: ({ id, ...data }) => ({
-        url: `/admin/users/${id}`,
-        method: "PUT",
-        body: data,
-      }),
+      queryFn: async (arg, _api, _extraOptions, baseQuery) => {
+        const { id, scope, ...data } = arg || {};
+        if (!isStaffScope(scope)) {
+          return {
+            error: {
+              status: 403,
+              data: { message: "Forbidden: only staff can update users." },
+            },
+          };
+        }
+        return baseQuery({
+          url: `${resolveUsersBasePath(scope)}/${id}`,
+          method: "PUT",
+          body: data,
+        });
+      },
       invalidatesTags: (result, error, { id }) => [
         { type: "User", id: "LIST" },
         { type: "User", id },

@@ -1,11 +1,11 @@
 // React Hooks
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // React Redux
 import { useSelector } from "react-redux";
 
 // Icon
-import { LogOut, X } from "lucide-react";
+import { ChevronDown, LogOut, X } from "lucide-react";
 
 // React Router
 import { Link, useLocation } from "react-router";
@@ -28,6 +28,21 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
   const location = useLocation();
   const { direction } = useSelector((state) => state.ui);
   const isRtl = direction === "rtl";
+
+  const defaultOpenGroups = useMemo(() => {
+    const pathname = location.pathname;
+    const open = {};
+    (sidebarLinks || []).forEach((item) => {
+      if (!item?.children?.length) return;
+      const groupKey = item.key || item.to || item.label;
+      open[groupKey] = item.children.some((c) => pathname === c.to);
+    });
+    return open;
+  }, [location.pathname, sidebarLinks]);
+
+  // Only stores explicit user toggles. If a group hasn't been toggled yet,
+  // we fall back to `defaultOpenGroups` (derived from current route).
+  const [openGroups, setOpenGroups] = useState({});
 
   // إغلاق القائمة عند الضغط على Escape
   useEffect(() => {
@@ -68,6 +83,156 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
     logout();
   };
 
+  const renderLinks = ({ isMobile }) => {
+    return (sidebarLinks || []).map((item) => {
+      const Icon = item.icon;
+      const hasChildren =
+        Array.isArray(item.children) && item.children.length > 0;
+      const isActiveDirect = location.pathname === item.to;
+      const isActiveChild = hasChildren
+        ? item.children.some((c) => location.pathname === c.to)
+        : false;
+      const isActive = isActiveDirect || isActiveChild;
+
+      if (!hasChildren) {
+        return (
+          <Link
+            key={item.to}
+            to={item.to}
+            onClick={isMobile ? handleMobileNavigation : undefined}
+            className={cn(
+              "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group relative",
+              isActive
+                ? "bg-red-500 text-white shadow-xl shadow-red-500/25 scale-[1.02]"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-red-500 hover:ps-5",
+            )}
+          >
+            <Icon
+              size={20}
+              className={cn(
+                "transition-transform duration-300",
+                isActive
+                  ? "text-white"
+                  : "group-hover:scale-110 group-hover:text-red-500",
+              )}
+            />
+            <span className="font-semibold text-sm">{t(item.label)}</span>
+
+            {isActive && (
+              <motion.div
+                layoutId={
+                  isMobile ? "active-indicator-mobile" : "active-indicator"
+                }
+                className="absolute -right-1 w-1.5 h-6 rounded-full bg-red-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              />
+            )}
+          </Link>
+        );
+      }
+
+      const groupKey = item.key || item.to || item.label;
+      const isOpenGroup = Object.prototype.hasOwnProperty.call(
+        openGroups,
+        groupKey,
+      )
+        ? !!openGroups[groupKey]
+        : !!defaultOpenGroups[groupKey];
+      const toggleGroup = () =>
+        setOpenGroups((prev) => ({
+          ...prev,
+          [groupKey]: Object.prototype.hasOwnProperty.call(prev, groupKey)
+            ? !prev[groupKey]
+            : !defaultOpenGroups[groupKey],
+        }));
+
+      return (
+        <div key={groupKey} className="space-y-2">
+          <button
+            type="button"
+            onClick={toggleGroup}
+            className={cn(
+              "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group relative text-start",
+              isActive
+                ? "bg-red-500 text-white shadow-xl shadow-red-500/25 scale-[1.02]"
+                : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-red-500",
+            )}
+          >
+            <span className="flex items-center gap-3 min-w-0">
+              <Icon
+                size={20}
+                className={cn(
+                  "transition-transform duration-300 shrink-0",
+                  isActive
+                    ? "text-white"
+                    : "group-hover:scale-110 group-hover:text-red-500",
+                )}
+              />
+              <span className="font-semibold text-sm truncate">
+                {t(item.label)}
+              </span>
+            </span>
+
+            <ChevronDown
+              size={18}
+              className={cn(
+                "transition-transform duration-200 shrink-0",
+                isOpenGroup ? "rotate-180" : "rotate-0",
+                isActive ? "text-white" : "group-hover:text-red-500",
+              )}
+            />
+          </button>
+
+          <AnimatePresence initial={false}>
+            {isOpenGroup && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-2 ps-6">
+                  {item.children.map((child) => {
+                    const ChildIcon = child.icon || Icon;
+                    const isChildActive = location.pathname === child.to;
+                    return (
+                      <Link
+                        key={child.to}
+                        to={child.to}
+                        onClick={isMobile ? handleMobileNavigation : undefined}
+                        className={cn(
+                          "flex items-center gap-3 px-4 py-2.5 rounded-2xl transition-all duration-300 group relative",
+                          isChildActive
+                            ? "bg-red-500/10 text-red-600 dark:text-red-400"
+                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-red-500",
+                        )}
+                      >
+                        <ChildIcon
+                          size={18}
+                          className={cn(
+                            "transition-transform duration-300",
+                            isChildActive
+                              ? "text-red-600 dark:text-red-400"
+                              : "group-hover:scale-110 group-hover:text-red-500",
+                          )}
+                        />
+                        <span className="font-semibold text-sm">
+                          {t(child.label)}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    });
+  };
+
   return (
     <>
       {/* ============= Desktop Sidebar (Fixed) ============= */}
@@ -91,44 +256,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
 
         {/* ============ SideBar Links ============ */}
         <nav className="custom-scrollbar space-y-2 overflow-y-auto px-4 overflow-x-hidden">
-          {sidebarLinks.map((item) => {
-            const isActive = location.pathname === item.to;
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group relative",
-                  isActive
-                    ? "bg-red-500 text-white shadow-xl shadow-red-500/25 scale-[1.02]"
-                    : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-red-500 hover:ps-5",
-                )}
-              >
-                <Icon
-                  size={20}
-                  className={cn(
-                    "transition-transform duration-300",
-                    isActive
-                      ? "text-white"
-                      : "group-hover:scale-110 group-hover:text-red-500",
-                  )}
-                />
-                <span className="font-semibold text-sm">{t(item.label)}</span>
-
-                {/* ============ SideBar Animation ============ */}
-                {isActive && (
-                  <motion.div
-                    layoutId="active-indicator"
-                    className="absolute -right-1 w-1.5 h-6 rounded-full bg-red-500"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  />
-                )}
-              </Link>
-            );
-          })}
+          {renderLinks({ isMobile: false })}
         </nav>
 
         {/* ============ Logout Button ============ */}
@@ -194,47 +322,7 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
 
               {/* ============ SideBar Links ============ */}
               <nav className="custom-scrollbar-mobile space-y-2 overflow-y-auto px-4 overflow-x-hidden">
-                {sidebarLinks.map((item) => {
-                  const isActive = location.pathname === item.to;
-                  const Icon = item.icon;
-
-                  return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={handleMobileNavigation}
-                      className={cn(
-                        "flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group relative",
-                        isActive
-                          ? "bg-red-500 text-white shadow-xl shadow-red-500/25 scale-[1.02]"
-                          : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-red-500 hover:ps-5",
-                      )}
-                    >
-                      <Icon
-                        size={20}
-                        className={cn(
-                          "transition-transform duration-300",
-                          isActive
-                            ? "text-white"
-                            : "group-hover:scale-110 group-hover:text-red-500",
-                        )}
-                      />
-                      <span className="font-semibold text-sm">
-                        {t(item.label)}
-                      </span>
-
-                      {/* ============ SideBar Animation ============ */}
-                      {isActive && (
-                        <motion.div
-                          layoutId="active-indicator"
-                          className="absolute -right-1 w-1.5 h-6 rounded-full bg-red-500"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                        />
-                      )}
-                    </Link>
-                  );
-                })}
+                {renderLinks({ isMobile: true })}
               </nav>
 
               {/* ============ Logout Button ============ */}

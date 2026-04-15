@@ -5,7 +5,7 @@ export const staffApiSlice = baseApi.injectEndpoints({
     getStaff: builder.query({
       query: () => "/admin/users/staff",
       transformResponse: (response) =>
-        Array.isArray(response?.data?.data) ? response.data.data : [],
+        Array.isArray(response?.data) ? response.data : [],
       providesTags: (result) =>
         result?.length
           ? [

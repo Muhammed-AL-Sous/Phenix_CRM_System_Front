@@ -30,6 +30,7 @@ i18n
       "dashboard",
       "auth",
       "clientProfile",
+      "user",
     ],
 
     backend: {

@@ -20,11 +20,6 @@ function resolveUsersBasePath(scope) {
 export const usersApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
-      /**
-       * scope:
-       * - admin/manager/support: مسارات لوحات التحكم
-       * - غير ذلك: fallback لمسار عام (إن وُجد في الـ API)
-       */
       query: (arg) => resolveUsersBasePath(arg?.scope),
       transformResponse: (response) => {
         // Paginated envelope: { data: { data: [...] } }

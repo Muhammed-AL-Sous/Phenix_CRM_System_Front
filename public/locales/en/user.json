@@ -1,0 +1,53 @@
+{
+    "users": {
+        "title": "Users",
+        "addUser": "Add User",
+        "editUser": "Edit User",
+        "deleteUser": "Delete User",
+        "confirmDelete": "Are you sure you want to delete this user?",
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "actions": "Actions"
+    },
+    "roles": {
+        "title": "Roles",
+        "addRole": "Add Role",
+        "editRole": "Edit Role",
+        "deleteRole": "Delete Role",
+        "confirmDelete": "Are you sure you want to delete this role?",
+        "name": "Name",
+        "permissions": "Permissions",
+        "actions": "Actions"
+    },
+    "permissions": {
+        "title": "Permissions",
+        "addPermission": "Add Permission",
+        "editPermission": "Edit Permission",
+        "deletePermission": "Delete Permission",
+        "confirmDelete": "Are you sure you want to delete this permission?",
+        "name": "Name",
+        "actions": "Actions"
+    },
+    "profile": {
+        "title": "Profile",
+        "editProfile": "Edit Profile",
+        "changePassword": "Change Password",
+        "name": "Name",
+        "email": "Email",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password"
+    },
+    "settings": {
+        "title": "Settings",
+        "general": "General",
+        "security": "Security",
+        "notifications": "Notifications"
+    },
+    "errors": {
+        "userNotFound": "User not found",
+        "emailInUse": "Email is already in use",
+        "invalidCredentials": "Invalid credentials"
+    }
+}

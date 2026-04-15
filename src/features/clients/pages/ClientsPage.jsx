@@ -20,6 +20,7 @@ export default function ClientsPage() {
     },
   );
 
+
   if (!canView) {
     return (
       <p className="text-slate-600 dark:text-slate-400">

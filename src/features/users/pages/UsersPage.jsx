@@ -6,6 +6,7 @@ import { notify } from "../../../lib/notify";
 import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
 import UsersTable from "../components/UsersTable";
 import UsersModal from "../components/UsersModal";
+import { UserCog, UserPlus } from "lucide-react";
 
 const ADMIN_ONLY = new Set(["admin"]);
 
@@ -27,7 +28,7 @@ const UsersPage = () => {
     { skip: !canFetchUsers },
   );
   const [deleteUser] = useDeleteUserMutation();
-
+console.log(users)
   const handleDelete = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
 
@@ -61,11 +62,14 @@ const UsersPage = () => {
   return (
     <div className="users-page">
       <div className="flex justify-between items-center mb-6">
-        <h1>Users Management</h1>
+        <h1> <UserCog /> 
+        Users Management
+        </h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="btn btn-primary"
         >
+          <UserPlus />
           Add User
         </button>
       </div>

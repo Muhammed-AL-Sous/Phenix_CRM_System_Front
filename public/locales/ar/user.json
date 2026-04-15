@@ -1,0 +1,53 @@
+{
+    "users": {
+        "title": "المستخدمون",
+        "addUser": "إضافة مستخدم",
+        "editUser": "تعديل مستخدم",
+        "deleteUser": "حذف مستخدم",
+        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المستخدم?",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "role": "الدور",
+        "actions": "الإجراءات"
+    },
+    "roles": {
+        "title": "الأدوار",
+        "addRole": "إضافة دور",
+        "editRole": "تعديل دور",
+        "deleteRole": "حذف دور",
+        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا الدور?",
+        "name": "الاسم",
+        "permissions": "الصلاحيات",
+        "actions": "الإجراءات"
+    },
+    "permissions": {
+        "title": "الصلاحيات",
+        "addPermission": "إضافة صلاحية",
+        "editPermission": "تعديل صلاحية",
+        "deletePermission": "حذف صلاحية",
+        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذه الصلاحية?",
+        "name": "الاسم",
+        "actions": "الإجراءات"
+    },
+    "profile": {
+        "title": "الملف الشخصي",
+        "editProfile": "تعديل الملف الشخصي",
+        "changePassword": "تغيير كلمة المرور",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "currentPassword": "كلمة المرور الحالية",
+        "newPassword": "كلمة المرور الجديدة",
+        "confirmNewPassword": "تأكيد كلمة المرور الجديدة"
+    },
+    "settings": {
+        "title": "الإعدادات",
+        "general": "عام",
+        "security": "الأمان",
+        "notifications": "الإشعارات"
+    },
+    "errors": {
+        "userNotFound": "المستخدم غير موجود",
+        "emailInUse": "البريد الإلكتروني مستخدم بالفعل",
+        "invalidCredentials": "بيانات اعتماد غير صالحة"
+    }
+}

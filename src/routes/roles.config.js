@@ -10,7 +10,9 @@ const ProfilePage = lazy(
 );
 
 const UsersPage = lazy(() => import("../features/users/pages/UsersPage.jsx"));
+
 const StaffPage = lazy(() => import("../features/staff/pages/StaffPage.jsx"));
+
 const ClientsPage = lazy(
   () => import("../features/clients/pages/ClientsPage.jsx"),
 );
@@ -31,7 +33,6 @@ const RatingsPage = lazy(
 import {
   LayoutDashboard,
   ChartNoAxesCombined,
-  Users,
   Tickets,
   ListTodo,
   SendToBack,
@@ -42,6 +43,13 @@ import {
   Handshake,
   HeartPlus,
 } from "lucide-react";
+
+import {
+  IconAllUsers,
+  IconClients,
+  IconStaff,
+  IconUsers,
+} from "../components/icons/SidebarUsersIcons.jsx";
 
 // =================== Admin =================== //
 
@@ -73,6 +81,8 @@ const ProspectiveClientsPage = lazy(
   () => import("../features/clients/pages/ProspectiveClientsPage.jsx"),
 );
 
+
+
 export const ROLES_CONFIG = {
   admin: {
     prefix: "admin",
@@ -82,8 +92,16 @@ export const ROLES_CONFIG = {
       { icon: LayoutDashboard, label: "dashboard", to: "/admin" },
       { icon: Tickets, label: "tickets", to: "/admin/tickets" },
       { icon: ListTodo, label: "tasks", to: "/admin/tasks" },
-      { icon: Users, label: "staff", to: "/admin/staff" },
-      { icon: Handshake, label: "clients", to: "/admin/clients" },
+      {
+        key: "users_menu",
+        icon: IconUsers,
+        label: "users",
+        children: [
+          { icon: IconAllUsers, label: "all_users", to: "/admin/users" },
+          { icon: IconStaff, label: "staff", to: "/admin/staff" },
+          { icon: IconClients, label: "clients", to: "/admin/clients" },
+        ],
+      },
       { icon: MessageCircleMore, label: "chat", to: "/admin/chat" },
       { icon: UserStar, label: "ratings", to: "/admin/ratings" },
       {
@@ -100,6 +118,7 @@ export const ROLES_CONFIG = {
       { path: "tickets", element: TicketsPage },
       { path: "tasks", element: TasksPage },
       { path: "profile", element: ProfilePage },
+      { path: "users", element: UsersPage },
       { path: "staff", element: StaffPage },
       { path: "clients", element: ClientsPage },
       { path: "chat", element: ChatPage },

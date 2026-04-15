@@ -6,7 +6,7 @@ export const clientsApiSlice = baseApi.injectEndpoints({
     getAdminClients: builder.query({
       query: () => "/staff/users/clients",
       transformResponse: (response) =>
-        Array.isArray(response?.data?.data) ? response.data.data : [],
+        Array.isArray(response?.data) ? response.data : [],
       providesTags: (result) =>
         result?.length
           ? [

@@ -1,14 +1,15 @@
 {
     "users": {
         "title": "Users",
-        "addUser": "Add User",
-        "editUser": "Edit User",
-        "deleteUser": "Delete User",
+        "add_user": "Add User",
+        "edit_user": "Edit User",
+        "delete_user": "Delete User",
         "confirmDelete": "Are you sure you want to delete this user?",
         "name": "Name",
         "email": "Email",
         "role": "Role",
-        "actions": "Actions"
+        "actions": "Actions",
+        "manage_users": "User Management"
     },
     "roles": {
         "title": "Roles",

@@ -22,6 +22,12 @@ function resolveUsersBasePath(scope) {
   return "/users";
 }
 
+function resolveUsersWriteBasePath(scope) {
+  // Writes (create/update) are handled under `/api/staff/*` for all staff (including admin).
+  if (isStaffScope(scope)) return "/staff/users";
+  return "/users";
+}
+
 export const usersApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
@@ -40,6 +46,13 @@ export const usersApiSlice = baseApi.injectEndpoints({
           : [{ type: "User", id: "LIST" }],
     }),
 
+    getRoles: builder.query({
+      query: () => "/lookups/roles",
+      transformResponse: (response) =>
+        Array.isArray(response?.data) ? response.data : [],
+      providesTags: [{ type: "Role", id: "LIST" }],
+    }),
+
     addUser: builder.mutation({
       queryFn: async (arg, _api, _extraOptions, baseQuery) => {
         const { scope, ...userData } = arg || {};
@@ -52,7 +65,7 @@ export const usersApiSlice = baseApi.injectEndpoints({
           };
         }
         return baseQuery({
-          url: resolveUsersBasePath(scope),
+          url: resolveUsersWriteBasePath(scope),
           method: "POST",
           body: userData,
         });
@@ -100,7 +113,7 @@ export const usersApiSlice = baseApi.injectEndpoints({
           };
         }
         return baseQuery({
-          url: `${resolveUsersBasePath(scope)}/${id}`,
+          url: `${resolveUsersWriteBasePath(scope)}/${id}`,
           method: "PUT",
           body: data,
         });
@@ -116,6 +129,7 @@ export const usersApiSlice = baseApi.injectEndpoints({
 
 export const {
   useGetUsersQuery,
+  useGetRolesQuery,
   useAddUserMutation,
   useDeleteUserMutation,
   useUpdateProfileMutation,

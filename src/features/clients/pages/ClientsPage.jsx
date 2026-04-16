@@ -13,13 +13,14 @@ export default function ClientsPage() {
     [currentUser?.role],
   );
 
-  const { data: clients = [], isLoading, error } = useGetAdminClientsQuery(
-    undefined,
-    {
-      skip: !canView,
-    },
-  );
-
+  const {
+    data: clients = [],
+    isLoading,
+    error,
+  } = useGetAdminClientsQuery(undefined, {
+    skip: !canView,
+  });
+  console.log(clients);
 
   if (!canView) {
     return (
@@ -47,6 +48,16 @@ export default function ClientsPage() {
     );
   }
 
+  // Helper function to capitalize company names
+  const capitalizeFirstLetter = (string) => {
+    return string
+      .split(" ")
+      .map(function (e) {
+        return e[0].toUpperCase() + e.slice(1);
+      })
+      .join(" ");
+  };
+
   return (
     <div className="clients-page">
       <div className="mb-6 flex items-center justify-between">
@@ -70,10 +81,13 @@ export default function ClientsPage() {
                 Phone
               </th>
               <th className="px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
-                Email
+                Job Title
               </th>
               <th className="px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
-                Profile
+                Country
+              </th>
+              <th className="px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
+                City
               </th>
             </tr>
           </thead>
@@ -83,20 +97,25 @@ export default function ClientsPage() {
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-900 dark:text-slate-100">
                   {c.id}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-slate-900 dark:text-slate-100">
-                  {c.company_name || "—"}
+                <td className="whitespace-nowrap px-4 py-3  text-sm font-medium text-slate-900 dark:text-slate-100">
+                  {capitalizeFirstLetter(c.company_name) || "—"}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
-                  {c.client_name || c.user?.name || "—"}
+                  {capitalizeFirstLetter(c.client_name) ||
+                    capitalizeFirstLetter(c.user?.name) ||
+                    "—"}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
                   {c.phone || "—"}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
-                  {c.user?.email || "—"}
+                  {c?.job_title?.name || "—"}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
-                  {c.user ? "Complete" : "—"}
+                  {c?.country?.name || "—"}
+                </td>
+                <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                  {c?.subdivision?.name || "—"}
                 </td>
               </tr>
             ))}
@@ -106,4 +125,3 @@ export default function ClientsPage() {
     </div>
   );
 }
-

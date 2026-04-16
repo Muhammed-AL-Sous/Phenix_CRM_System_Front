@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import process from "node:process";
 
 // Single backend URL — must match APP_URL / Laravel host (see Back_End_Laravel .env).
 // https://vite.dev/config/

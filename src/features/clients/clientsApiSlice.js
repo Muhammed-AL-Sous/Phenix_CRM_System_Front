@@ -22,6 +22,12 @@ export const clientsApiSlice = baseApi.injectEndpoints({
         url: "/clients",
         params: { search: searchTerm },
       }),
+      transformResponse: (response) => {
+        // Supports ApiResponse-style { status, data: [...] } or raw arrays.
+        if (Array.isArray(response)) return response;
+        if (Array.isArray(response?.data)) return response.data;
+        return [];
+      },
       providesTags: (result) =>
         result
           ? [

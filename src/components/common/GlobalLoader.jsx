@@ -37,7 +37,7 @@ export default function GlobalLoader({ message, className = "" }) {
   return (
     <div
       className={[
-        "fixed inset-0 z-[9999]",
+        "fixed inset-0 z-9999",
         "flex items-center justify-center",
         "bg-slate-50 dark:bg-zinc-900",
         className,

@@ -1,4 +1,9 @@
 import { baseApi } from "../../api/apiSlice";
+import {
+  compactUsersListParams,
+  normalizeUsersListResponse,
+  usersListParamsToQueryString,
+} from "./usersQueryUtils";
 
 const USERS_SCOPE_BASE_PATH = {
   // Admin-only listing endpoints live under `/api/admin/*`
@@ -20,18 +25,16 @@ function resolveUsersBasePath(scope) {
 export const usersApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: (arg) => resolveUsersBasePath(arg?.scope),
-      transformResponse: (response) => {
-        // Paginated envelope: { data: { data: [...] } }
-        if (Array.isArray(response?.data?.data)) return response.data.data;
-        // Non-paginated envelope: { data: [...] }
-        if (Array.isArray(response?.data)) return response.data;
-        return [];
+      query: (arg) => {
+        const path = resolveUsersBasePath(arg?.scope);
+        const params = compactUsersListParams(arg);
+        return `${path}${usersListParamsToQueryString(params)}`;
       },
+      transformResponse: (response) => normalizeUsersListResponse(response),
       providesTags: (result) =>
-        result?.length
+        result?.users?.length
           ? [
-              ...result.map(({ id }) => ({ type: "User", id })),
+              ...result.users.map(({ id }) => ({ type: "User", id })),
               { type: "User", id: "LIST" },
             ]
           : [{ type: "User", id: "LIST" }],

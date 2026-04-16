@@ -15,7 +15,7 @@
             "manager": "مدير",
             "support":"دعم فني",
             "sales": "مبيعات",
-            "client": "زبون"
+            "client": "عميل"
         },
         "list": {
             "search_placeholder": "ابحث بالاسم أو البريد (يدعم أكثر من كلمة)…",

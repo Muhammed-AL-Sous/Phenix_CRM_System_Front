@@ -36,6 +36,38 @@ const FormListbox = ({
   const { direction } = useSelector((state) => state.ui);
   const isRtl = direction === "rtl";
 
+  const computeFloatingStyle = useCallback(() => {
+    const trigger = rootRef.current;
+    if (!trigger) return null;
+
+    const GAP = 8;
+    const MAX_PANEL = 288;
+
+    const r = trigger.getBoundingClientRect();
+    const below = window.innerHeight - r.bottom - GAP;
+    const above = r.top - GAP;
+    const openUp = below < 240 && above > below;
+
+    let top;
+    let maxH;
+    if (openUp) {
+      maxH = Math.min(MAX_PANEL, Math.max(100, above - GAP));
+      top = Math.max(GAP, r.top - GAP - maxH);
+    } else {
+      maxH = Math.min(MAX_PANEL, Math.max(100, below - GAP));
+      top = r.bottom + GAP;
+    }
+
+    return {
+      position: "fixed",
+      left: r.left,
+      width: r.width,
+      top,
+      maxHeight: maxH,
+      zIndex: 100,
+    };
+  }, []);
+
   const selected = useMemo(
     () => options.find((o) => String(o.id) === String(value)),
     [options, value],
@@ -54,52 +86,17 @@ const FormListbox = ({
 
   /** Portal + fixed position avoids clipping inside dashboard <main overflow-y-auto> */
   useLayoutEffect(() => {
-    if (disabled || loading) {
-      setFloatingStyle(null);
+    if (disabled || loading || !open) {
       return undefined;
     }
-    if (!open) {
-      /* keep last floatingStyle while AnimatePresence runs exit — cleared in onExitComplete */
-      return undefined;
-    }
-
-    const GAP = 8;
-    const MAX_PANEL = 288;
-
-    const updatePlacement = () => {
-      const trigger = rootRef.current;
-      if (!trigger) return;
-      const r = trigger.getBoundingClientRect();
-      const below = window.innerHeight - r.bottom - GAP;
-      const above = r.top - GAP;
-      const openUp = below < 240 && above > below;
-      let top;
-      let maxH;
-      if (openUp) {
-        maxH = Math.min(MAX_PANEL, Math.max(100, above - GAP));
-        top = Math.max(GAP, r.top - GAP - maxH);
-      } else {
-        maxH = Math.min(MAX_PANEL, Math.max(100, below - GAP));
-        top = r.bottom + GAP;
-      }
-      setFloatingStyle({
-        position: "fixed",
-        left: r.left,
-        width: r.width,
-        top,
-        maxHeight: maxH,
-        zIndex: 100,
-      });
-    };
-
-    updatePlacement();
+    const updatePlacement = () => setFloatingStyle(computeFloatingStyle());
     window.addEventListener("resize", updatePlacement);
     window.addEventListener("scroll", updatePlacement, true);
     return () => {
       window.removeEventListener("resize", updatePlacement);
       window.removeEventListener("scroll", updatePlacement, true);
     };
-  }, [open, disabled, loading, options.length, filter]);
+  }, [open, disabled, loading, computeFloatingStyle]);
 
   useEffect(() => {
     const onDoc = (e) => {
@@ -144,8 +141,13 @@ const FormListbox = ({
         onClick={() => {
           if (disabled || loading) return;
           setOpen((prev) => {
-            if (prev) setFilter("");
-            return !prev;
+            const next = !prev;
+            if (next) {
+              setFloatingStyle(computeFloatingStyle());
+            } else {
+              setFilter("");
+            }
+            return next;
           });
         }}
         className="flex w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-start text-sm leading-normal text-slate-800 outline-none transition focus:ring-2 focus:ring-red-500/70 dark:focus:ring-red-500/50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
@@ -172,7 +174,7 @@ const FormListbox = ({
       </button>
       {portalTarget &&
         createPortal(
-          <AnimatePresence>
+          <AnimatePresence onExitComplete={() => setFloatingStyle(null)}>
             {open && !disabled && !loading && floatingStyle && (
               <motion.div
                 key="form-listbox-panel"
@@ -183,7 +185,6 @@ const FormListbox = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.15 }}
-                onExitComplete={() => setFloatingStyle(null)}
                 className="flex flex-col overflow-hidden rounded-xl bg-white text-sm shadow-lg ring-1 ring-black/5 backdrop-blur-xl dark:bg-zinc-900 dark:ring-white/10"
                 role="listbox"
               >

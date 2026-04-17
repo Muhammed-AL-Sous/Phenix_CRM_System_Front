@@ -16,6 +16,7 @@ import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 // ========= External Libraries ========= //
 import { notify, notifyPromise } from "../../../lib/notify";
 import { useTranslation } from "react-i18next";
+import { formatTimeMmSs } from "../../../lib/formatTimeMmSs.js";
 
 const useVerifyEmailPageHook = () => {
   const inputsRef = useRef([]);
@@ -171,12 +172,6 @@ const useVerifyEmailPageHook = () => {
     }
   };
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
   return {
     code,
     email,
@@ -192,7 +187,7 @@ const useVerifyEmailPageHook = () => {
     resendLoading,
     handleResend,
     timer,
-    formatTime,
+    formatTime: formatTimeMmSs,
   };
 };
 

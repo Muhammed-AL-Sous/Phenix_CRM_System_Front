@@ -58,7 +58,7 @@ const ForgotPasswordPage = () => {
             disabled={isLoading || timer > 0} // تعطيل الإدخال أثناء الإرسال أو الانتظار
             value={email}
             onChange={(e) => {
-              setErrors("");
+              setErrors({});
               setEmail(e.target.value);
             }}
             autoComplete="email"
@@ -69,7 +69,7 @@ const ForgotPasswordPage = () => {
     dark:bg-zinc-800 dark:text-white dark:border-zinc-700 
     ${isLoading || timer > 0 ? "opacity-70 cursor-not-allowed" : ""}
     /* حالة الخطأ */
-    ${errors ? "border-red-500 ring-red-500/20" : "focus:ring-red-500/20"}`}
+    ${errors.email ? "border-red-500 ring-red-500/20" : "focus:ring-red-500/20"}`}
             placeholder="name@company.com"
             style={{
               fontFamily: "Livvic",
@@ -78,7 +78,7 @@ const ForgotPasswordPage = () => {
           />
 
           {/* ======= Errors Email ======= */}
-          {errors && (
+          {errors.email && (
             <div className="absolute left-0 right-0 top-[calc(100%+6px)] w-full">
               <p
                 className="text-red-500 text-xs font-semibold px-1"
@@ -86,7 +86,7 @@ const ForgotPasswordPage = () => {
                   fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
                 }}
               >
-                {t(errors)}
+                {t(errors.email)}
               </p>
             </div>
           )}

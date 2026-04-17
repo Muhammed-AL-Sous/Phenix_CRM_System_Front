@@ -48,21 +48,27 @@ const FormListbox = ({
     const above = r.top - GAP;
     const openUp = below < 240 && above > below;
 
-    let top;
     let maxH;
     if (openUp) {
       maxH = Math.min(MAX_PANEL, Math.max(100, above - GAP));
-      top = Math.max(GAP, r.top - GAP - maxH);
-    } else {
-      maxH = Math.min(MAX_PANEL, Math.max(100, below - GAP));
-      top = r.bottom + GAP;
+      // Pin panel bottom to just above the trigger so short lists sit flush
+      // (using `top` + maxHeight assumed full height and left a large gap).
+      return {
+        position: "fixed",
+        left: r.left,
+        width: r.width,
+        bottom: window.innerHeight - r.top + GAP,
+        maxHeight: maxH,
+        zIndex: 100,
+      };
     }
 
+    maxH = Math.min(MAX_PANEL, Math.max(100, below - GAP));
     return {
       position: "fixed",
       left: r.left,
       width: r.width,
-      top,
+      top: r.bottom + GAP,
       maxHeight: maxH,
       zIndex: 100,
     };
@@ -91,10 +97,20 @@ const FormListbox = ({
     }
     const updatePlacement = () => setFloatingStyle(computeFloatingStyle());
     window.addEventListener("resize", updatePlacement);
-    window.addEventListener("scroll", updatePlacement, true);
+    const scrollRoots = [];
+    let el = rootRef.current?.parentElement;
+    while (el) {
+      scrollRoots.push(el);
+      el = el.parentElement;
+    }
+    scrollRoots.forEach((node) => {
+      node.addEventListener("scroll", updatePlacement, { passive: true, capture: true });
+    });
     return () => {
       window.removeEventListener("resize", updatePlacement);
-      window.removeEventListener("scroll", updatePlacement, true);
+      scrollRoots.forEach((node) => {
+        node.removeEventListener("scroll", updatePlacement, { capture: true });
+      });
     };
   }, [open, disabled, loading, computeFloatingStyle]);
 
@@ -181,9 +197,15 @@ const FormListbox = ({
                 ref={panelRef}
                 dir={isRtl ? "rtl" : "ltr"}
                 style={floatingStyle}
-                initial={{ opacity: 0, y: -4 }}
+                initial={{
+                  opacity: 0,
+                  y: "bottom" in floatingStyle ? 6 : -6,
+                }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
+                exit={{
+                  opacity: 0,
+                  y: "bottom" in floatingStyle ? 6 : -6,
+                }}
                 transition={{ duration: 0.15 }}
                 className="flex flex-col overflow-hidden rounded-xl bg-white text-sm shadow-lg ring-1 ring-black/5 backdrop-blur-xl dark:bg-zinc-900 dark:ring-white/10"
                 role="listbox"

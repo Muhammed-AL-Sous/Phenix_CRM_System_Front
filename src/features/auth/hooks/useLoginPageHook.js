@@ -15,6 +15,8 @@ import { setCredentials } from "../authSlice";
 // ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
 import { notify } from "../../../lib/notify";
+import { patchClearFieldError } from "../../../lib/patchClearFieldError.js";
+import { getLoginFormErrors } from "../validation/authFormValidators.js";
 
 const useLoginPageHook = () => {
   // ========= React State ========= //
@@ -45,29 +47,8 @@ const useLoginPageHook = () => {
 
   // ========= Validate Login Form ========= //
   const validateLoginForm = () => {
-    let newErrors = {};
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!loginForm.email.trim()) {
-      newErrors.email = "error.email_required";
-    } else if (!emailRegex.test(loginForm.email)) {
-      newErrors.email = "error.email_invalid";
-    }
-
-    // Password validation
-    if (!loginForm.password) {
-      newErrors.password = "error.password_required";
-    } else if (
-      loginForm.password.length < 8 ||
-      !/[a-zA-Z]/.test(loginForm.password) || // يجب أن تحتوي على حرف
-      !/[0-9]/.test(loginForm.password) // يجب أن تحتوي على رقم
-    ) {
-      newErrors.password = "error.password_length_letter_error";
-    }
-
+    const newErrors = getLoginFormErrors(loginForm);
     setErrors(newErrors);
-    // إذا كان كائن الأخطاء فارغاً، فهذا يعني أن البيانات صالحة
     return Object.keys(newErrors).length === 0;
   };
 
@@ -75,11 +56,7 @@ const useLoginPageHook = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginForm((prev) => ({ ...prev, [name]: value }));
-
-    // مسح الخطأ الخاص بهذا الحقل فقط عند الكتابة
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
-    }
+    setErrors((prev) => patchClearFieldError(prev, name));
   };
 
   // ========= Handle Submit Function ========= //
@@ -97,6 +74,7 @@ const useLoginPageHook = () => {
       notify("auth:success.welcome_back", "success");
 
       const { user } = response.data;
+
       dispatch(setCredentials({ user }));
 
       const destination = getPostAuthDestination(user, {
@@ -123,18 +101,15 @@ const useLoginPageHook = () => {
               retry_after: pendingUser.retry_after,
             },
           });
-
           notify("auth:error.Account_not_verified", "error");
           return;
         }
       }
-
       // معالجة الـ 401 (بيانات خاطئة)
       if (status === 401) {
         notify("auth:error.Invalid Email Or Password", "error");
         return;
       }
-
       notify("auth:error.login_failed", "error");
     }
   };

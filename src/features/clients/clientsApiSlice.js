@@ -16,6 +16,15 @@ export const clientsApiSlice = baseApi.injectEndpoints({
           : [{ type: "Clients", id: "ADMIN_LIST" }],
     }),
 
+    getAdminClient: builder.query({
+      query: (clientId) => `/staff/clients/${clientId}`,
+      transformResponse: (response) => response?.data?.client ?? null,
+      providesTags: (_result, _error, clientId) => [
+        { type: "Clients", id: clientId },
+        { type: "Clients", id: "ADMIN_LIST" },
+      ],
+    }),
+
     // ✅ (غير مستخدم بالداش حالياً) قائمة clients العامة
     getClients: builder.query({
       query: (searchTerm) => ({
@@ -106,6 +115,7 @@ export const clientsApiSlice = baseApi.injectEndpoints({
 
 export const {
   useGetAdminClientsQuery,
+  useGetAdminClientQuery,
   useGetClientsQuery,
   useAddClientMutation,
   useUpdateClientMutation,

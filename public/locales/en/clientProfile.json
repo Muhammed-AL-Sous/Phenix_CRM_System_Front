@@ -1,4 +1,17 @@
 {
+  "staffClient": {
+    "title": "Client profile",
+    "back": "Back to clients list",
+    "account": "Account",
+    "profile": "Company profile",
+    "not_found": "Could not load this client.",
+    "open_list": "Go to clients list",
+    "label_email": "Email",
+    "label_role": "Role",
+    "label_active": "Account active",
+    "active_yes": "Yes",
+    "active_no": "No"
+  },
   "title": "Complete your company profile",
   "subtitle": "A few details are required before you can use the client dashboard.",
   "fields": {

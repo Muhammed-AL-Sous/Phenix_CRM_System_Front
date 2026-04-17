@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router";
 import { selectCurrentUser } from "../../auth/authSlice";
 import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
 import { useGetAdminClientsQuery } from "../clientsApiSlice";
@@ -20,7 +21,12 @@ export default function ClientsPage() {
   } = useGetAdminClientsQuery(undefined, {
     skip: !canView,
   });
-  console.log(clients);
+
+  const clientsBasePath = useMemo(() => {
+    const role = currentUser?.role;
+    if (!role) return "/clients";
+    return `/${role}/clients`;
+  }, [currentUser?.role]);
 
   if (!canView) {
     return (
@@ -101,9 +107,14 @@ export default function ClientsPage() {
                   {capitalizeFirstLetter(c.company_name) || "—"}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
-                  {capitalizeFirstLetter(c.client_name) ||
-                    capitalizeFirstLetter(c.user?.name) ||
-                    "—"}
+                  <Link
+                    to={`${clientsBasePath}/${c.id}`}
+                    className="font-medium text-sky-600 underline-offset-2 hover:text-sky-700 hover:underline dark:text-sky-400 dark:hover:text-sky-300"
+                  >
+                    {capitalizeFirstLetter(c.client_name) ||
+                      capitalizeFirstLetter(c.user?.name) ||
+                      "—"}
+                  </Link>
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
                   {c.phone || "—"}

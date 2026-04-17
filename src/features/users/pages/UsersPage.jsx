@@ -29,6 +29,8 @@ const ADMIN_ONLY = new Set(["admin"]);
 
 const UsersPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalUserId, setModalUserId] = useState(null);
+  const [modalKey, setModalKey] = useState(0);
   const currentUser = useSelector(selectCurrentUser);
   const canFetchUsers = useMemo(
     () => ADMIN_ONLY.has(currentUser?.role),
@@ -114,15 +116,17 @@ const UsersPage = () => {
 
     try {
       await deleteUser(userId).unwrap();
-      notify("auth:success.user_deleted", "success");
+      notify("user:users.toast_deleted", "success");
       refetch();
     } catch (_error) {
-      notify("auth:error.delete_failed", "error");
+      notify("user:users.toast_delete_failed", "error");
     }
   };
 
-  const handleEditUser = async (_userId) => {
-    // Wire edit modal / route when available
+  const handleEditUser = (userId) => {
+    setModalKey((k) => k + 1);
+    setModalUserId(userId);
+    setIsModalOpen(true);
   };
 
   if (!canFetchUsers) {
@@ -154,7 +158,11 @@ const UsersPage = () => {
         </h1>
         <button
           type="button"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setModalKey((k) => k + 1);
+            setModalUserId(null);
+            setIsModalOpen(true);
+          }}
           className="flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-200 px-3 py-2 text-xs font-semibold text-gray-700 transition-colors duration-200 hover:bg-slate-300 dark:bg-gray-900 dark:text-gray-200 hover:dark:bg-gray-800"
         >
           <UserPlus size={16} />
@@ -232,9 +240,15 @@ const UsersPage = () => {
 
       <UsersModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        userId={modalUserId}
+        modalKey={modalKey}
+        onClose={() => {
+          setIsModalOpen(false);
+          setModalUserId(null);
+        }}
         onSuccess={() => {
           setIsModalOpen(false);
+          setModalUserId(null);
           refetch();
         }}
       />

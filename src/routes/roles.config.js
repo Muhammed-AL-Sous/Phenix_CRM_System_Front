@@ -17,6 +17,10 @@ const ClientsPage = lazy(
   () => import("../features/clients/pages/ClientsPage.jsx"),
 );
 
+const StaffClientProfilePage = lazy(
+  () => import("../features/clients/pages/StaffClientProfilePage.jsx"),
+);
+
 const TasksPage = lazy(() => import("../features/tasks/pages/TasksPage.jsx"));
 
 const TicketsPage = lazy(
@@ -121,6 +125,7 @@ export const ROLES_CONFIG = {
       { path: "users", element: UsersPage },
       { path: "staff", element: StaffPage },
       { path: "clients", element: ClientsPage },
+      { path: "clients/:clientId", element: StaffClientProfilePage },
       { path: "chat", element: ChatPage },
       { path: "ratings", element: RatingsPage },
       { path: "prospective-clients", element: ProspectiveClientsPage },
@@ -153,6 +158,7 @@ export const ROLES_CONFIG = {
       { path: "tasks", element: TasksPage },
       { path: "profile", element: ProfilePage },
       { path: "clients", element: ClientsPage },
+      { path: "clients/:clientId", element: StaffClientProfilePage },
       { path: "chat", element: ChatPage },
       { path: "ratings", element: RatingsPage },
       { path: "prospective-clients", element: ProspectiveClientsPage },
@@ -183,6 +189,7 @@ export const ROLES_CONFIG = {
       { path: "tickets", element: TicketsPage },
       { path: "tasks", element: TasksPage },
       { path: "clients", element: ClientsPage },
+      { path: "clients/:clientId", element: StaffClientProfilePage },
       { path: "ratings", element: RatingsPage },
       { path: "prospective-clients", element: ProspectiveClientsPage },
       { path: "chat", element: ChatPage },

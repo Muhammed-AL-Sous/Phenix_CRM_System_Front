@@ -15,6 +15,9 @@ import { setCredentials } from "../authSlice";
 // ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
 import { notify } from "../../../lib/notify";
+import { patchClearFieldError } from "../../../lib/patchClearFieldError.js";
+import { getResetPasswordFormErrors } from "../validation/authFormValidators.js";
+import { handleDualPasswordFieldToggle } from "../utils/dualPasswordFieldToggle.js";
 
 const useResetPasswordPageHook = () => {
   // ========= Router ========= //
@@ -49,30 +52,8 @@ const useResetPasswordPageHook = () => {
 
   // ========= Validate Reset Password Form ========= //
   const validateResetPassForm = () => {
-    let newErrors = {};
-
-    // Password validation
-    if (!resetPasswordForm.password) {
-      newErrors.password = "error.password_required";
-    } else if (
-      resetPasswordForm.password.length < 8 ||
-      !/[a-zA-Z]/.test(resetPasswordForm.password) || // يجب أن تحتوي على حرف
-      !/[0-9]/.test(resetPasswordForm.password) // يجب أن تحتوي على رقم
-    ) {
-      newErrors.password = "error.password_length_letter_error";
-    }
-
-    // Confirm Password validation
-    if (!resetPasswordForm.password_confirmation) {
-      newErrors.password_confirmation = "error.confirm_password_required";
-    } else if (
-      resetPasswordForm.password !== resetPasswordForm.password_confirmation
-    ) {
-      newErrors.password_confirmation = "error.passwords_dont_match";
-    }
-
+    const newErrors = getResetPasswordFormErrors(resetPasswordForm);
     setErrors(newErrors);
-    // إذا كان كائن الأخطاء فارغاً، فهذا يعني أن البيانات صالحة
     return Object.keys(newErrors).length === 0;
   };
 
@@ -80,11 +61,7 @@ const useResetPasswordPageHook = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setResetPasswordForm((prev) => ({ ...prev, [name]: value }));
-
-    // مسح الخطأ الخاص بهذا الحقل فقط عند الكتابة
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
-    }
+    setErrors((prev) => patchClearFieldError(prev, name));
   };
 
   // ========= Handle Submit Function ========= //
@@ -121,25 +98,16 @@ const useResetPasswordPageHook = () => {
   // =============================
   // Toggle Logic (Keyboard Fix)
   // =============================
-  const handleToggle = useCallback((e, type) => {
-    e.preventDefault(); // يمنع فقدان التركيز (إغلاق الكيبورد)
-
-    const isMain = type === "password";
-    const input = isMain ? passwordRef.current : passwordConfirmRef.current;
-
-    if (!input) return;
-
-    const start = input.selectionStart;
-    const end = input.selectionEnd;
-
-    if (isMain) setShowPassword((prev) => !prev);
-    else setShowConfirmPassword((prev) => !prev);
-
-    requestAnimationFrame(() => {
-      input.setSelectionRange(start, end);
-      input.focus();
-    });
-  }, []);
+  const handleToggle = useCallback(
+    (e, type) =>
+      handleDualPasswordFieldToggle(e, type, {
+        passwordRef,
+        passwordConfirmRef,
+        setShowPassword,
+        setShowConfirmPassword,
+      }),
+    [],
+  );
 
   return {
     showPassword,

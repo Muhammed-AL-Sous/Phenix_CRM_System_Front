@@ -53,6 +53,12 @@ export const usersApiSlice = baseApi.injectEndpoints({
       providesTags: [{ type: "Role", id: "LIST" }],
     }),
 
+    getAdminUser: builder.query({
+      query: (userId) => `/admin/users/${userId}`,
+      transformResponse: (response) => response?.data ?? null,
+      providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
+    }),
+
     addUser: builder.mutation({
       queryFn: async (arg, _api, _extraOptions, baseQuery) => {
         const { scope, ...userData } = arg || {};
@@ -129,6 +135,7 @@ export const usersApiSlice = baseApi.injectEndpoints({
 
 export const {
   useGetUsersQuery,
+  useGetAdminUserQuery,
   useGetRolesQuery,
   useAddUserMutation,
   useDeleteUserMutation,

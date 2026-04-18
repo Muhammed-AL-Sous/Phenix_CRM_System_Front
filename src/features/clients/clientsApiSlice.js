@@ -1,10 +1,25 @@
 import { baseApi } from "../../api/apiSlice";
 
+/** @param {string | undefined} role */
+function clientsScopePrefix(role) {
+  if (
+    role === "admin" ||
+    role === "manager" ||
+    role === "support" ||
+    role === "sales"
+  ) {
+    return `/${role}`;
+  }
+  return "/admin";
+}
+
 export const clientsApiSlice = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // ✅ لوحة التحكم: جلب كل الزبائن مع ملفاتهم (ClientResource + pagination envelope)
+    // Staff dashboards: GET /{role}/users/clients (matches Laravel role-prefixed API)
     getAdminClients: builder.query({
-      query: () => "/staff/users/clients",
+      query: (role) => `${clientsScopePrefix(role)}/users/clients`,
+      serializeQueryArgs: ({ endpointName, queryArgs }) =>
+        `${endpointName}(${queryArgs ?? ""})`,
       transformResponse: (response) =>
         Array.isArray(response?.data) ? response.data : [],
       providesTags: (result) =>
@@ -17,12 +32,37 @@ export const clientsApiSlice = baseApi.injectEndpoints({
     }),
 
     getAdminClient: builder.query({
-      query: (clientId) => `/staff/clients/${clientId}`,
+      query: (arg) => {
+        const clientId =
+          arg && typeof arg === "object" && arg != null && "clientId" in arg
+            ? arg.clientId
+            : arg;
+        const role =
+          arg && typeof arg === "object" && arg != null && "role" in arg
+            ? arg.role
+            : undefined;
+        return `${clientsScopePrefix(role)}/clients/${clientId}`;
+      },
+      serializeQueryArgs: ({ queryArgs }) => {
+        if (queryArgs && typeof queryArgs === "object" && "clientId" in queryArgs) {
+          return {
+            clientId: queryArgs.clientId,
+            role: queryArgs.role,
+          };
+        }
+        return { clientId: queryArgs };
+      },
       transformResponse: (response) => response?.data?.client ?? null,
-      providesTags: (_result, _error, clientId) => [
-        { type: "Clients", id: clientId },
-        { type: "Clients", id: "ADMIN_LIST" },
-      ],
+      providesTags: (_result, _error, arg) => {
+        const clientId =
+          arg && typeof arg === "object" && arg != null && "clientId" in arg
+            ? arg.clientId
+            : arg;
+        return [
+          { type: "Clients", id: clientId },
+          { type: "Clients", id: "ADMIN_LIST" },
+        ];
+      },
     }),
 
     // ✅ (غير مستخدم بالداش حالياً) قائمة clients العامة

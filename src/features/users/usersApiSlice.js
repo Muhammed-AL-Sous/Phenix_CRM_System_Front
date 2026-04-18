@@ -6,25 +6,24 @@ import {
 } from "./usersQueryUtils";
 
 const USERS_SCOPE_BASE_PATH = {
-  // Admin-only listing endpoints live under `/api/admin/*`
   admin: "/admin/users",
-  // Shared staff endpoints live under `/api/staff/*`
-  manager: "/staff/users",
-  support: "/staff/users",
+  manager: "/manager/users",
+  support: "/support/users",
+  sales: "/sales/users",
 };
 
 function isStaffScope(scope) {
-  return scope === "admin" || scope === "manager" || scope === "support";
+  return (
+    scope === "admin" ||
+    scope === "manager" ||
+    scope === "support" ||
+    scope === "sales"
+  );
 }
 
 function resolveUsersBasePath(scope) {
-  if (scope && USERS_SCOPE_BASE_PATH[scope]) return USERS_SCOPE_BASE_PATH[scope];
-  return "/users";
-}
-
-function resolveUsersWriteBasePath(scope) {
-  // Writes (create/update) are handled under `/api/staff/*` for all staff (including admin).
-  if (isStaffScope(scope)) return "/staff/users";
+  if (scope && USERS_SCOPE_BASE_PATH[scope])
+    return USERS_SCOPE_BASE_PATH[scope];
   return "/users";
 }
 
@@ -54,14 +53,38 @@ export const usersApiSlice = baseApi.injectEndpoints({
     }),
 
     getAdminUser: builder.query({
-      query: (userId) => `/admin/users/${userId}`,
+      query: (arg) => {
+        const userId =
+          arg && typeof arg === "object" && arg != null && "userId" in arg
+            ? arg.userId
+            : arg;
+        const scope =
+          arg && typeof arg === "object" && arg != null && "scope" in arg
+            ? arg.scope
+            : undefined;
+        const path = resolveUsersBasePath(scope);
+        return `${path}/${userId}`;
+      },
+      serializeQueryArgs: ({ queryArgs }) => {
+        if (queryArgs && typeof queryArgs === "object" && "userId" in queryArgs) {
+          return { userId: queryArgs.userId, scope: queryArgs.scope };
+        }
+        return { userId: queryArgs };
+      },
       transformResponse: (response) => response?.data ?? null,
-      providesTags: (_result, _error, userId) => [{ type: "User", id: userId }],
+      providesTags: (_result, _error, arg) => {
+        const id =
+          arg && typeof arg === "object" && arg != null && "userId" in arg
+            ? arg.userId
+            : arg;
+        return [{ type: "User", id }];
+      },
     }),
 
     addUser: builder.mutation({
       queryFn: async (arg, _api, _extraOptions, baseQuery) => {
         const { scope, ...userData } = arg || {};
+        const path = resolveUsersBasePath(arg?.scope);
         if (!isStaffScope(scope)) {
           return {
             error: {
@@ -71,7 +94,7 @@ export const usersApiSlice = baseApi.injectEndpoints({
           };
         }
         return baseQuery({
-          url: resolveUsersWriteBasePath(scope),
+          url: path,
           method: "POST",
           body: userData,
         });
@@ -80,13 +103,13 @@ export const usersApiSlice = baseApi.injectEndpoints({
     }),
 
     deleteUser: builder.mutation({
-      query: (id) => ({
-        url: `/admin/users/${id}`,
+      query: ({ id, scope }) => ({
+        url: `${resolveUsersBasePath(scope ?? "admin")}/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (result, error, arg) => [
         { type: "User", id: "LIST" },
-        { type: "User", id },
+        { type: "User", id: arg?.id },
       ],
     }),
 
@@ -110,6 +133,7 @@ export const usersApiSlice = baseApi.injectEndpoints({
     updateUser: builder.mutation({
       queryFn: async (arg, _api, _extraOptions, baseQuery) => {
         const { id, scope, ...data } = arg || {};
+        const path = resolveUsersBasePath(arg?.scope);
         if (!isStaffScope(scope)) {
           return {
             error: {
@@ -119,7 +143,7 @@ export const usersApiSlice = baseApi.injectEndpoints({
           };
         }
         return baseQuery({
-          url: `${resolveUsersWriteBasePath(scope)}/${id}`,
+          url: `${path}/${id}`,
           method: "PUT",
           body: data,
         });

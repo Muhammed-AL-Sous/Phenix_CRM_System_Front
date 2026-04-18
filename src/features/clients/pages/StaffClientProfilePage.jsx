@@ -7,7 +7,7 @@ import { selectCurrentUser } from "../../auth/authSlice";
 import { useGetAdminClientQuery } from "../clientsApiSlice";
 import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
 
-const STAFF = new Set(["admin", "manager", "support"]);
+const STAFF = new Set(["admin", "manager", "support", "sales"]);
 
 export default function StaffClientProfilePage() {
   const { clientId } = useParams();
@@ -32,9 +32,12 @@ export default function StaffClientProfilePage() {
     isLoading,
     isFetching,
     error,
-  } = useGetAdminClientQuery(clientId, {
-    skip: !canView || !clientId,
-  });
+  } = useGetAdminClientQuery(
+    { clientId, role: currentUser?.role },
+    {
+      skip: !canView || !clientId,
+    },
+  );
 
   if (!canView) {
     return (

@@ -5,7 +5,7 @@ import { selectCurrentUser } from "../../auth/authSlice";
 import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
 import { useGetAdminClientsQuery } from "../clientsApiSlice";
 
-const STAFF_ROLES = new Set(["admin", "manager", "support"]);
+const STAFF_ROLES = new Set(["admin", "manager", "support", "sales"]);
 
 export default function ClientsPage() {
   const currentUser = useSelector(selectCurrentUser);
@@ -18,7 +18,7 @@ export default function ClientsPage() {
     data: clients = [],
     isLoading,
     error,
-  } = useGetAdminClientsQuery(undefined, {
+  } = useGetAdminClientsQuery(currentUser?.role, {
     skip: !canView,
   });
 

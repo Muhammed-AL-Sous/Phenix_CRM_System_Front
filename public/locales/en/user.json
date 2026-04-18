@@ -5,11 +5,14 @@
         "edit_user": "Edit User",
         "delete_user": "Delete User",
         "confirmDelete": "Are you sure you want to delete this user?",
+        "cancel": "Cancel",
+        "confirm_delete_action": "Delete",
         "name": "Name",
         "email": "Email",
         "role": "Role",
         "actions": "Actions",
         "manage_users": "User Management",
+        "manage_client_users": "Client accounts",
         "close": "Close",
         "optional_password_hint": "Optional — leave blank to keep the current password",
         "saving": "Saving…",
@@ -26,6 +29,7 @@
             "admin": "Admin",
             "manager": "Manager",
             "support": "Support",
+            "sales": "Sales",
             "client": "Client"
         },
         "list": {

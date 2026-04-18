@@ -15,6 +15,7 @@ import { UserPlus } from "lucide-react";
 // Utilities Components
 import UsersTable from "../components/UsersTable";
 import UsersModal from "../components/UsersModal";
+import DeleteUserConfirmModal from "../components/DeleteUserConfirmModal";
 import UsersListToolbar from "../components/UsersListToolbar";
 import UsersPagination from "../components/UsersPagination";
 
@@ -25,15 +26,25 @@ import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { notify } from "../../../lib/notify";
 import { useTranslation } from "react-i18next";
 
-const ADMIN_ONLY = new Set(["admin"]);
+/** Admin: all roles. Other staff: client accounts only (matches API). */
+const STAFF_USER_MANAGEMENT = new Set([
+  "admin",
+  "manager",
+  "support",
+  "sales",
+]);
 
 const UsersPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalUserId, setModalUserId] = useState(null);
   const [modalKey, setModalKey] = useState(0);
+  const [deleteConfirmUserId, setDeleteConfirmUserId] = useState(null);
   const currentUser = useSelector(selectCurrentUser);
+  const isAdmin = currentUser?.role === "admin";
+  const clientsOnlyMode = Boolean(currentUser?.role) && !isAdmin;
+
   const canFetchUsers = useMemo(
-    () => ADMIN_ONLY.has(currentUser?.role),
+    () => STAFF_USER_MANAGEMENT.has(currentUser?.role),
     [currentUser?.role],
   );
   const { direction } = useSelector((state) => state.ui);
@@ -65,7 +76,7 @@ const UsersPage = () => {
     };
     const q = debouncedSearch.trim();
     if (q) arg.search = q;
-    if (role) arg.role = role;
+    if (!clientsOnlyMode && role) arg.role = role;
     if (activeFilter === "active") arg.is_active = true;
     if (activeFilter === "inactive") arg.is_active = false;
     if (verifiedFilter === "yes") arg.email_verified = true;
@@ -79,6 +90,7 @@ const UsersPage = () => {
     perPage,
     sort,
     debouncedSearch,
+    clientsOnlyMode,
     role,
     activeFilter,
     verifiedFilter,
@@ -97,7 +109,15 @@ const UsersPage = () => {
   const users = data?.users ?? [];
   const meta = data?.meta;
 
-  const [deleteUser] = useDeleteUserMutation();
+  const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
+
+  const deleteConfirmLabel = useMemo(() => {
+    if (deleteConfirmUserId == null) return "";
+    const u = users.find((row) => row.id === deleteConfirmUserId);
+    if (!u) return "";
+    const bits = [u.name, u.email].filter(Boolean);
+    return bits.join(" — ");
+  }, [deleteConfirmUserId, users]);
 
   const handleResetFilters = () => {
     setSearchInput("");
@@ -111,12 +131,19 @@ const UsersPage = () => {
     setPage(1);
   };
 
-  const handleDeleteUser = async (userId) => {
-    if (!window.confirm(t("users.confirmDelete"))) return;
+  const handleRequestDeleteUser = (userId) => {
+    setDeleteConfirmUserId(userId);
+  };
 
+  const handleConfirmDeleteUser = async () => {
+    if (deleteConfirmUserId == null) return;
     try {
-      await deleteUser(userId).unwrap();
+      await deleteUser({
+        id: deleteConfirmUserId,
+        scope: currentUser?.role,
+      }).unwrap();
       notify("user:users.toast_deleted", "success");
+      setDeleteConfirmUserId(null);
       refetch();
     } catch (_error) {
       notify("user:users.toast_delete_failed", "error");
@@ -154,7 +181,11 @@ const UsersPage = () => {
           className="text-2xl font-semibold text-slate-700 dark:text-gray-200"
           style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter" }}
         >
-          {t("users.manage_users")}
+          {t(
+            clientsOnlyMode
+              ? "users.manage_client_users"
+              : "users.manage_users",
+          )}
         </h1>
         <button
           type="button"
@@ -186,6 +217,7 @@ const UsersPage = () => {
           setSort(v);
           setPage(1);
         }}
+        hideRoleFilter={clientsOnlyMode}
         role={role}
         onRoleChange={(v) => {
           setRole(v);
@@ -227,7 +259,8 @@ const UsersPage = () => {
         metaFrom={meta?.from}
         emptyLabel={t("users.list.no_results")}
         isFetching={isFetching && !isLoading}
-        onDelete={handleDeleteUser}
+        canDelete={isAdmin}
+        onDelete={handleRequestDeleteUser}
         onEdit={handleEditUser}
       />
 
@@ -242,6 +275,7 @@ const UsersPage = () => {
         isOpen={isModalOpen}
         userId={modalUserId}
         modalKey={modalKey}
+        clientsOnly={clientsOnlyMode}
         onClose={() => {
           setIsModalOpen(false);
           setModalUserId(null);
@@ -251,6 +285,16 @@ const UsersPage = () => {
           setModalUserId(null);
           refetch();
         }}
+      />
+
+      <DeleteUserConfirmModal
+        isOpen={deleteConfirmUserId != null}
+        userLabel={deleteConfirmLabel}
+        isDeleting={isDeletingUser}
+        onClose={() => {
+          if (!isDeletingUser) setDeleteConfirmUserId(null);
+        }}
+        onConfirm={handleConfirmDeleteUser}
       />
     </div>
   );

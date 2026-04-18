@@ -1,5 +1,5 @@
 /**
- * Builds query params for GET /admin/users (IndexUsersRequest).
+ * Builds query params for GET /{role}/users (IndexUsersRequest), e.g. /api/admin/users.
  * Omits empty optional fields so Laravel does not receive invalid empty search.
  */
 

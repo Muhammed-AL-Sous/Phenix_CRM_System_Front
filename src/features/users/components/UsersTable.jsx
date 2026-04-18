@@ -5,8 +5,9 @@ import clsx from "clsx";
 /**
  * @param {object} props
  * @param {Array} props.users
- * @param {(id: number) => void} props.onDelete
+ * @param {(id: number) => void} [props.onDelete]
  * @param {(id: number) => void} props.onEdit
+ * @param {boolean} [props.canDelete]
  * @param {number} props.page
  * @param {number} props.perPage
  * @param {number | null | undefined} props.metaFrom — Laravel `meta.from` (1-based first row index)
@@ -17,6 +18,7 @@ export default function UsersTable({
   users = [],
   onDelete,
   onEdit,
+  canDelete = true,
   page = 1,
   perPage = 15,
   metaFrom,
@@ -85,13 +87,15 @@ export default function UsersTable({
                     : "—"}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3 text-end">
-                  <button
-                    type="button"
-                    onClick={() => onDelete(u.id)}
-                    className="cursor-pointer rounded-lg border border-red-500 px-1 py-1 text-red-500 transition-colors duration-200 hover:border-red-600 hover:text-red-600"
-                  >
-                    <UserX size={18} />
-                  </button>
+                  {canDelete && typeof onDelete === "function" ? (
+                    <button
+                      type="button"
+                      onClick={() => onDelete(u.id)}
+                      className="cursor-pointer rounded-lg border border-red-500 px-1 py-1 text-red-500 transition-colors duration-200 hover:border-red-600 hover:text-red-600"
+                    >
+                      <UserX size={18} />
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => onEdit(u.id)}

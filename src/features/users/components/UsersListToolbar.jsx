@@ -47,12 +47,14 @@ const PER_PAGE_OPTIONS = [10, 15, 25, 50];
  * @param {(n: number) => void} props.onPerPageChange
  * @param {() => void} props.onReset
  * @param {'ltr' | 'rtl'} props.dir
+ * @param {boolean} [props.hideRoleFilter]
  */
 export default function UsersListToolbar({
   searchInput,
   onSearchChange,
   sort,
   onSortChange,
+  hideRoleFilter = false,
   role,
   onRoleChange,
   activeFilter,
@@ -145,7 +147,12 @@ export default function UsersListToolbar({
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div
+        className={clsx(
+          "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3",
+          hideRoleFilter ? "xl:grid-cols-5" : "xl:grid-cols-6",
+        )}
+      >
         <div>
           <label htmlFor="users-sort" className={labelClass}>
             {t("users.list.sort")}
@@ -159,18 +166,20 @@ export default function UsersListToolbar({
           />
         </div>
 
-        <div>
-          <label htmlFor="users-role" className={labelClass}>
-            {t("users.list.filter_role")}
-          </label>
-          <FormListbox
-            id="users-role"
-            value={role}
-            onChange={(v) => onRoleChange(v)}
-            options={roleOptions}
-            placeholder={t("users.list.filter_role_all")}
-          />
-        </div>
+        {!hideRoleFilter ? (
+          <div>
+            <label htmlFor="users-role" className={labelClass}>
+              {t("users.list.filter_role")}
+            </label>
+            <FormListbox
+              id="users-role"
+              value={role}
+              onChange={(v) => onRoleChange(v)}
+              options={roleOptions}
+              placeholder={t("users.list.filter_role_all")}
+            />
+          </div>
+        ) : null}
 
         <div>
           <label htmlFor="users-active" className={labelClass}>

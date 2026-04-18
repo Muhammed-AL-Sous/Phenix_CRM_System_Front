@@ -30,6 +30,7 @@ function UsersModalForm({
   initialRoleId,
   rolesLoading,
   roleOptions,
+  hideRoleField = false,
   onSuccess,
 }) {
   const { t } = useTranslation("user");
@@ -153,27 +154,29 @@ function UsersModalForm({
         />
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
-          {t("users.role")}
-        </label>
-        <select
-          value={roleId}
-          onChange={(e) => setRoleId(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
-          required
-          disabled={rolesLoading}
-        >
-          <option value="" disabled>
-            {rolesLoading ? "…" : "—"}
-          </option>
-          {roleOptions.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name}
+      {!hideRoleField ? (
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
+            {t("users.role")}
+          </label>
+          <select
+            value={roleId}
+            onChange={(e) => setRoleId(e.target.value)}
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+            required
+            disabled={rolesLoading}
+          >
+            <option value="" disabled>
+              {rolesLoading ? "…" : "—"}
             </option>
-          ))}
-        </select>
-      </div>
+            {roleOptions.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
 
       <div>
         <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -227,6 +230,7 @@ export default function UsersModal({
   isOpen,
   userId,
   modalKey = 0,
+  clientsOnly = false,
   onClose,
   onSuccess,
 }) {
@@ -247,22 +251,36 @@ export default function UsersModal({
     data: existingUser,
     isLoading: userLoading,
     isFetching: userFetching,
-  } = useGetAdminUserQuery(userId, {
-    skip: !isOpen || !isEdit,
-  });
+  } = useGetAdminUserQuery(
+    { userId, scope: currentUser?.role },
+    {
+      skip: !isOpen || !isEdit || userId == null || userId === "",
+    },
+  );
 
-  const roleOptions = useMemo(() => {
+  const roleOptionsFull = useMemo(() => {
     const safe = Array.isArray(roles) ? roles : [];
     return safe.map((r) => ({
       id: r.id,
       name: r.label || r.name,
+      roleName: r.name,
     }));
   }, [roles]);
+
+  const roleOptions = useMemo(() => {
+    if (!clientsOnly) return roleOptionsFull;
+    return roleOptionsFull.filter((r) => r.roleName === "client");
+  }, [roleOptionsFull, clientsOnly]);
+
+  const defaultRoleIdForCreate = useMemo(() => {
+    if (!clientsOnly || roleOptions.length !== 1) return "";
+    return String(roleOptions[0].id);
+  }, [clientsOnly, roleOptions]);
 
   const portalTarget =
     typeof document !== "undefined" ? document.body : null;
 
-  const formRemountKey = `${modalKey}-${isEdit ? String(userId) : "create"}`;
+  const formRemountKey = `${modalKey}-${isEdit ? String(userId) : "create"}-${clientsOnly ? defaultRoleIdForCreate || "pending" : "roles"}`;
 
   if (!portalTarget) return null;
 
@@ -318,6 +336,7 @@ export default function UsersModal({
                 isEdit={isEdit}
                 userId={userId}
                 scope={scope}
+                hideRoleField={clientsOnly}
                 initialName={
                   isEdit && existingUser ? (existingUser.name ?? "") : ""
                 }
@@ -327,7 +346,7 @@ export default function UsersModal({
                 initialRoleId={
                   isEdit && existingUser && existingUser.role_id != null
                     ? String(existingUser.role_id)
-                    : ""
+                    : defaultRoleIdForCreate
                 }
                 rolesLoading={rolesLoading}
                 roleOptions={roleOptions}

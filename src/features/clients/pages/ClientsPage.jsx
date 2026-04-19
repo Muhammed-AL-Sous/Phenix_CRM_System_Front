@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router";
 import { selectCurrentUser } from "../../auth/authSlice";
-import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/GlobalLoader";
 import { useGetAdminClientsQuery } from "../clientsApiSlice";
 
 const STAFF_ROLES = new Set(["admin", "manager", "support", "sales"]);
@@ -36,13 +36,27 @@ export default function ClientsPage() {
     );
   }
 
-  if (isLoading) return <RouteSuspenseFallback className="min-h-[50vh]" />;
-
   if (error) {
     return (
       <p className="text-red-600 dark:text-red-400">
         {error?.data?.message || "Failed to load clients."}
       </p>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="clients-page">
+        <div className="mb-6 flex items-center justify-between">
+          <h1>Clients</h1>
+        </div>
+        <div
+          className="flex min-h-[240px] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
+          aria-busy
+        >
+          <Spinner size="lg" />
+        </div>
+      </div>
     );
   }
 

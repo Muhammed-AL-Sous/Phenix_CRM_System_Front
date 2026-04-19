@@ -40,10 +40,11 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
     return open;
   }, [location.pathname, sidebarLinks]);
 
+  
   // Only stores explicit user toggles. If a group hasn't been toggled yet,
   // we fall back to `defaultOpenGroups` (derived from current route).
   const [openGroups, setOpenGroups] = useState({});
-
+  
   // إغلاق القائمة عند الضغط على Escape
   useEffect(() => {
     const handleEsc = (e) => {

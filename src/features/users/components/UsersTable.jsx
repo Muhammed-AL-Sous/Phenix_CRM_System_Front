@@ -13,6 +13,7 @@ import clsx from "clsx";
  * @param {number | null | undefined} props.metaFrom — Laravel `meta.from` (1-based first row index)
  * @param {string} [props.emptyLabel]
  * @param {boolean} [props.isFetching]
+ * @param {boolean} [props.isInitialLoading] — أول جلب للبيانات (بدون استبدال الصفحة بلودر عام)
  */
 export default function UsersTable({
   users = [],
@@ -24,6 +25,7 @@ export default function UsersTable({
   metaFrom,
   emptyLabel,
   isFetching,
+  isInitialLoading = false,
 }) {
   const { t } = useTranslation("user");
 
@@ -31,6 +33,17 @@ export default function UsersTable({
     if (metaFrom != null) return metaFrom + i;
     return (page - 1) * perPage + i + 1;
   };
+
+  if (isInitialLoading && !users.length) {
+    return (
+      <div
+        className="flex min-h-[240px] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
+        aria-busy
+      >
+        <span className="h-8 w-8 animate-spin rounded-full border-2 border-sky-500 border-t-transparent dark:border-sky-400" />
+      </div>
+    );
+  }
 
   if (!users.length) {
     return (

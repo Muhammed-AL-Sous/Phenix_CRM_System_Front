@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { House } from "lucide-react";
 
 import { RouteSuspenseFallback } from "../../../../components/common/GlobalLoader";
+import AuthHotToaster from "../../../../lib/AuthHotToaster";
 
 const AuthLayout = () => {
   const { direction } = useSelector((state) => state.ui);
@@ -36,6 +37,7 @@ const AuthLayout = () => {
 
   return (
     <div className="min-h-screen flex items-center flex-col gap-4 justify-start mesh-gradient p-4 relative overflow-hidden">
+      <AuthHotToaster />
       {/* ============= Decorative Blobs ============= */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-red-500/5 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px]" />

@@ -1,5 +1,9 @@
 import { lazy } from "react";
 
+// قوائم المستخدمين/الزبائن: تُحمَّل مع الحزمة الرئيسية لتفادي لودر مزدوج (Suspense + طلب البيانات).
+import UsersPage from "../features/users/pages/UsersPage.jsx";
+import ClientsPage from "../features/clients/pages/ClientsPage.jsx";
+
 // =================== Shared =================== //
 const DashboardPage = lazy(
   () => import("../features/dashboard/pages/DashboardPage.jsx"),
@@ -9,13 +13,7 @@ const ProfilePage = lazy(
   () => import("../features/dashboard/pages/ProfilePage.jsx"),
 );
 
-const UsersPage = lazy(() => import("../features/users/pages/UsersPage.jsx"));
-
 const StaffPage = lazy(() => import("../features/staff/pages/StaffPage.jsx"));
-
-const ClientsPage = lazy(
-  () => import("../features/clients/pages/ClientsPage.jsx"),
-);
 
 const StaffClientProfilePage = lazy(
   () => import("../features/clients/pages/StaffClientProfilePage.jsx"),

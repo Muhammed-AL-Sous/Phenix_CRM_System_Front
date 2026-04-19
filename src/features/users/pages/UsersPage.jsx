@@ -6,9 +6,6 @@ import { useSelector } from "react-redux";
 import { useGetUsersQuery, useDeleteUserMutation } from "../usersApiSlice";
 import { selectCurrentUser } from "../../auth/authSlice";
 
-// Global Components
-import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
-
 // Icons
 import { UserPlus } from "lucide-react";
 
@@ -23,7 +20,7 @@ import UsersPagination from "../components/UsersPagination";
 import { useDebouncedValue } from "../hooks/useDebouncedValue";
 
 // External Libraries
-import { notify } from "../../../lib/notify";
+import { notifySonner } from "../../../lib/notifySonner";
 import { useTranslation } from "react-i18next";
 
 /** Admin: all roles. Other staff: client accounts only (matches API). */
@@ -106,7 +103,7 @@ const UsersPage = () => {
     error,
   } = useGetUsersQuery(queryArg, { skip: !canFetchUsers });
 
-  const users = data?.users ?? [];
+  const users = useMemo(() => data?.users ?? [], [data?.users]);
   const meta = data?.meta;
 
   const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
@@ -142,11 +139,11 @@ const UsersPage = () => {
         id: deleteConfirmUserId,
         scope: currentUser?.role,
       }).unwrap();
-      notify("user:users.toast_deleted", "success");
+      notifySonner("user:users.toast_deleted", "success");
       setDeleteConfirmUserId(null);
       refetch();
     } catch (_error) {
-      notify("user:users.toast_delete_failed", "error");
+      notifySonner("user:users.toast_delete_failed", "error");
     }
   };
 
@@ -163,8 +160,6 @@ const UsersPage = () => {
       </p>
     );
   }
-
-  if (isLoading) return <RouteSuspenseFallback className="min-h-[50vh]" />;
 
   if (error) {
     return (
@@ -258,6 +253,7 @@ const UsersPage = () => {
         perPage={perPage}
         metaFrom={meta?.from}
         emptyLabel={t("users.list.no_results")}
+        isInitialLoading={isLoading}
         isFetching={isFetching && !isLoading}
         canDelete={isAdmin}
         onDelete={handleRequestDeleteUser}

@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "motion/react";
-import { notify } from "../../../lib/notify";
+import { notifySonner } from "../../../lib/notifySonner";
 import { selectCurrentUser } from "../../auth/authSlice";
 import {
   useAddUserMutation,
@@ -50,13 +50,13 @@ function UsersModalForm({
     e.preventDefault();
 
     if (!name.trim() || !email.trim() || !roleId) {
-      notify("user:users.validation_missing", "error");
+      notifySonner("user:users.validation_missing", "error");
       return;
     }
 
     const parsedRoleId = Number.parseInt(String(roleId), 10);
     if (!Number.isFinite(parsedRoleId)) {
-      notify("user:users.validation_missing", "error");
+      notifySonner("user:users.validation_missing", "error");
       return;
     }
 
@@ -65,20 +65,20 @@ function UsersModalForm({
 
     if (!isEdit) {
       if (pwd.length < 8) {
-        notify("user:users.validation_password_short", "error");
+        notifySonner("user:users.validation_password_short", "error");
         return;
       }
       if (pwd !== pwd2) {
-        notify("user:users.validation_password_mismatch", "error");
+        notifySonner("user:users.validation_password_mismatch", "error");
         return;
       }
     } else if (pwd || pwd2) {
       if (pwd.length < 8) {
-        notify("user:users.validation_password_short", "error");
+        notifySonner("user:users.validation_password_short", "error");
         return;
       }
       if (pwd !== pwd2) {
-        notify("user:users.validation_password_mismatch", "error");
+        notifySonner("user:users.validation_password_mismatch", "error");
         return;
       }
     }
@@ -93,7 +93,7 @@ function UsersModalForm({
           password: pwd,
           password_confirmation: pwd2,
         }).unwrap();
-        notify("user:users.toast_created", "success");
+        notifySonner("user:users.toast_created", "success");
       } else {
         const body = {
           id: userId,
@@ -107,7 +107,7 @@ function UsersModalForm({
           body.password_confirmation = pwd2;
         }
         await updateUser(body).unwrap();
-        notify("user:users.toast_updated", "success");
+        notifySonner("user:users.toast_updated", "success");
       }
       onSuccess?.();
     } catch (err) {
@@ -116,7 +116,7 @@ function UsersModalForm({
       const fromFields = firstValidationMessage(data?.errors);
       const resolved =
         (typeof msg === "string" && msg.trim() ? msg : null) || fromFields;
-      notify(
+      notifySonner(
         resolved && String(resolved).trim()
           ? String(resolved).trim()
           : "user:users.toast_save_failed",

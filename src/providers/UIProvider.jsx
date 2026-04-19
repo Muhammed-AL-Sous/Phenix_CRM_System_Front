@@ -7,9 +7,6 @@ import { useSelector } from "react-redux";
 // Translation Library
 import i18n from "../i18n";
 
-// Notification Library
-import { Toaster } from "react-hot-toast";
-
 const UIProvider = ({ children }) => {
   const { mode, direction, lang } = useSelector((state) => state.ui);
 
@@ -35,26 +32,7 @@ const UIProvider = ({ children }) => {
     i18n.changeLanguage(lang);
   }, [mode, direction, lang]);
 
-  return (
-    <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 4000,
-          // استخدام الفونت الخاص بك بناءً على اللغة
-          className: direction === "rtl" ? "font-[Vazirmatn]" : "font-[Inter]",
-          style: {
-            direction: direction,
-            borderRadius: "12px",
-            background: mode === "dark" ? "#27272a" : "#fff", // ألوان متناسقة مع Slate/Zinc
-            color: mode === "dark" ? "#fff" : "#18181b",
-            fontSize: "14px",
-          },
-        }}
-      />
-      {children}
-    </>
-  );
+  return <>{children}</>;
 };
 
 export default UIProvider;

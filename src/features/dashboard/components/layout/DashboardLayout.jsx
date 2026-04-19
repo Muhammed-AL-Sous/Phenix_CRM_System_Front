@@ -22,7 +22,8 @@ import { motion, AnimatePresence } from "motion/react";
 // Echo Library (تهيئة كسولة — لا WebSocket عند أول سطر من التطبيق)
 import getEcho from "../../../../lib/echo";
 import { shouldShowBroadcastToast } from "../../../../logic/broadcastNotifyDedupe";
-import { notify } from "../../../../lib/notify";
+import { notifySonner } from "../../../../lib/notifySonner";
+import SonnerToaster from "../../../../lib/SonnerToaster";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -55,7 +56,7 @@ export default function DashboardLayout() {
         if (!shouldShowBroadcastToast(notification)) {
           return;
         }
-        notify(notification.message || "إشعار جديد", "success");
+        notifySonner(notification.message || "إشعار جديد", "success");
       });
 
       subscribed = true;
@@ -94,20 +95,25 @@ export default function DashboardLayout() {
 
   if (isClientOnboarding) {
     return (
-      <div
-        className="h-dvh overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
-      >
-        <main className="mesh-gradient no-scroll-anchor flex-1 overflow-y-auto overscroll-contain p-4 md:p-8 lg:p-10">
-          <Outlet />
-        </main>
-      </div>
+      <>
+        <SonnerToaster />
+        <div
+          className="h-dvh overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
+        >
+          <main className="mesh-gradient no-scroll-anchor flex-1 overflow-y-auto overscroll-contain p-4 md:p-8 lg:p-10">
+            <Outlet />
+          </main>
+        </div>
+      </>
     );
   }
 
   return (
-    <div
-      className="h-dvh w-full overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
-    >
+    <>
+      <SonnerToaster />
+      <div
+        className="h-dvh w-full overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
+      >
       {/* ============== Dashboard SideBar ============== */}
       <DashboardSidebar
         isOpen={isSidebarOpen}
@@ -141,5 +147,6 @@ export default function DashboardLayout() {
         </main>
       </div>
     </div>
+    </>
   );
 }

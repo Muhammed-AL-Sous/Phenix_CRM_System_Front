@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../auth/authSlice";
 import { useUpdateProfileMutation } from "../../users/usersApiSlice";
-import { notify } from "../../../lib/notify";
+import { notifySonner } from "../../../lib/notifySonner";
 import { Spinner } from "../../../components/common/GlobalLoader";
 
 const ProfilePage = () => {
@@ -22,9 +22,9 @@ const ProfilePage = () => {
     e.preventDefault();
     try {
       await updateProfile({ id: user.id, ...formData }).unwrap();
-      notify("auth:success.profile_updated", "success");
+      notifySonner("auth:success.profile_updated", "success");
     } catch (_error) {
-      notify("auth:error.update_failed", "error");
+      notifySonner("auth:error.update_failed", "error");
     }
   };
 

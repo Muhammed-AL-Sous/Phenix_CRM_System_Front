@@ -50,7 +50,7 @@ const DashboardNavbar = ({ toggleSidebar }) => {
 
   return (
     <header
-      className="h-[72px] min-h-[72px] md:h-[80px] md:min-h-[80px] shrink-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between sticky top-0 z-30
+      className="h-18 min-h-18 md:h-20 md:min-h-20 shrink-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between sticky top-0 z-30
      shadow-xl glass px-2 md:px-4"
     >
       <div className="flex items-center gap-4 md:gap-6 flex-1">

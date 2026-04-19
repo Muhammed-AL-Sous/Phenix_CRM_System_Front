@@ -8,7 +8,7 @@ import {
   useAddClientMutation,
 } from "../clientsApiSlice";
 import { selectCurrentUser, setCredentials } from "../../auth/authSlice";
-import toast from "react-hot-toast";
+import { sonnerToast } from "../../../lib/notifySonner";
 import { Spinner } from "../../../components/common/GlobalLoader";
 import FormListbox from "../../../components/utility/FormListbox";
 import { Building2, MapPin, Phone, User } from "lucide-react";
@@ -148,11 +148,11 @@ export default function CompleteClientProfilePage() {
       if (updatedUser) {
         dispatch(setCredentials({ user: updatedUser }));
       }
-      toast.success(t("success.saved"));
+      sonnerToast.success(t("success.saved"));
       navigate("/client", { replace: true });
     } catch (err) {
       const serverMsg = err?.data?.message;
-      toast.error(serverMsg || t("errors.save_failed"));
+      sonnerToast.error(serverMsg || t("errors.save_failed"));
     }
   };
 
@@ -351,7 +351,7 @@ export default function CompleteClientProfilePage() {
               }
               // 512 KB server limit; keep a small client guard too
               if (f.size > 512 * 1024) {
-                toast.error(t("errors.logo_too_large"));
+                sonnerToast.error(t("errors.logo_too_large"));
                 e.target.value = "";
                 setLogoFile(null);
                 return;

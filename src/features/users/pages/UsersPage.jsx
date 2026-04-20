@@ -7,7 +7,7 @@ import { useGetUsersQuery, useDeleteUserMutation } from "../usersApiSlice";
 import { selectCurrentUser } from "../../auth/authSlice";
 
 // Icons
-import { UserPlus } from "lucide-react";
+import { UserPlus, ArrowDownWideNarrow } from "lucide-react";
 
 // Utilities Components
 import UsersTable from "../components/UsersTable";
@@ -23,16 +23,15 @@ import { useDebouncedValue } from "../hooks/useDebouncedValue";
 import { notifySonner } from "../../../lib/notifySonner";
 import { useTranslation } from "react-i18next";
 
+// Motion Library
+import { motion, AnimatePresence } from "motion/react";
+
 /** Admin: all roles. Other staff: client accounts only (matches API). */
-const STAFF_USER_MANAGEMENT = new Set([
-  "admin",
-  "manager",
-  "support",
-  "sales",
-]);
+const STAFF_USER_MANAGEMENT = new Set(["admin", "manager", "support", "sales"]);
 
 const UsersPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenGroup, setIsOpenGroup] = useState(false);
   const [modalUserId, setModalUserId] = useState(null);
   const [modalKey, setModalKey] = useState(0);
   const [deleteConfirmUserId, setDeleteConfirmUserId] = useState(null);
@@ -95,13 +94,10 @@ const UsersPage = () => {
     createdTo,
   ]);
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-    refetch,
-    error,
-  } = useGetUsersQuery(queryArg, { skip: !canFetchUsers });
+  const { data, isLoading, isFetching, refetch, error } = useGetUsersQuery(
+    queryArg,
+    { skip: !canFetchUsers },
+  );
 
   const users = useMemo(() => data?.users ?? [], [data?.users]);
   const meta = data?.meta;
@@ -171,7 +167,7 @@ const UsersPage = () => {
 
   return (
     <div className="users-page" dir={dir}>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between flex-col md:flex-row gap-4">
         <h1
           className="text-2xl font-semibold text-slate-700 dark:text-gray-200"
           style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter" }}
@@ -182,70 +178,93 @@ const UsersPage = () => {
               : "users.manage_users",
           )}
         </h1>
-        <button
-          type="button"
-          onClick={() => {
-            setModalKey((k) => k + 1);
-            setModalUserId(null);
-            setIsModalOpen(true);
-          }}
-          className="flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-200 px-3 py-2 text-xs font-semibold text-gray-700 transition-colors duration-200 hover:bg-slate-300 dark:bg-gray-900 dark:text-gray-200 hover:dark:bg-gray-800"
-        >
-          <UserPlus size={16} />
-          <span
-            style={{
-              fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
-              position: "relative",
-              top: direction === "rtl" ? 0 : 1,
+
+        <div className="flex gap-2 items-center">
+          <button
+            type="button"
+            onClick={() => {
+              setModalKey((k) => k + 1);
+              setModalUserId(null);
+              setIsModalOpen(true);
             }}
+            className="flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-200 px-3 py-2 text-xs font-semibold text-gray-700 transition-colors duration-200 hover:bg-slate-300 dark:bg-gray-900 dark:text-gray-200 hover:dark:bg-gray-800"
           >
-            {t("users.add_user")}
-          </span>
-        </button>
+            <UserPlus size={16} />
+            <span
+              style={{
+                fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
+                position: "relative",
+                top: direction === "rtl" ? 0 : 1,
+              }}
+            >
+              {t("users.add_user")}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setIsOpenGroup((prev) => !prev)}
+            className="flex cursor-pointer items-center gap-2 rounded-2xl bg-red-500 px-3 py-2 text-xs font-semibold text-white transition-colors duration-200 hover:bg-red-600 dark:bg-red-800 dark:text-gray-200 hover:dark:bg-red-900"
+          >
+            <ArrowDownWideNarrow size={16} />
+            {t("users.list.filter")}
+          </button>
+        </div>
       </div>
 
-      <UsersListToolbar
-        searchInput={searchInput}
-        onSearchChange={setSearchInput}
-        sort={sort}
-        onSortChange={(v) => {
-          setSort(v);
-          setPage(1);
-        }}
-        hideRoleFilter={clientsOnlyMode}
-        role={role}
-        onRoleChange={(v) => {
-          setRole(v);
-          setPage(1);
-        }}
-        activeFilter={activeFilter}
-        onActiveFilterChange={(v) => {
-          setActiveFilter(v);
-          setPage(1);
-        }}
-        verifiedFilter={verifiedFilter}
-        onVerifiedFilterChange={(v) => {
-          setVerifiedFilter(v);
-          setPage(1);
-        }}
-        createdFrom={createdFrom}
-        createdTo={createdTo}
-        onCreatedFromChange={(v) => {
-          setCreatedFrom(v);
-          setPage(1);
-        }}
-        onCreatedToChange={(v) => {
-          setCreatedTo(v);
-          setPage(1);
-        }}
-        perPage={perPage}
-        onPerPageChange={(n) => {
-          setPerPage(n);
-          setPage(1);
-        }}
-        onReset={handleResetFilters}
-        dir={dir}
-      />
+      <AnimatePresence initial={false}>
+        {isOpenGroup && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <UsersListToolbar
+              searchInput={searchInput}
+              onSearchChange={setSearchInput}
+              sort={sort}
+              onSortChange={(v) => {
+                setSort(v);
+                setPage(1);
+              }}
+              hideRoleFilter={clientsOnlyMode}
+              role={role}
+              onRoleChange={(v) => {
+                setRole(v);
+                setPage(1);
+              }}
+              activeFilter={activeFilter}
+              onActiveFilterChange={(v) => {
+                setActiveFilter(v);
+                setPage(1);
+              }}
+              verifiedFilter={verifiedFilter}
+              onVerifiedFilterChange={(v) => {
+                setVerifiedFilter(v);
+                setPage(1);
+              }}
+              createdFrom={createdFrom}
+              createdTo={createdTo}
+              onCreatedFromChange={(v) => {
+                setCreatedFrom(v);
+                setPage(1);
+              }}
+              onCreatedToChange={(v) => {
+                setCreatedTo(v);
+                setPage(1);
+              }}
+              perPage={perPage}
+              onPerPageChange={(n) => {
+                setPerPage(n);
+                setPage(1);
+              }}
+              onReset={handleResetFilters}
+              dir={dir}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <UsersTable
         users={users}

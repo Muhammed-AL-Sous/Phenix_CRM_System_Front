@@ -11,7 +11,18 @@ import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import FormListbox from "../../../components/utility/FormListbox";
 
-const SORT_VALUES = ["-id", "id", "-created_at", "created_at", "name", "-name", "email", "-email"];
+const SORT_VALUES = [
+  "-id",
+  "id",
+  "-created_at",
+  "created_at",
+  "name",
+  "-name",
+  "email",
+  "-email",
+  "role",
+  "-role",
+];
 
 /** Maps API `sort` param to `users.list.*` translation suffix */
 const SORT_I18N = {
@@ -23,6 +34,8 @@ const SORT_I18N = {
   "-name": "sort_name_desc",
   email: "sort_email_asc",
   "-email": "sort_email_desc",
+  role: "sort_role_asc",
+  "-role": "sort_role_desc",
 };
 
 const PER_PAGE_OPTIONS = [10, 15, 25, 50];
@@ -76,7 +89,8 @@ export default function UsersListToolbar({
   const dateInputClass =
     "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-slate-100 dark:focus:border-sky-400";
 
-  const labelClass = "mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400";
+  const labelClass =
+    "mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400";
 
   const sortOptions = useMemo(
     () =>
@@ -189,7 +203,9 @@ export default function UsersListToolbar({
             id="users-active"
             value={activeFilter}
             onChange={(v) =>
-              onActiveFilterChange(/** @type {'' | 'active' | 'inactive'} */ (v))
+              onActiveFilterChange(
+                /** @type {'' | 'active' | 'inactive'} */ (v),
+              )
             }
             options={activeOptions}
             placeholder={t("users.list.filter_active_all")}
@@ -243,7 +259,11 @@ export default function UsersListToolbar({
       >
         <Filter className="size-4" />
         {t("users.list.advanced_filters")}
-        {advancedOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+        {advancedOpen ? (
+          <ChevronUp className="size-4" />
+        ) : (
+          <ChevronDown className="size-4" />
+        )}
       </button>
 
       {advancedOpen ? (

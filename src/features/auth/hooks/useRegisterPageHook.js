@@ -11,7 +11,7 @@ import { setCredentials } from "../authSlice";
 import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 
 // ========= External Libraries ========= //
-import { notify } from "../../../lib/notify";
+import { notifySonner } from "../../../lib/notifySonner";
 import { useTranslation } from "react-i18next";
 import { patchClearFieldError } from "../../../lib/patchClearFieldError.js";
 import { getRegisterFormErrors } from "../validation/authFormValidators.js";
@@ -74,8 +74,6 @@ const useRegisterPageHook = () => {
 
       const response = await registrationPromise;
 
-      notify("auth:success.register_success", "success");
-
       const { user } = response.data;
 
       const destination = getPostAuthDestination(user, {
@@ -84,6 +82,7 @@ const useRegisterPageHook = () => {
 
       // حساب جديد غير مفعّل: التحقق أولاً (نفس قاعدة postAuthRedirect)
       if (destination === "/verify-email") {
+        notifySonner("auth:success.register_success", "success");
         navigate(destination, {
           replace: true,
           state: {
@@ -97,6 +96,7 @@ const useRegisterPageHook = () => {
 
       dispatch(setCredentials({ user }));
       navigate(destination, { replace: true });
+      notifySonner("auth:success.register_success", "success");
     } catch (err) {
       console.error("Registration detail error:", err);
       if (err.status === 422) {
@@ -107,7 +107,7 @@ const useRegisterPageHook = () => {
             email: "error.The email has already been taken.",
           });
         } else {
-          notify("auth:error.failed_try_again", "error");
+          notifySonner("auth:error.failed_try_again", "error");
         }
       }
     }

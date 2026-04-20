@@ -14,7 +14,7 @@ import { setCredentials } from "../authSlice";
 
 // ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
-import { notify } from "../../../lib/notify";
+import { notifySonner, sonnerToast } from "../../../lib/notifySonner";
 import { patchClearFieldError } from "../../../lib/patchClearFieldError.js";
 import { getResetPasswordFormErrors } from "../validation/authFormValidators.js";
 import { handleDualPasswordFieldToggle } from "../utils/dualPasswordFieldToggle.js";
@@ -77,7 +77,7 @@ const useResetPasswordPageHook = () => {
 
       const response = await resetPassPromise;
 
-      notify(
+      notifySonner(
         "auth:success.The password has been successfully changed",
         "success",
       );
@@ -91,7 +91,7 @@ const useResetPasswordPageHook = () => {
 
       setTimeout(() => navigate(destination, { replace: true }), 2000);
     } catch (err) {
-      notify(err.data.message, "error");
+      sonnerToast.error(err.data.message);
     }
   };
 

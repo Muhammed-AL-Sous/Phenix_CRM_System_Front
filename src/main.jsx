@@ -21,11 +21,14 @@ import AuthInitializer from "./features/auth/components/common/AuthInitializer";
 // Provider For Lang & Mode & Direction
 import UIProvider from "./providers/UIProvider";
 
+// إشعارات موحّدة (Sonner) — خارج AuthInitializer حتى تبقى مرئية أثناء التحميل أو التوجيه
+import SonnerToaster from "./lib/SonnerToaster";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <UIProvider>
+        <SonnerToaster />
         <AuthInitializer>
           <RouterProvider router={router} />
         </AuthInitializer>

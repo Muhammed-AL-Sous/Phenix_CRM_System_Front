@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import i18n from "../i18n";
 
 /**
- * تنبيهات Sonner مع ترجمة تلقائية عبر i18n (نفس فكرة notify.js مع react-hot-toast).
+ * تنبيهات Sonner مع ترجمة تلقائية عبر i18n.
  * تمرّر مفتاح الترجمة ونوع التنبيه فقط.
  *
  * @param {string} key - مفتاح الترجمة (مثل "auth:success.welcome_back")

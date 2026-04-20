@@ -14,7 +14,11 @@ import { selectCurrentUser, setCredentials } from "../authSlice";
 import { getPostAuthDestination } from "../../../logic/auth/postAuthRedirect";
 
 // ========= External Libraries ========= //
-import { notify, notifyPromise } from "../../../lib/notify";
+import {
+  notifySonner,
+  notifySonnerPromise,
+  sonnerToast,
+} from "../../../lib/notifySonner";
 import { useTranslation } from "react-i18next";
 import { formatTimeMmSs } from "../../../lib/formatTimeMmSs.js";
 
@@ -132,7 +136,7 @@ const useVerifyEmailPageHook = () => {
     try {
       const response = await verifyEmail({ email, code: codeString }).unwrap();
       localStorage.removeItem("otp_expiry");
-      notify("auth:success.Email_verified_successfully", "success");
+      notifySonner("auth:success.Email_verified_successfully", "success");
       if (response.data?.user) {
         dispatch(setCredentials({ user: response.data.user }));
       }
@@ -146,7 +150,7 @@ const useVerifyEmailPageHook = () => {
       if (err.status === 429) {
         updateTimer(err.data?.errors?.retry_after || 60);
       } else {
-        notify(
+        notifySonner(
           "auth:error." + (err.data?.message || "Verification failed"),
           "error",
         );
@@ -160,7 +164,7 @@ const useVerifyEmailPageHook = () => {
     if (!canResend || resendLoading) return;
     try {
       const promise = resendVerification({ email }).unwrap();
-      notifyPromise(promise, {
+      notifySonnerPromise(promise, {
         loading: "auth:loading.The verification code is being resent",
         success: "auth:success.Code resent successfully",
       });
@@ -168,7 +172,7 @@ const useVerifyEmailPageHook = () => {
       updateTimer(response?.data?.user?.retry_after ?? 60);
     } catch (err) {
       if (err.status === 429) updateTimer(err.data?.errors?.retry_after || 60);
-      notify(err.data?.message || "Resend failed", "error");
+      sonnerToast.error(err.data?.message || "Resend failed");
     }
   };
 

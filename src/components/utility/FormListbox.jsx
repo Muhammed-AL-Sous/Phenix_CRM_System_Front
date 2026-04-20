@@ -122,6 +122,7 @@ const FormListbox = ({
       if (root?.contains(t) || panel?.contains(t)) return;
       closePanel();
     };
+    // Use mousedown so clicks that open the panel don't also trigger this and immediately close it again.
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, [closePanel]);
@@ -188,6 +189,7 @@ const FormListbox = ({
           aria-hidden
         />
       </button>
+
       {portalTarget &&
         createPortal(
           <AnimatePresence onExitComplete={() => setFloatingStyle(null)}>

@@ -23,7 +23,6 @@ import { motion, AnimatePresence } from "motion/react";
 import getEcho from "../../../../lib/echo";
 import { shouldShowBroadcastToast } from "../../../../logic/broadcastNotifyDedupe";
 import { notifySonner } from "../../../../lib/notifySonner";
-import SonnerToaster from "../../../../lib/SonnerToaster";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -96,7 +95,6 @@ export default function DashboardLayout() {
   if (isClientOnboarding) {
     return (
       <>
-        <SonnerToaster />
         <div
           className="h-dvh overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
         >
@@ -110,7 +108,6 @@ export default function DashboardLayout() {
 
   return (
     <>
-      <SonnerToaster />
       <div
         className="h-dvh w-full overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
       >

@@ -14,7 +14,7 @@ import { setCredentials } from "../authSlice";
 
 // ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
-import { notify } from "../../../lib/notify";
+import { notifySonner } from "../../../lib/notifySonner";
 import { patchClearFieldError } from "../../../lib/patchClearFieldError.js";
 import { getLoginFormErrors } from "../validation/authFormValidators.js";
 
@@ -71,8 +71,6 @@ const useLoginPageHook = () => {
 
       const response = await loginPromise;
 
-      notify("auth:success.welcome_back", "success");
-
       const { user } = response.data;
 
       dispatch(setCredentials({ user }));
@@ -82,6 +80,7 @@ const useLoginPageHook = () => {
       });
 
       navigate(destination, { replace: true });
+      notifySonner("auth:success.welcome_back", "success");
     } catch (err) {
       console.error("Logging detail error:", err);
       const status = err.status;
@@ -101,16 +100,16 @@ const useLoginPageHook = () => {
               retry_after: pendingUser.retry_after,
             },
           });
-          notify("auth:error.Account_not_verified", "error");
+          notifySonner("auth:error.Account_not_verified", "error");
           return;
         }
       }
       // معالجة الـ 401 (بيانات خاطئة)
       if (status === 401) {
-        notify("auth:error.Invalid Email Or Password", "error");
+        notifySonner("auth:error.Invalid Email Or Password", "error");
         return;
       }
-      notify("auth:error.login_failed", "error");
+      notifySonner("auth:error.login_failed", "error");
     }
   };
 

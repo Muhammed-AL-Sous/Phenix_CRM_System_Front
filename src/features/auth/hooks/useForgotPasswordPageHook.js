@@ -9,7 +9,7 @@ import { useForgotPasswordMutation } from "../authApiSlice.js";
 
 // ========= External Libraries ========= //
 import { useTranslation } from "react-i18next";
-import { notify } from "../../../lib/notify";
+import { notifySonner, sonnerToast } from "../../../lib/notifySonner";
 import { formatTimeMmSs } from "../../../lib/formatTimeMmSs.js";
 import { getForgotPasswordEmailErrors } from "../validation/authFormValidators.js";
 
@@ -61,7 +61,7 @@ const useForgotPasswordPageHook = () => {
     try {
       await forgotPassword(email.trim()).unwrap();
 
-      notify("auth:success.reset_link_sent", "success");
+      notifySonner("auth:success.reset_link_sent", "success");
 
       setIsSent(true);
 
@@ -71,15 +71,15 @@ const useForgotPasswordPageHook = () => {
         // قراءة الثواني القادمة من Laravel (مثلاً 60 أو 900 ثانية)
         const waitSeconds = err.data?.errors?.retry_after || 60;
         // إذا كان لارافيل قد حظر المستخدم فعلياً (RateLimiter)
-        notify(t("auth:error.too_many_requests"), "error");
+        sonnerToast.error(t("auth:error.too_many_requests"));
         // تشغيل العداد بناءً على تعليمات السيرفر
         startCountdown(waitSeconds);
       } else if (err.status === 404) {
-        notify(t("auth:error.email_not_found"), "error");
+        sonnerToast.error(t("auth:error.email_not_found"));
       } else if (err.status === 422) {
-        notify(t("auth:error.email_not_valid"), "error");
+        sonnerToast.error(t("auth:error.email_not_valid"));
       } else {
-        notify(t("auth:error.server_error"), "error");
+        sonnerToast.error(t("auth:error.server_error"));
       }
     }
   };

@@ -9,7 +9,7 @@ import { selectCurrentUser } from "../../auth/authSlice";
 // Icons
 import { UserPlus, ArrowDownWideNarrow } from "lucide-react";
 
-// Utilities Components
+// Components
 import UsersTable from "../components/UsersTable";
 import UsersModal from "../components/UsersModal";
 import DeleteUserConfirmModal from "../components/DeleteUserConfirmModal";
@@ -30,12 +30,27 @@ import { motion, AnimatePresence } from "motion/react";
 const STAFF_USER_MANAGEMENT = new Set(["admin", "manager", "support", "sales"]);
 
 const UsersPage = () => {
+  const [role, setRole] = useState("");
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState("-id");
+  const [perPage, setPerPage] = useState(15);
+  const [modalKey, setModalKey] = useState(0);
+  const [searchInput, setSearchInput] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenGroup, setIsOpenGroup] = useState(false);
   const [modalUserId, setModalUserId] = useState(null);
-  const [modalKey, setModalKey] = useState(0);
+  const [activeFilter, setActiveFilter] = useState("");
+  const [verifiedFilter, setVerifiedFilter] = useState("");
+  const [createdFrom, setCreatedFrom] = useState("");
+  const [createdTo, setCreatedTo] = useState("");
   const [deleteConfirmUserId, setDeleteConfirmUserId] = useState(null);
+
   const currentUser = useSelector(selectCurrentUser);
+  const { direction } = useSelector((state) => state.ui);
+  const { t } = useTranslation("user");
+  const dir = direction === "rtl" ? "rtl" : "ltr";
+  const resetPage = useCallback(() => setPage(1), []);
+  const debouncedSearch = useDebouncedValue(searchInput, 400, resetPage);
   const isAdmin = currentUser?.role === "admin";
   const clientsOnlyMode = Boolean(currentUser?.role) && !isAdmin;
 
@@ -43,25 +58,6 @@ const UsersPage = () => {
     () => STAFF_USER_MANAGEMENT.has(currentUser?.role),
     [currentUser?.role],
   );
-  const { direction } = useSelector((state) => state.ui);
-  const { t } = useTranslation("user");
-  const dir = direction === "rtl" ? "rtl" : "ltr";
-
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(15);
-  const [sort, setSort] = useState("-id");
-  const [searchInput, setSearchInput] = useState("");
-  const resetPage = useCallback(() => setPage(1), []);
-  const debouncedSearch = useDebouncedValue(searchInput, 400, resetPage);
-  const [role, setRole] = useState("");
-  const [activeFilter, setActiveFilter] = useState(
-    /** @type {'' | 'active' | 'inactive'} */ (""),
-  );
-  const [verifiedFilter, setVerifiedFilter] = useState(
-    /** @type {'' | 'yes' | 'no'} */ (""),
-  );
-  const [createdFrom, setCreatedFrom] = useState("");
-  const [createdTo, setCreatedTo] = useState("");
 
   const queryArg = useMemo(() => {
     const arg = {
@@ -94,12 +90,14 @@ const UsersPage = () => {
     createdTo,
   ]);
 
+  // ===== Get Users Query With `Skip` When User Doesn't Have Permission To View Users ===== //
   const { data, isLoading, isFetching, refetch, error } = useGetUsersQuery(
     queryArg,
     { skip: !canFetchUsers },
   );
 
   const users = useMemo(() => data?.users ?? [], [data?.users]);
+
   const meta = data?.meta;
 
   const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
@@ -112,6 +110,7 @@ const UsersPage = () => {
     return bits.join(" — ");
   }, [deleteConfirmUserId, users]);
 
+  // ===== Reset Filters To Default Values ===== //
   const handleResetFilters = () => {
     setSearchInput("");
     setSort("-id");
@@ -124,10 +123,12 @@ const UsersPage = () => {
     setPage(1);
   };
 
+  // ==== Request To Delete User (Open Confirmation Modal) ===== //
   const handleRequestDeleteUser = (userId) => {
     setDeleteConfirmUserId(userId);
   };
 
+  // ===== Confirm Deletion Of User ===== //
   const handleConfirmDeleteUser = async () => {
     if (deleteConfirmUserId == null) return;
     try {
@@ -143,6 +144,7 @@ const UsersPage = () => {
     }
   };
 
+  // ==== Handle Edit User (Open Modal With User Data) ===== //
   const handleEditUser = (userId) => {
     setModalKey((k) => k + 1);
     setModalUserId(userId);
@@ -152,7 +154,7 @@ const UsersPage = () => {
   if (!canFetchUsers) {
     return (
       <p className="text-slate-600 dark:text-slate-400">
-        You do not have permission to view this page.
+        You Do Not Have Permission To View This Page.
       </p>
     );
   }
@@ -160,7 +162,7 @@ const UsersPage = () => {
   if (error) {
     return (
       <p className="text-red-600 dark:text-red-400">
-        {error?.data?.message || "Failed to load users."}
+        {error?.data?.message || "Failed To Load Users."}
       </p>
     );
   }
@@ -180,6 +182,7 @@ const UsersPage = () => {
         </h1>
 
         <div className="flex gap-2 items-center">
+          {/* ===== Add User Button ===== */}
           <button
             type="button"
             onClick={() => {
@@ -201,6 +204,7 @@ const UsersPage = () => {
             </span>
           </button>
 
+          {/* ===== Filter Button ===== */}
           <button
             onClick={() => setIsOpenGroup((prev) => !prev)}
             className="flex cursor-pointer items-center gap-2 rounded-2xl bg-red-500 px-3 py-2 text-xs font-semibold text-white transition-colors duration-200 hover:bg-red-600 dark:bg-red-800 dark:text-gray-200 hover:dark:bg-red-900"
@@ -211,6 +215,7 @@ const UsersPage = () => {
         </div>
       </div>
 
+      {/* ===== Users List Toolbar ===== */}
       <AnimatePresence initial={false}>
         {isOpenGroup && (
           <motion.div
@@ -266,6 +271,7 @@ const UsersPage = () => {
         )}
       </AnimatePresence>
 
+      {/* ===== Users Table ===== */}
       <UsersTable
         users={users}
         page={page}
@@ -279,6 +285,7 @@ const UsersPage = () => {
         onEdit={handleEditUser}
       />
 
+      {/* ===== Users Pagination ===== */}
       <UsersPagination
         meta={meta}
         onPageChange={setPage}
@@ -286,6 +293,7 @@ const UsersPage = () => {
         dir={dir}
       />
 
+      {/* ===== Edit & Add Users Modal ===== */}
       <UsersModal
         isOpen={isModalOpen}
         userId={modalUserId}
@@ -302,6 +310,7 @@ const UsersPage = () => {
         }}
       />
 
+      {/* ===== Delete User Confirm Modal ===== */}
       <DeleteUserConfirmModal
         isOpen={deleteConfirmUserId != null}
         userLabel={deleteConfirmLabel}

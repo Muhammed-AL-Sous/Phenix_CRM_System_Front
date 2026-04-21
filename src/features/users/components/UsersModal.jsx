@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
+
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "motion/react";
 import { notifySonner } from "../../../lib/notifySonner";
@@ -11,6 +12,15 @@ import {
   useGetRolesQuery,
   useUpdateUserMutation,
 } from "../usersApiSlice";
+
+import {
+  UserRoundPlus,
+  Mail,
+  Lock,
+  LockKeyhole,
+  UserRoundKey,
+} from "lucide-react";
+import FormListbox from "../../../components/utility/FormListbox";
 
 function firstValidationMessage(errors) {
   if (!errors || typeof errors !== "object") return null;
@@ -34,7 +44,7 @@ function UsersModalForm({
   onSuccess,
 }) {
   const { t } = useTranslation("user");
-
+  const { direction } = useSelector((state) => state.ui);
   const [name, setName] = useState(initialName);
   const [email, setEmail] = useState(initialEmail);
   const [roleId, setRoleId] = useState(initialRoleId);
@@ -84,6 +94,7 @@ function UsersModalForm({
     }
 
     try {
+      // For creation, we require password. For update, password is optional and only sent if user wants to change it.
       if (!isEdit) {
         await addUser({
           scope,
@@ -109,6 +120,7 @@ function UsersModalForm({
         await updateUser(body).unwrap();
         notifySonner("user:users.toast_updated", "success");
       }
+      // Trigger Parent Callback To Refresh List Or Close Modal
       onSuccess?.();
     } catch (err) {
       const data = err?.data;
@@ -127,8 +139,15 @@ function UsersModalForm({
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+      {/* ===== Name Field ===== */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label
+          style={{ fontFamily: direction === "rtl" ? "Almarai" : "Livvic" }}
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+        >
+          <span>
+            <UserRoundPlus className="w-4 h-4" />
+          </span>
           {t("users.name")}
         </label>
         <input
@@ -136,12 +155,19 @@ function UsersModalForm({
           onChange={(e) => setName(e.target.value)}
           className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
           autoComplete="name"
-          required
+          placeholder="John Doe"
         />
       </div>
 
+      {/* ===== Email Field ===== */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label
+          style={{ fontFamily: direction === "rtl" ? "Almarai" : "Livvic" }}
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+        >
+          <span>
+            <Mail className="w-4 h-4" />
+          </span>
           {t("users.email")}
         </label>
         <input
@@ -150,31 +176,32 @@ function UsersModalForm({
           type="email"
           className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
           autoComplete="email"
-          required
+          placeholder="name@company.com"
         />
       </div>
 
       {!hideRoleField ? (
         <div>
-          <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
+          <label
+            style={{ fontFamily: direction === "rtl" ? "Almarai" : "Livvic" }}
+            className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          >
+            <span>
+              <UserRoundKey className="w-4 h-4" />
+            </span>
             {t("users.role")}
           </label>
-          <select
+
+          <FormListbox
+            id="users-modal-role"
             value={roleId}
-            onChange={(e) => setRoleId(e.target.value)}
+            onChange={(v) => setRoleId(v)} 
             className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
-            required
             disabled={rolesLoading}
-          >
-            <option value="" disabled>
-              {rolesLoading ? "…" : "—"}
-            </option>
-            {roleOptions.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
+            loading={rolesLoading}
+            options={roleOptions}
+            placeholder={t("users.list.filter_role_all")}
+          />
         </div>
       ) : null}
 
@@ -262,10 +289,12 @@ export default function UsersModal({
     const safe = Array.isArray(roles) ? roles : [];
     return safe.map((r) => ({
       id: r.id,
-      name: r.label || r.name,
+      name: t(`users.role_names.${r.name}`, {
+        defaultValue: r.label || r.name,
+      }),
       roleName: r.name,
     }));
-  }, [roles]);
+  }, [roles, t]);
 
   const roleOptions = useMemo(() => {
     if (!clientsOnly) return roleOptionsFull;
@@ -277,8 +306,7 @@ export default function UsersModal({
     return String(roleOptions[0].id);
   }, [clientsOnly, roleOptions]);
 
-  const portalTarget =
-    typeof document !== "undefined" ? document.body : null;
+  const portalTarget = typeof document !== "undefined" ? document.body : null;
 
   const formRemountKey = `${modalKey}-${isEdit ? String(userId) : "create"}-${clientsOnly ? defaultRoleIdForCreate || "pending" : "roles"}`;
 

@@ -9,6 +9,7 @@ import {
   ArrowDownAZ,
   ArrowDownZA,
 } from "lucide-react";
+
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import FormListbox from "../../../components/utility/FormListbox";
@@ -18,7 +19,6 @@ import { motion, AnimatePresence } from "motion/react";
 
 const SORT_FIELDS = ["id", "created_at", "name", "email", "role_id"];
 
-/** Maps API `sort` field to `users.list.*` translation suffix */
 const SORT_FIELD_I18N = {
   id: "sort_field_id",
   created_at: "sort_field_created_at",
@@ -29,28 +29,6 @@ const SORT_FIELD_I18N = {
 
 const PER_PAGE_OPTIONS = [10, 15, 25, 50];
 
-/**
- * @param {object} props
- * @param {string} props.searchInput
- * @param {(v: string) => void} props.onSearchChange
- * @param {string} props.sort
- * @param {(v: string) => void} props.onSortChange
- * @param {string} props.role
- * @param {(v: string) => void} props.onRoleChange
- * @param {'' | 'active' | 'inactive'} props.activeFilter
- * @param {(v: '' | 'active' | 'inactive') => void} props.onActiveFilterChange
- * @param {'' | 'yes' | 'no'} props.verifiedFilter
- * @param {(v: '' | 'yes' | 'no') => void} props.onVerifiedFilterChange
- * @param {string} props.createdFrom
- * @param {string} props.createdTo
- * @param {(v: string) => void} props.onCreatedFromChange
- * @param {(v: string) => void} props.onCreatedToChange
- * @param {number} props.perPage
- * @param {(n: number) => void} props.onPerPageChange
- * @param {() => void} props.onReset
- * @param {'ltr' | 'rtl'} props.dir
- * @param {boolean} [props.hideRoleFilter]
- */
 export default function UsersListToolbar({
   searchInput,
   onSearchChange,
@@ -79,7 +57,7 @@ export default function UsersListToolbar({
     "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-slate-100 dark:focus:border-sky-400";
 
   const labelClass =
-    "mb-1 block text-xs font-semibold text-slate-500 dark:text-slate-400";
+    "mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400";
 
   const sortField = useMemo(() => {
     const raw = String(sort ?? "-id");
@@ -172,8 +150,10 @@ export default function UsersListToolbar({
       dir={dir}
       className="mb-6 space-y-4 rounded-2xl border border-slate-200/90 bg-white/90 p-4 shadow-sm backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/90"
     >
-      <div className={clsx("grid grid-cols-1 gap-3 md:grid-cols-4 xl:grid-cols-6")}>
-      {/* ===== Search Input ===== */}
+      <div
+        className={clsx("grid grid-cols-1 gap-3 md:grid-cols-4 xl:grid-cols-6")}
+      >
+        {/* ===== Search Input ===== */}
         <div className="md:col-span-3 xl:col-span-5 relative">
           <Search
             className={clsx(
@@ -311,7 +291,7 @@ export default function UsersListToolbar({
       <button
         type="button"
         onClick={() => setAdvancedOpen((o) => !o)}
-        className="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
+        className="inline-flex items-center gap-2 text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-700 dark:hover:text-sky-600 cursor-pointer transition duration-200"
       >
         <Filter className="size-4" />
         {t("users.list.advanced_filters")}
@@ -341,7 +321,10 @@ export default function UsersListToolbar({
           </div>
           <div>
             <label htmlFor="users-created-to" className={labelClass}>
-              {t("users.list.created_to")}
+              <span className="inline-flex items-center gap-1">
+                <CalendarRange className="size-3.5 opacity-70" />
+                {t("users.list.created_to")}
+              </span>
             </label>
             <input
               id="users-created-to"

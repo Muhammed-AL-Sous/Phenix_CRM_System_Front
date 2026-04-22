@@ -38,12 +38,12 @@ export default function UsersTable({
     <div className="relative">
       <div
         className={clsx(
-          "overflow-x-auto rounded-xl border border-slate-400 transition-opacity dark:border-zinc-800",
+          "overflow-x-auto rounded-xl backdrop-blur-sm border border-slate-200 transition-opacity dark:border-zinc-800 shadow-sm",
           isFetching && "pointer-events-none opacity-60",
         )}
         aria-busy={isFetching || undefined}
       >
-        <table className="min-w-full divide-y divide-slate-400 dark:divide-zinc-800">
+        <table className="min-w-full divide-y divide-slate-200 dark:divide-zinc-800">
           <thead className="bg-slate-100 dark:bg-zinc-900">
             <tr>
               <th className="px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
@@ -63,7 +63,7 @@ export default function UsersTable({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-400 bg-slate-50 font-[Livvic] dark:divide-zinc-800 dark:bg-zinc-950">
+          <tbody className="divide-y divide-slate-200 bg-slate-50 font-[Livvic] dark:divide-zinc-800 dark:bg-zinc-950">
             {users.map((u, i) => (
               <tr key={u.id}>
                 <td className="whitespace-nowrap px-4 py-3 text-sm font-medium tabular-nums text-slate-700 dark:text-slate-400">

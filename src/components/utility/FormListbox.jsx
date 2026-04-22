@@ -167,7 +167,7 @@ const FormListbox = ({
             return next;
           });
         }}
-        className="flex w-full h-10 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-normal text-slate-800 outline-none transition focus:ring-2 focus:ring-red-500/70 dark:focus:ring-red-500/50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white cursor-pointer"
+        className="flex w-full h-10 items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium leading-normal text-slate-800 outline-none transition focus:ring-1 focus:ring-slate-300 dark:focus:ring-red-500/50 dark:focus:border-red-800 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white cursor-pointer"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
@@ -220,7 +220,7 @@ const FormListbox = ({
                       onChange={(e) => setFilter(e.target.value)}
                       placeholder={filterPlaceholder}
                       dir={isRtl ? "rtl" : "ltr"}
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-red-500/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-red-500/50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}
                     />
@@ -250,7 +250,7 @@ const FormListbox = ({
                         }}
                         className={`w-full px-3 py-2 text-start text-sm leading-normal transition hover:bg-slate-100 dark:hover:bg-zinc-800 ${
                           String(o.id) === String(value)
-                            ? "bg-red-50 font-medium text-red-700 dark:bg-red-950/40 dark:text-red-200"
+                            ? "bg-red-100 font-medium text-red-700 dark:bg-red-950/40 dark:text-red-200"
                             : "text-slate-800 dark:text-slate-100"
                         }`}
                         style={{ fontFamily: isRtl ? "Vazirmatn" : "Inter" }}

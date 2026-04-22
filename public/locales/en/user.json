@@ -40,6 +40,8 @@
             "sort": "Sort",
             "sort_by": "Sort by",
             "sort_direction": "Direction",
+            "sort_dir_asc": "Ascending",
+            "sort_dir_desc": "Descending",
             "sort_field_id": "ID",
             "sort_field_created_at": "Created date",
             "sort_field_name": "Name",

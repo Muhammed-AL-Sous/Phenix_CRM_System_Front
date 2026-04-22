@@ -40,6 +40,8 @@
             "sort": "الترتيب",
             "sort_by": "رتّب حسب",
             "sort_direction": "الاتجاه",
+            "sort_dir_asc": "تصاعدي",
+            "sort_dir_desc": "تنازلي",
             "sort_field_id": "المعرّف",
             "sort_field_created_at": "تاريخ الإنشاء",
             "sort_field_name": "الاسم",

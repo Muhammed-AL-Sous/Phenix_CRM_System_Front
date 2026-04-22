@@ -6,8 +6,8 @@ import {
   Filter,
   RotateCcw,
   Search,
-  ArrowDownAZ,
   ArrowDownZA,
+  ArrowDownAZ,
 } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
@@ -154,10 +154,10 @@ export default function UsersListToolbar({
         className={clsx("grid grid-cols-1 gap-3 md:grid-cols-4 xl:grid-cols-6")}
       >
         {/* ===== Search Input ===== */}
-        <div className="md:col-span-3 xl:col-span-5 relative">
+        <div className="md:col-span-3 xl:col-span-5 relative group">
           <Search
             className={clsx(
-              "pointer-events-none absolute top-1/2 size-4 -translate-y-1/2 text-slate-400",
+              "pointer-events-none absolute top-1/2 size-4 -translate-y-1/2 text-slate-400 dark:group-focus-within:text-red-500/80 group-focus-within:text-slate-400 transition-colors",
               dir === "rtl" ? "inset-e-3" : "inset-s-3",
             )}
             aria-hidden
@@ -169,7 +169,7 @@ export default function UsersListToolbar({
             placeholder={t("users.list.search_placeholder")}
             autoComplete="off"
             className={clsx(
-              "w-full rounded-xl border border-slate-300 bg-slate-50/80 py-2.5 text-sm text-slate-600 shadow-inner outline-none transition placeholder:text-slate-400 focus:border-slate-500 focus:bg-white dark:focus:bg-zinc-900 focus:ring-1 focus:ring-slate-500/60 dark:focus:ring-red-800/20 dark:focus:border-red-800 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-slate-100 dark:placeholder:text-slate-500",
+              "w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 text-sm text-slate-600 shadow-inner outline-none transition placeholder:text-slate-400 focus:ring-1 focus:ring-slate-300 caret-slate-400 dark:focus:ring-red-500/50 dark:caret-red-500/80 focus:bg-white dark:focus:bg-zinc-900 dark:focus:border-red-800 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-slate-100 dark:placeholder:text-slate-500",
               dir === "rtl" ? "pe-10 ps-3" : "ps-10 pe-3",
               dir === "rtl" ? "font-[Vazirmatn]" : "Livvic",
             )}
@@ -181,7 +181,7 @@ export default function UsersListToolbar({
           <button
             type="button"
             onClick={onReset}
-            className="cursor-pointer inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-zinc-700 hover:dark:border-red-500/30 dark:bg-zinc-900 dark:text-slate-200 dark:hover:bg-red-500/30 duration-200"
+            className="cursor-pointer inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 transition dark:border-zinc-700 dark:hover:border-red-500/30 hover:bg-slate-100 dark:bg-zinc-900 dark:text-slate-200 dark:hover:bg-red-500/30 duration-200"
           >
             <RotateCcw className="size-4 shrink-0" />
             {t("users.list.reset")}

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router";
 import { selectCurrentUser } from "../../auth/authSlice";
-import { Spinner } from "../../../components/common/GlobalLoader";
+import { PanelEdgeSpinner } from "../../../components/common/SpinnerFallback";
 import { useGetAdminClientsQuery } from "../clientsApiSlice";
 
 const STAFF_ROLES = new Set(["admin", "manager", "support", "sales"]);
@@ -51,10 +51,10 @@ export default function ClientsPage() {
           <h1>Clients</h1>
         </div>
         <div
-          className="flex min-h-[240px] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
+          className="min-h-[12rem] rounded-xl border border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
           aria-busy
         >
-          <Spinner size="lg" />
+          <PanelEdgeSpinner className="min-h-[10rem]" />
         </div>
       </div>
     );

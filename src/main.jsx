@@ -1,38 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-// React Router Dom
-import { RouterProvider } from "react-router/dom";
-import { router } from "./routes";
-
-// Redux Toolkit
-import { store } from "./store/store";
-import { Provider } from "react-redux";
-
-// Global Css File
 import "./index.css";
-
-// Custom Fonts
 import "./assets/styles/fonts.css";
 
-// Auth Initializer
-import AuthInitializer from "./features/auth/components/common/AuthInitializer";
-
-// Provider For Lang & Mode & Direction
-import UIProvider from "./providers/UIProvider";
-
-// إشعارات موحّدة (Sonner) — خارج AuthInitializer حتى تبقى مرئية أثناء التحميل أو التوجيه
-import SonnerToaster from "./lib/SonnerToaster";
+import AppRoot from "./AppRoot.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Provider store={store}>
-      <UIProvider>
-        <SonnerToaster />
-        <AuthInitializer>
-          <RouterProvider router={router} />
-        </AuthInitializer>
-      </UIProvider>
-    </Provider>
+    <AppRoot />
   </StrictMode>,
 );

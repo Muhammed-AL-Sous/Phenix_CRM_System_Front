@@ -1,5 +1,5 @@
 import { Eye, EyeOff, Mail, Lock, LockKeyhole } from "lucide-react";
-import { Spinner } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/SpinnerFallback";
 import useResetPasswordPageHook from "../hooks/useResetPasswordPageHook";
 
 const ResetPasswordPage = () => {

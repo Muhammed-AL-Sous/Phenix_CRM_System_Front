@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useLayoutEffect, useMemo } from "react";
-import GlobalLoader from "../../../../components/common/GlobalLoader";
 import {
   useGetUserDataQuery,
   useGetCsrfCookieMutation,
@@ -12,6 +11,7 @@ import {
   logOut,
   setAuthReady,
 } from "../../authSlice";
+import { setLoadingOverlayAuth } from "../../../../store/Slices/uiSlice";
 
 export default function AuthInitializer({ children }) {
   const dispatch = useDispatch();
@@ -31,7 +31,6 @@ export default function AuthInitializer({ children }) {
       .some((item) => item.trim().startsWith("XSRF-TOKEN="));
   }, []);
 
-  
   const [
     getCsrfCookie,
     {
@@ -137,8 +136,14 @@ export default function AuthInitializer({ children }) {
     }
   }, [isAuthLoading, authReady, dispatch]);
 
-  if (isAuthLoading) {
-    return <GlobalLoader />;
+  const authBlocking = isAuthLoading || !authReady;
+
+  useLayoutEffect(() => {
+    dispatch(setLoadingOverlayAuth(authBlocking));
+  }, [authBlocking, dispatch]);
+
+  if (authBlocking) {
+    return null;
   }
 
   return children;

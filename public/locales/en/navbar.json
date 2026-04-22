@@ -1,8 +1,11 @@
 {
   "home": "Home",
   "about": "About",
+  "about_lead": "Phenix Systems builds integrated CRM, accounting, and operations software for growing teams. This page introduces our mission, values, and how we support clients across regions.",
   "agents": "Agents",
+  "agents_lead": "Authorized Phenix partners help you implement, train, and scale on our platform. Reach out through the contact section in the footer to connect with a representative in your area.",
   "what's_new": "What's New",
+  "whats_new_lead": "Product updates, improvements, and announcements will appear here as we ship new capabilities to the Phenix suite.",
   "get_Started": "Get Started",
   "logout": "Log out",
   "dashboard": "Dashboard",

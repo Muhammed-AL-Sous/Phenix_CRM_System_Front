@@ -1,20 +1,8 @@
 import { UserPen, UserX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
+import { PanelEdgeSpinner } from "../../../components/common/SpinnerFallback";
 
-/**
- * @param {object} props
- * @param {Array} props.users
- * @param {(id: number) => void} [props.onDelete]
- * @param {(id: number) => void} props.onEdit
- * @param {boolean} [props.canDelete]
- * @param {number} props.page
- * @param {number} props.perPage
- * @param {number | null | undefined} props.metaFrom — Laravel `meta.from` (1-based first row index)
- * @param {string} [props.emptyLabel]
- * @param {boolean} [props.isFetching]
- * @param {boolean} [props.isInitialLoading] — أول جلب للبيانات (بدون استبدال الصفحة بلودر عام)
- */
 export default function UsersTable({
   users = [],
   onDelete,
@@ -35,14 +23,7 @@ export default function UsersTable({
   };
 
   if (isInitialLoading && !users.length) {
-    return (
-      <div
-        className="flex min-h-[240px] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
-        aria-busy
-      >
-        <span className="h-8 w-8 animate-spin rounded-full border-2 border-sky-500 border-t-transparent dark:border-sky-400" />
-      </div>
-    );
+    return <PanelEdgeSpinner />;
   }
 
   if (!users.length) {

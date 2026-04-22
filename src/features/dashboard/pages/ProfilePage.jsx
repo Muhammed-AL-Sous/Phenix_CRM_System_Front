@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../auth/authSlice";
 import { useUpdateProfileMutation } from "../../users/usersApiSlice";
 import { notifySonner } from "../../../lib/notifySonner";
-import { Spinner } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/SpinnerFallback";
 
 const ProfilePage = () => {
   const user = useSelector(selectCurrentUser);

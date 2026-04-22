@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { useSelector } from "react-redux";
 import { ROLES_CONFIG } from "../../../routes/roles.config";
 import { selectCurrentUser } from "../../auth/authSlice";
-import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/SpinnerFallback";
 
 const DashboardPage = () => {
   const user = useSelector(selectCurrentUser);
@@ -14,7 +14,17 @@ const DashboardPage = () => {
   }
 
   return (
-    <Suspense fallback={<RouteSuspenseFallback className="min-h-[50vh]" />}>
+    <Suspense
+      fallback={
+        <div
+          // className="flex min-h-[10rem] w-full max-w-4xl items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50/60 dark:border-zinc-800/80 dark:bg-zinc-900/40"
+          className="flex min-h-40 w-full max-w-4xl items-center justify-center "
+          aria-busy
+        >
+          <Spinner size="lg" />
+        </div>
+      }
+    >
       <RoleStatsComponent />
     </Suspense>
   );

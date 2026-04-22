@@ -1,47 +1,63 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 
-// Layouts Components
-import PublicLayout from "../components/layout/PublicLayout";
-import AuthLayout from "../features/auth/components/layout/AuthLayout";
-import DashboardLayout from "../features/dashboard/components/layout/DashboardLayout";
-import GuestRoute from "./GuestRoute";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import ErrorPage from "../pages/ErrorPage";
+import GuestRoute from "./GuestRoute";
+import RootChrome from "./RootChrome";
+import RouteSuspenseGate from "./RouteSuspenseGate";
 
-// Routes Arrays
 import { publicRoutes } from "./PublicRoutes";
 import { authRoutes } from "./AuthRoutes";
 import { generateRoleRoutes } from "./roleRouteGenerator";
 
+const PublicLayout = lazy(() => import("../components/layout/PublicLayout"));
+const AuthLayout = lazy(
+  () => import("../features/auth/components/layout/AuthLayout"),
+);
+const DashboardLayout = lazy(
+  () => import("../features/dashboard/components/layout/DashboardLayout"),
+);
+
 export const router = createBrowserRouter([
-  // 🌐 Public Pages
   {
-    path: "/",
-    element: <PublicLayout />,
+    element: <RootChrome />,
     errorElement: <ErrorPage />,
-    children: [...publicRoutes],
-  },
-
-  // 🔐 Auth Pages
-  {
-    element: <GuestRoute />, // Protects "Auth" pages from "Members"
     children: [
       {
-        element: <AuthLayout />,
-        children: [...authRoutes], // هنا يوجد /login و /register
+        path: "/",
+        element: (
+          <Suspense fallback={<RouteSuspenseGate />}>
+            <PublicLayout />
+          </Suspense>
+        ),
+        children: [...publicRoutes],
       },
-    ],
-  },
-
-  // 📊 Dashboard
-  {
-    // حماية عامة: تمنع أي شخص غير مسجل دخول من رؤية الـ Layout أصلاً
-    element: <ProtectedRoute />,
-    children: [
       {
-        element: <DashboardLayout />,
-        // هنا الـ generateRoleRoutes ستكمل حماية "الأدوار" (admin, support, الخ)
-        children: [...generateRoleRoutes()],
+        element: <GuestRoute />,
+        children: [
+          {
+            element: (
+              <Suspense fallback={<RouteSuspenseGate />}>
+                <AuthLayout />
+              </Suspense>
+            ),
+            children: [...authRoutes],
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            element: (
+              <Suspense fallback={<RouteSuspenseGate />}>
+                <DashboardLayout />
+              </Suspense>
+            ),
+            children: [...generateRoleRoutes()],
+          },
+        ],
       },
     ],
   },

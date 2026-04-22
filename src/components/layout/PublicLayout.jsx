@@ -6,12 +6,12 @@ import Footer from "./Footer";
 import { ParticleBackground } from "../utility/ParticleBackground";
 import ScrollToTopButton from "../utility/ScrollToTopButton";
 import ParticleNetwork from "../utility/ParticleNetwork";
-import { RouteSuspenseFallback } from "../common/GlobalLoader";
-
 // React & Redux
 import { Suspense } from "react";
 import { Outlet } from "react-router";
 import { useSelector } from "react-redux";
+
+import RouteSuspenseGate from "../../routes/RouteSuspenseGate";
 
 const PublicLayout = () => {
   const { mode } = useSelector((state) => state.ui);
@@ -27,7 +27,7 @@ const PublicLayout = () => {
 
       <Navbar />
       <main className="relative z-10">
-        <Suspense fallback={<RouteSuspenseFallback />}>
+        <Suspense fallback={<RouteSuspenseGate />}>
           <Outlet />
         </Suspense>
       </main>

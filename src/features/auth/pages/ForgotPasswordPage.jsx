@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { BadgeCheck, Mail } from "lucide-react";
-import { Spinner } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/SpinnerFallback";
 import useForgotPasswordPageHook from "../hooks/useForgotPasswordPageHook.js";
 
 const ForgotPasswordPage = () => {

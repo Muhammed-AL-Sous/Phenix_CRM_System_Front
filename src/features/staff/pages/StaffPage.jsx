@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../auth/authSlice";
-import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
+import { PanelEdgeSpinner } from "../../../components/common/SpinnerFallback";
 import { useGetStaffQuery } from "../staffApiSlice";
 
 const ADMIN_ONLY = new Set(["admin"]);
@@ -25,7 +25,7 @@ export default function StaffPage() {
     );
   }
 
-  if (isLoading) return <RouteSuspenseFallback className="min-h-[50vh]" />;
+  if (isLoading) return <PanelEdgeSpinner />;
 
   if (error) {
     return (

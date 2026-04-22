@@ -4,15 +4,13 @@ import {
   selectCurrentUser,
   selectAuthReady,
 } from "../../features/auth/authSlice";
-import GlobalLoader from "./GlobalLoader";
-
 export default function ProtectedRoute({ allowedRoles }) {
   const user = useSelector(selectCurrentUser);
   const authReady = useSelector(selectAuthReady);
   const location = useLocation();
 
   if (!authReady) {
-    return <GlobalLoader />;
+    return null;
   }
 
   if (!user) {

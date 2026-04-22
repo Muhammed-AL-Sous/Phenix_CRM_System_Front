@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { Spinner } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/SpinnerFallback";
 import useLoginPageHook from "../hooks/useLoginPageHook";
 
 const LoginPage = () => {

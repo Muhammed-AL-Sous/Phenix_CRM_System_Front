@@ -14,7 +14,7 @@ import {
 // ======== Custom Hook for Register Page Logic ========= //
 import useRegisterPageHook from "../hooks/useRegisterPageHook";
 
-import { Spinner } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/SpinnerFallback";
 
 const RegisterPage = () => {
   // ======== Custom Hook for Register Page Logic ========= //

@@ -9,7 +9,7 @@ import {
 } from "../clientsApiSlice";
 import { selectCurrentUser, setCredentials } from "../../auth/authSlice";
 import { sonnerToast } from "../../../lib/notifySonner";
-import { Spinner } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/SpinnerFallback";
 import FormListbox from "../../../components/utility/FormListbox";
 import { Building2, MapPin, Phone, User } from "lucide-react";
 

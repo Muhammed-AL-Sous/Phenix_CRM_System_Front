@@ -15,7 +15,6 @@
         const savedLang = localStorage.getItem("lang") || "en";
         const root = document.documentElement;
 
-        // تطبيق الكلاس والاتجاه
         if (savedMode === "dark") {
           root.classList.add("dark");
         } else {
@@ -28,66 +27,42 @@
     </script>
 
     <style>
-      /* إجبار الخلفية من خلال الـ CSS الداخلي ليكون أسرع من أي ملف خارجي */
+      /*
+        ألوان ثابتة قبل أي CSS من Vite — تمنى الشاشة السوداء/الوميض
+        وتطابق لون وضع الموقع (فاتح / داكن)
+      */
+      html {
+        min-height: 100dvh;
+      }
+
       html.dark {
-        background-color: #18181b !important; /* لون Zinc-900 */
+        background-color: #18181b !important;
         color-scheme: dark;
       }
 
       html:not(.dark) {
-        background-color: #f8fafc !important; /* لون Slate-50 */
+        background-color: #f8fafc !important;
         color-scheme: light;
       }
 
       body {
         margin: 0;
-        /* نضمن أن الـ body لا يملك خلفية بيضاء افتراضية */
-        background-color: transparent !important;
+        min-height: 100dvh;
+        background-color: #f8fafc !important;
       }
 
-      /* لودر فوري قبل تحميل JS — يمنع شاشة فارغة تبدو وكأن الموقع معطّل */
-      #phenix-initial-loader {
-        position: fixed;
-        inset: 0;
-        z-index: 2147483646;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 0;
+      html.dark body {
+        background-color: #18181b !important;
       }
 
-      html.dark #phenix-initial-loader {
-        background-color: #18181b;
-      }
-
-      html:not(.dark) #phenix-initial-loader {
-        background-color: #f8fafc;
-      }
-
-      #phenix-initial-loader .phenix-initial-spinner {
-        width: 3rem;
-        height: 3rem;
-        border-radius: 9999px;
-        border: 4px solid transparent;
-        border-top-color: #ef4444;
-        border-right-color: rgba(239, 68, 68, 0.35);
-        animation: phenix-spin 0.75s linear infinite;
-      }
-
-      @keyframes phenix-spin {
-        to {
-          transform: rotate(360deg);
-        }
+      #root {
+        min-height: 100dvh;
+        background-color: inherit;
       }
     </style>
   </head>
   <body>
-    <div id="root">
-      <div id="phenix-initial-loader" aria-busy="true" aria-live="polite">
-        <div class="phenix-initial-spinner" role="status" aria-label="Loading"></div>
-      </div>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

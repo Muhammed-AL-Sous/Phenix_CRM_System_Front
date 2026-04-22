@@ -1,70 +1,54 @@
-const SIZE_CLASS = {
-  sm: "h-5 w-5 border-2",
-  md: "h-8 w-8 border-[3px]",
-  lg: "h-12 w-12 border-4",
-};
+import Lottie from "lottie-react";
 
-const VARIANT_CLASS = {
-  primary: "border-red-500 border-t-transparent",
-  onPrimary: "border-white border-t-transparent",
-};
+import loadingDots from "../../assets/loaders/Loading_Dots.json";
 
-export function Spinner({
-  size = "md",
-  variant = "primary",
-  className = "",
-  ...rest
-}) {
-  return (
-    <span
-      role="status"
-      aria-label="Loading"
-      className={[
-        "inline-block shrink-0 rounded-full animate-spin",
-        SIZE_CLASS[size] ?? SIZE_CLASS.md,
-        VARIANT_CLASS[variant] ?? VARIANT_CLASS.primary,
-        className,
-      ].join(" ")}
-      {...rest}
-    />
-  );
-}
+/** حجم ثابت للّوتي */
+const FULLSCREEN_LOTTIE_PX = 140;
 
-/**
- * شاشة تحميل كاملة — نفس الشكل في كل التطبيق (بما فيها أول تحميل / الداشبورد)
- */
-export default function GlobalLoader({ message, className = "" }) {
+/** مكوّن Lottie مشترك — يُبقى mounted حتى لا تتوقف الحركة عند إخفاء الطبقة */
+export function LottieDotsPlayer({ className = "" }) {
+  const box = `${FULLSCREEN_LOTTIE_PX}px`;
+
   return (
     <div
-      className={[
-        "fixed inset-0 z-9999",
-        "flex items-center justify-center",
-        "bg-slate-50 dark:bg-zinc-900",
-        className,
-      ].join(" ")}
+      className={["shrink-0 overflow-hidden", className].filter(Boolean).join(" ")}
+      style={{ width: box, height: box }}
+      aria-hidden
     >
-      <div className="text-center px-4">
-        <Spinner size="lg" className="mx-auto block" />
-        {message ? (
-          <p className="mt-4 text-sm text-gray-600 dark:text-gray-400 sm:text-base">
-            {message}
-          </p>
-        ) : null}
-      </div>
+      <Lottie
+        animationData={loadingDots}
+        loop
+        className="block"
+        style={{
+          width: box,
+          height: box,
+          maxWidth: box,
+          maxHeight: box,
+        }}
+      />
     </div>
   );
 }
 
 /**
- * لودر مسارات (Suspense) — داخل منطقة المحتوى فقط، بدون fixed،
- * حتى لا يغطي الشريط الجانبي ولا يعيد وميض الشاشة بعد تسجيل الدخول.
+ * شاشة تحميل كاملة (استخدام نادر — الطبقة الموحّدة هي AppBlockingOverlay)
  */
-export function RouteSuspenseFallback({ className = "" }) {
+export default function GlobalLoader({ message, className = "" }) {
   return (
     <div
-      className={`flex w-full min-h-[40vh] flex-1 items-center justify-center ${className}`}
+      className={[
+        "fixed inset-0 z-10000",
+        "flex flex-col items-center justify-center gap-4",
+        "bg-[#f8fafc] dark:bg-[#18181b]",
+        className,
+      ].join(" ")}
     >
-      <Spinner size="lg" />
+      <LottieDotsPlayer />
+      {message ? (
+        <p className="max-w-sm px-4 text-center text-sm text-slate-600 dark:text-slate-400 sm:text-base">
+          {message}
+        </p>
+      ) : null}
     </div>
   );
 }

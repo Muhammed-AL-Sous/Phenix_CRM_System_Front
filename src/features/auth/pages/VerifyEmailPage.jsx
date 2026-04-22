@@ -1,4 +1,4 @@
-import { Spinner } from "../../../components/common/GlobalLoader";
+import { Spinner } from "../../../components/common/SpinnerFallback";
 
 // ================= Hook Logic =================
 import useVerifyEmailPageHook from "../hooks/useVerifyEmailPageHook";

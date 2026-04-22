@@ -1,5 +1,5 @@
 // React Hooks
-import { useState, useLayoutEffect, useEffect } from "react";
+import { Suspense, useState, useLayoutEffect, useEffect } from "react";
 
 // React Redux
 import { useSelector } from "react-redux";
@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from "motion/react";
 import getEcho from "../../../../lib/echo";
 import { shouldShowBroadcastToast } from "../../../../logic/broadcastNotifyDedupe";
 import { notifySonner } from "../../../../lib/notifySonner";
+import RouteSuspenseGate from "../../../../routes/RouteSuspenseGate";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -95,11 +96,11 @@ export default function DashboardLayout() {
   if (isClientOnboarding) {
     return (
       <>
-        <div
-          className="h-dvh overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
-        >
+        <div className="h-dvh overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30">
           <main className="mesh-gradient no-scroll-anchor flex-1 overflow-y-auto overscroll-contain p-4 md:p-8 lg:p-10">
-            <Outlet />
+            <Suspense fallback={<RouteSuspenseGate />}>
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </>
@@ -108,42 +109,42 @@ export default function DashboardLayout() {
 
   return (
     <>
-      <div
-        className="h-dvh w-full overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30"
-      >
-      {/* ============== Dashboard SideBar ============== */}
-      <DashboardSidebar
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
-        sidebarLinks={sidebarLinks}
-      />
+      <div className="h-dvh w-full overflow-hidden bg-slate-50 dark:bg-black flex selection:bg-red-500/30">
+        {/* ============== Dashboard SideBar ============== */}
+        <DashboardSidebar
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
+          sidebarLinks={sidebarLinks}
+        />
 
-      {/* ============== Main Content Area ============== */}
-      <div
-        className={`flex-1 flex flex-col min-w-0 min-h-0 transition-all duration-300 ease-in-out
+        {/* ============== Main Content Area ============== */}
+        <div
+          className={`flex-1 flex flex-col min-w-0 min-h-0 transition-all duration-300 ease-in-out
           ${isRtl ? "lg:mr-80" : "lg:ml-80"}`}
-      >
-        {/* ============== Dashboard NavBar ============== */}
-        <DashboardNavbar toggleSidebar={() => setIsSidebarOpen(true)} />
+        >
+          {/* ============== Dashboard NavBar ============== */}
+          <DashboardNavbar toggleSidebar={() => setIsSidebarOpen(true)} />
 
-        {/* ============== Dashboard Content ============== */}
-        <main className="mesh-gradient no-scroll-anchor flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 md:p-8 lg:p-10 relative overflow-x-hidden">
-          {/* ============== Page Transition Animation ============== */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3, ease: "circOut" }}
-              className="w-full min-h-0"
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
-        </main>
+          {/* ============== Dashboard Content ============== */}
+          <main className="mesh-gradient no-scroll-anchor flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 md:p-8 lg:p-10 relative overflow-x-hidden">
+            {/* ============== Page Transition Animation ============== */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: -15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 15 }}
+                transition={{ duration: 0.5, ease: "circOut" }}
+                className="w-full min-h-0"
+              >
+                <Suspense fallback={<RouteSuspenseGate />}>
+                  <Outlet />
+                </Suspense>
+              </motion.div>
+            </AnimatePresence>
+          </main>
+        </div>
       </div>
-    </div>
     </>
   );
 }

@@ -3,7 +3,7 @@ import {
   useGetClientsQuery,
   useDeleteClientMutation,
 } from "../clientsApiSlice";
-import { RouteSuspenseFallback, Spinner } from "../../../components/common/GlobalLoader";
+import { PanelEdgeSpinner, Spinner } from "../../../components/common/SpinnerFallback";
 
 export default function ClientsTable() {
   const [search, setSearch] = useState("");
@@ -40,7 +40,7 @@ export default function ClientsTable() {
       </div>
 
       {isLoading ? (
-        <RouteSuspenseFallback className="min-h-[50vh]" />
+        <PanelEdgeSpinner className="min-h-[8rem]" />
       ) : (
         <table
           className={`w-full border-collapse ${isFetching ? "opacity-50" : ""}`}

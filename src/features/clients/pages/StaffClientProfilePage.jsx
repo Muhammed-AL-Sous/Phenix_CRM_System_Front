@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight } from "lucide-react";
 import { selectCurrentUser } from "../../auth/authSlice";
 import { useGetAdminClientQuery } from "../clientsApiSlice";
-import { RouteSuspenseFallback } from "../../../components/common/GlobalLoader";
+import { PanelEdgeSpinner } from "../../../components/common/SpinnerFallback";
 
 const STAFF = new Set(["admin", "manager", "support", "sales"]);
 
@@ -47,7 +47,7 @@ export default function StaffClientProfilePage() {
     );
   }
 
-  if (isLoading) return <RouteSuspenseFallback className="min-h-[50vh]" />;
+  if (isLoading) return <PanelEdgeSpinner />;
 
   if (error || !client) {
     return (

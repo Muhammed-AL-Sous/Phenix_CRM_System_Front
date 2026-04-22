@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { Outlet, useMatches, useLocation, Link } from "react-router";
 
+import RouteSuspenseGate from "../../../../routes/RouteSuspenseGate";
+
 // Utilities Toggles
 import ThemeToggle from "../../../../components/utility/ThemeToggle";
 import LanguageToggle from "../../../../components/utility/LanguageToggle";
@@ -19,8 +21,6 @@ import { useTranslation } from "react-i18next";
 
 // Icon
 import { House } from "lucide-react";
-
-import { RouteSuspenseFallback } from "../../../../components/common/GlobalLoader";
 
 const AuthLayout = () => {
   const { direction } = useSelector((state) => state.ui);
@@ -54,59 +54,61 @@ const AuthLayout = () => {
           </Link>
         </span>
       </div>
-      <Suspense fallback={<RouteSuspenseFallback />}>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full max-w-md glass rounded-[2.5rem] pt-0 pb-4 px-8 shadow-2xl relative z-10"
-        >
-          <div className="text-center mb-4">
-            {/* ============= Phenix Logo ============= */}
-            <motion.div
-              initial={{ rotate: -10 }}
-              animate={{ rotate: 0 }}
-              className="inline-flex items-center justify-center w-35 h-35 mb-2"
-            >
-              <img src={phenixLogo} alt="phenix-logo" />
-            </motion.div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-md glass rounded-[2.5rem] pt-0 pb-4 px-8 shadow-2xl relative z-10"
+      >
+        <div className="text-center mb-4">
+          {/* ============= Phenix Logo ============= */}
+          <motion.div
+            initial={{ rotate: -10 }}
+            animate={{ rotate: 0 }}
+            className="inline-flex items-center justify-center w-35 h-35 mb-2"
+          >
+            <img src={phenixLogo} alt="phenix-logo" />
+          </motion.div>
 
-            {/* ============= Title ============= */}
-            <h1
-              style={{
-                fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
-              }}
-              className="text-3xl font-black text-slate-600 dark:text-white tracking-tight"
-            >
-              {title}
-            </h1>
+          {/* ============= Title ============= */}
+          <h1
+            style={{
+              fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
+            }}
+            className="text-3xl font-black text-slate-600 dark:text-white tracking-tight"
+          >
+            {title}
+          </h1>
 
-            {/* ============= Subtitle ============= */}
-            <p
-              style={{
-                fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
-              }}
-              className="text-slate-600 dark:text-slate-400 mt-2 font-semibold"
-            >
-              {subtitle}
-              <span className="text-slate-600 dark:text-slate-400 mt-1 text-xs font-bold tracking-wide block">{description}</span>
-            </p>
-          </div>
+          {/* ============= Subtitle ============= */}
+          <p
+            style={{
+              fontFamily: direction === "rtl" ? "Almarai" : "Livvic",
+            }}
+            className="text-slate-600 dark:text-slate-400 mt-2 font-semibold"
+          >
+            {subtitle}
+            <span className="text-slate-600 dark:text-slate-400 mt-1 text-xs font-bold tracking-wide block">
+              {description}
+            </span>
+          </p>
+        </div>
 
-          {/* ============= Animation Between Routes ============= */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, x: direction === "rtl" ? -40 : 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction === "rtl" ? 40 : -40 }}
-              transition={{ duration: 0.3 }}
-            >
+        {/* ============= Animation Between Routes ============= */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, x: direction === "rtl" ? -40 : 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction === "rtl" ? 40 : -40 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Suspense fallback={<RouteSuspenseGate />}>
               <Outlet />
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
-      </Suspense>
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };

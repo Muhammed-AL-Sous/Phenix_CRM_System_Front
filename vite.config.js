@@ -45,5 +45,38 @@ export default defineConfig(({ mode }) => {
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) {
+            return;
+          }
+          if (id.includes("lottie-web") || id.includes("lottie-react")) {
+            return "lottie";
+          }
+          if (id.includes("motion") || id.includes("framer-motion")) {
+            return "motion";
+          }
+          if (id.includes("swiper")) {
+            return "swiper";
+          }
+          if (id.includes("lucide-react")) {
+            return "lucide";
+          }
+          if (id.includes("i18next")) {
+            return "i18next";
+          }
+          if (id.includes("pusher-js") || id.includes("laravel-echo")) {
+            return "echo";
+          }
+          if (id.includes("axios")) {
+            return "axios";
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 700,
+  },
 };
 });

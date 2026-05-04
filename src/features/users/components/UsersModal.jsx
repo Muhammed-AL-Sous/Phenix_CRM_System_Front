@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
+// React & Redux
+import { useCallback, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 
-import { useTranslation } from "react-i18next";
-import { AnimatePresence, motion } from "motion/react";
-import { notifySonner } from "../../../lib/notifySonner";
+// Slices
 import { selectCurrentUser } from "../../auth/authSlice";
+
+// API Slices
 import {
   useAddUserMutation,
   useGetAdminUserQuery,
@@ -13,16 +14,24 @@ import {
   useUpdateUserMutation,
 } from "../usersApiSlice";
 
+// Icons
 import {
   UserRoundPlus,
   Mail,
   Lock,
   LockKeyhole,
   UserRoundKey,
+  EyeOff,
+  Eye,
+  X,
 } from "lucide-react";
+
+// Utils & External Libs & Components
+import { useTranslation } from "react-i18next";
+import { AnimatePresence, motion } from "motion/react";
+import { notifySonner } from "../../../lib/notifySonner";
 import FormListbox from "../../../components/utility/FormListbox";
-import clsx from "clsx";
-import { cn } from './../../../lib/utils';
+import { handleDualPasswordFieldToggle } from "../../auth/utils/dualPasswordFieldToggle";
 
 function firstValidationMessage(errors) {
   if (!errors || typeof errors !== "object") return null;
@@ -52,11 +61,32 @@ function UsersModalForm({
   const [roleId, setRoleId] = useState(initialRoleId);
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [addUser, { isLoading: adding }] = useAddUserMutation();
   const [updateUser, { isLoading: updating }] = useUpdateUserMutation();
 
   const busy = adding || updating;
+
+  // ========= Refs ========= //
+  const passwordRef = useRef(null);
+  const passwordConfirmRef = useRef(null);
+
+  // =============================
+  // Toggle Logic (Keyboard Fix)
+  // =============================
+  const handleToggle = useCallback(
+    (e, type) =>
+      handleDualPasswordFieldToggle(e, type, {
+        passwordRef,
+        passwordConfirmRef,
+        setShowPassword,
+        setShowConfirmPassword,
+      }),
+    [],
+  );
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -140,22 +170,27 @@ function UsersModalForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+    <form onSubmit={handleSubmit} className="mt-4 space-y-4">
       {/* ===== Name Field ===== */}
       <div>
         <label
-          style={{ fontFamily: direction === "rtl" ? "Almarai" : "Livvic" }}
-          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic" }}
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
         >
           <span>
-            <UserRoundPlus className="w-4 h-4" />
+            <UserRoundPlus
+              style={{
+                top: direction === "rtl" ? "-2px" : "",
+              }}
+              className="w-4 h-4 relative"
+            />
           </span>
           {t("users.name")}
         </label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium font-[livvic] text-slate-800 outline-none transition focus:ring-1 focus:ring-slate-300 dark:focus:ring-red-500/50 dark:focus:border-red-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
           autoComplete="name"
           placeholder="John Doe"
         />
@@ -164,11 +199,16 @@ function UsersModalForm({
       {/* ===== Email Field ===== */}
       <div>
         <label
-          style={{ fontFamily: direction === "rtl" ? "Almarai" : "Livvic" }}
-          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic" }}
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
         >
           <span>
-            <Mail className="w-4 h-4" />
+            <Mail
+              style={{
+                top: direction === "rtl" ? "-2px" : "",
+              }}
+              className="w-4 h-4 relative"
+            />
           </span>
           {t("users.email")}
         </label>
@@ -176,29 +216,34 @@ function UsersModalForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           type="email"
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium font-[livvic] text-slate-800 outline-none transition focus:ring-1 focus:ring-slate-300 dark:focus:ring-red-500/50 dark:focus:border-red-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
           autoComplete="email"
           placeholder="name@company.com"
         />
       </div>
 
+      {/* ===== Role Field ===== */}
       {!hideRoleField ? (
         <div>
           <label
-            style={{ fontFamily: direction === "rtl" ? "Almarai" : "Livvic" }}
-            className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+            style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic" }}
+            className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
           >
             <span>
-              <UserRoundKey className="w-4 h-4" />
+              <UserRoundKey
+                style={{
+                  top: direction === "rtl" ? "-2px" : "",
+                }}
+                className="w-4 h-4 relative"
+              />
             </span>
             {t("users.role")}
           </label>
-
+          
           <FormListbox
             id="users-modal-role"
             value={roleId}
             onChange={(v) => setRoleId(v)}
-            //  className={cn("w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white",{"!focus":ring-offset-slate-300})}
             disabled={rolesLoading}
             loading={rolesLoading}
             options={roleOptions}
@@ -207,8 +252,18 @@ function UsersModalForm({
         </div>
       ) : null}
 
+      {/* ===== Password Field ===== */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label
+          style={{ fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic" }}
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+        >
+          <span>
+            <Lock
+              style={{ top: direction === "rtl" ? "-2px" : "" }}
+              className="w-4 h-4 relative"
+            />
+          </span>
           {t("users.password")}
           {isEdit ? (
             <span className="ms-1 font-normal text-slate-500 dark:text-slate-400">
@@ -216,34 +271,115 @@ function UsersModalForm({
             </span>
           ) : null}
         </label>
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:ring-2 focus:ring-red-500/70 dark:focus:ring-red-500/50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-          autoComplete={isEdit ? "new-password" : "new-password"}
-          required={!isEdit}
-        />
+        <div className="relative">
+          <input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            ref={passwordRef}
+            type={showPassword ? "text" : "password"}
+            style={{
+              letterSpacing:
+                !showPassword && password.length > 0 ? "0.2em" : "normal",
+            }}
+            className={`w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium font-[livvic] text-slate-800 outline-none transition-all focus:ring-1 focus:ring-slate-300 dark:focus:ring-red-500/50 dark:focus:border-red-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white
+         ${direction === "rtl" ? "text-right" : "text-left"}`}
+            autoComplete={isEdit ? "new-password" : "new-password"}
+            // required={!isEdit}
+            dir={password.length > 0 ? "ltr" : "inherit"}
+            placeholder="••••••••"
+          />
+          {/* ======= Icon Show Hide Password ======= */}
+          <button
+            type="button"
+            className={`absolute top-1/2 -translate-y-1/2
+                  ${direction === "rtl" ? "left-4" : "right-4"}`}
+            onMouseDown={(e) => handleToggle(e, "password")}
+            style={{
+              cursor: "pointer",
+              zIndex: 10,
+              color: "#6c757d",
+              fontSize: "18px",
+            }}
+          >
+            {showPassword ? <EyeOff /> : <Eye />}
+          </button>
+        </div>
       </div>
 
+      {/* ===== Password Confirmation Field ===== */}
       <div>
-        <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
+        <label
+          style={{
+            fontFamily: direction === "rtl" ? "Vazirmatn" : "Livvic",
+          }}
+          className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
+        >
+          <span>
+            <LockKeyhole
+              style={{ top: direction === "rtl" ? "-2px" : "" }}
+              className="w-4 h-4 relative"
+            />
+          </span>
           {t("users.password_confirmation")}
         </label>
-        <input
-          value={passwordConfirmation}
-          onChange={(e) => setPasswordConfirmation(e.target.value)}
-          type="password"
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-slate-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white"
-          autoComplete="new-password"
-          required={!isEdit}
-        />
+        <div className="relative">
+          <input
+            name="password_confirmation"
+            ref={passwordConfirmRef}
+            type={showConfirmPassword ? "text" : "password"}
+            style={{
+              fontFamily: "Livvic",
+              fontWeight: "500",
+              letterSpacing:
+                !showConfirmPassword && passwordConfirmation.length > 0
+                  ? "0.2em"
+                  : "normal",
+            }}
+            value={passwordConfirmation}
+            onChange={(e) => setPasswordConfirmation(e.target.value)}
+            className={`w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium font-[livvic] text-slate-800 outline-none transition-all focus:ring-1 focus:ring-slate-300 dark:focus:ring-red-500/50 dark:focus:border-red-800 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white
+         ${direction === "rtl" ? "text-right" : "text-left"}`}
+            autoComplete="new-password"
+            // required={!isEdit}
+            dir={passwordConfirmation.length > 0 ? "ltr" : "inherit"}
+            placeholder="••••••••"
+          />
+
+          {/* ======= Icon Show Hide Password Confirmation ======= */}
+          <button
+            type="button"
+            className={`absolute top-1/2 -translate-y-1/2
+          ${direction === "rtl" ? "left-4" : "right-4"}`}
+            onMouseDown={(e) => handleToggle(e, "confirm")}
+            style={{
+              cursor: "pointer",
+              zIndex: 10,
+              color: "#6c757d",
+              fontSize: "18px",
+            }}
+          >
+            {showConfirmPassword ? <EyeOff /> : <Eye />}
+          </button>
+        </div>
       </div>
 
+      {/* ===== Submit Button ===== */}
       <button
         type="submit"
         disabled={busy}
-        className="mt-2 w-full rounded-xl bg-slate-900 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+        style={{
+          fontFamily: direction === "rtl" ? "Vazirmatn" : "Almarai",
+        }}
+        className={`w-full py-2.5 text-sm font-semibold bg-red-500
+             hover:bg-red-600 duration-300 text-white leading-tight
+              rounded-2xl shadow-lg shadow-red-500/30 transition-all transform 
+              active:scale-[0.98] cursor-pointer 
+               ${
+                 busy
+                   ? "bg-red-500 cursor-not-allowed opacity-80"
+                   : "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 cursor-pointer"
+               }`}
       >
         {busy
           ? t("users.saving")
@@ -350,9 +486,9 @@ export default function UsersModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-zinc-800"
+                className="rounded-lg px-2 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-zinc-800 cursor-pointer"
               >
-                {t("users.close")}
+                <X />
               </button>
             </div>
 

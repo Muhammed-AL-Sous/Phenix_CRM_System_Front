@@ -40,11 +40,16 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
     return open;
   }, [location.pathname, sidebarLinks]);
 
-  
-  // Only stores explicit user toggles. If a group hasn't been toggled yet,
-  // we fall back to `defaultOpenGroups` (derived from current route).
-  const [openGroups, setOpenGroups] = useState({});
-  
+  // ✅ تخزين المسار مع الـ overrides لتجنب useEffect + setState
+  const [groupsState, setGroupsState] = useState({
+    pathname: location.pathname,
+    overrides: {},
+  });
+
+  // ✅ اشتق openGroups مباشرةً - إذا تغيّر المسار تُمسح الـ overrides تلقائياً
+  const openGroups =
+    groupsState.pathname === location.pathname ? groupsState.overrides : {};
+
   // إغلاق القائمة عند الضغط على Escape
   useEffect(() => {
     const handleEsc = (e) => {
@@ -67,9 +72,6 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
     },
   };
 
-  {
-    /* ============= handle Mobile Navigation ============= */
-  }
   const handleMobileNavigation = () => {
     if (window.innerWidth < 1024) {
       setTimeout(() => {
@@ -78,7 +80,6 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
     }
   };
 
-  /* ================= Handle Logout ================= */
   const [logout] = useLogoutMutation();
   const handleLogout = async () => {
     logout();
@@ -134,19 +135,35 @@ const DashboardSidebar = ({ isOpen, setIsOpen, sidebarLinks }) => {
       }
 
       const groupKey = item.key || item.to || item.label;
+
       const isOpenGroup = Object.prototype.hasOwnProperty.call(
         openGroups,
         groupKey,
       )
         ? !!openGroups[groupKey]
         : !!defaultOpenGroups[groupKey];
+
+      // ✅ toggleGroup مصحّحة - تعيد object وليس JSX
       const toggleGroup = () =>
-        setOpenGroups((prev) => ({
-          ...prev,
-          [groupKey]: Object.prototype.hasOwnProperty.call(prev, groupKey)
-            ? !prev[groupKey]
-            : !defaultOpenGroups[groupKey],
-        }));
+        setGroupsState((prev) => {
+          const currentOverrides =
+            prev.pathname === location.pathname ? prev.overrides : {};
+
+          const isCurrentlyOpen = Object.prototype.hasOwnProperty.call(
+            currentOverrides,
+            groupKey,
+          )
+            ? !!currentOverrides[groupKey]
+            : !!defaultOpenGroups[groupKey];
+
+          return {
+            pathname: location.pathname,
+            overrides: {
+              ...currentOverrides,
+              [groupKey]: !isCurrentlyOpen,
+            },
+          };
+        });
 
       return (
         <div key={groupKey} className="space-y-2">

@@ -1,5 +1,5 @@
 // React and Redux
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
 // Slices
@@ -7,7 +7,7 @@ import { useGetUsersQuery, useDeleteUserMutation } from "../usersApiSlice";
 import { selectCurrentUser } from "../../auth/authSlice";
 
 // Icons
-import { UserPlus, ArrowDownWideNarrow } from "lucide-react";
+import { UserRoundPlus, ArrowDownWideNarrow } from "lucide-react";
 
 // Components
 import UsersTable from "../components/UsersTable";
@@ -102,6 +102,21 @@ const UsersPage = () => {
 
   const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
 
+  useEffect(() => {
+  // نتحقق من وجود رقم الصفحة لتجنب التنفيذ عند أول تحميل إذا لم تكن هناك بيانات بعد
+  if (meta?.current_page) {
+    // نبحث عن حاوية التمرير الأساسية في الـ Dashboard
+    const scrollContainer = document.querySelector("main.no-scroll-anchor");
+    
+    if (scrollContainer) {
+      scrollContainer.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  }
+}, [meta?.current_page]);
+
   const deleteConfirmLabel = useMemo(() => {
     if (deleteConfirmUserId == null) return "";
     const u = users.find((row) => row.id === deleteConfirmUserId);
@@ -192,12 +207,10 @@ const UsersPage = () => {
             }}
             className="flex cursor-pointer items-center gap-2 rounded-2xl bg-slate-800 px-3 py-2 text-xs font-semibold text-white transition-colors duration-200 hover:bg-slate-900 dark:bg-gray-900 dark:text-gray-200 hover:dark:bg-gray-800"
           >
-            <UserPlus size={16} />
+            <UserRoundPlus size={17} />
             <span
               style={{
                 fontFamily: direction === "rtl" ? "Vazirmatn" : "Inter",
-                position: "relative",
-                top: direction === "rtl" ? 0 : 1,
               }}
             >
               {t("users.add_user")}
@@ -209,7 +222,7 @@ const UsersPage = () => {
             onClick={() => setIsOpenGroup((prev) => !prev)}
             className="flex cursor-pointer items-center gap-2 rounded-2xl bg-red-500 px-3 py-2 text-xs font-semibold text-white transition-colors duration-200 hover:bg-red-600 dark:bg-red-800 dark:text-gray-200 hover:dark:bg-red-900"
           >
-            <ArrowDownWideNarrow size={16} />
+            <ArrowDownWideNarrow size={17} />
             {t("users.list.filter")}
           </button>
         </div>

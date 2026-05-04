@@ -158,7 +158,7 @@ export default function StaffClientProfilePage() {
           <img
             src={client.company_logo_url}
             alt=""
-            className="mb-4 h-16 w-auto max-w-[200px] rounded-lg object-contain"
+            className="mb-4 h-16 w-auto max-w-50 rounded-lg object-contain"
           />
         ) : null}
         <dl className="grid gap-3 sm:grid-cols-2">
@@ -183,7 +183,7 @@ export default function StaffClientProfilePage() {
               {t("fields.country")}
             </dt>
             <dd className="font-medium text-slate-900 dark:text-slate-100">
-              {client.country?.name || "—"}
+              {direction === "rtl" ? client.country?.name_ar : client.country?.name_en || "—"}
             </dd>
           </div>
           <div>
@@ -191,7 +191,7 @@ export default function StaffClientProfilePage() {
               {t("fields.city")}
             </dt>
             <dd className="font-medium text-slate-900 dark:text-slate-100">
-              {client.subdivision?.name || "—"}
+              {direction === "rtl" ? client.subdivision?.name_ar : client.subdivision?.name_en || "—"}
             </dd>
           </div>
           <div>
@@ -199,7 +199,7 @@ export default function StaffClientProfilePage() {
               {t("fields.business_activity")}
             </dt>
             <dd className="font-medium text-slate-900 dark:text-slate-100">
-              {client.business_activity?.name || "—"}
+              {direction === "rtl" ? client.business_activity?.name_ar : client.business_activity?.name_en || "—"}
             </dd>
           </div>
           <div>
@@ -207,7 +207,7 @@ export default function StaffClientProfilePage() {
               {t("fields.job_title")}
             </dt>
             <dd className="font-medium text-slate-900 dark:text-slate-100">
-              {client.job_title?.name || "—"}
+              {direction === "rtl" ? client.job_title?.name_ar : client.job_title?.name_en || "—"}
             </dd>
           </div>
         </dl>

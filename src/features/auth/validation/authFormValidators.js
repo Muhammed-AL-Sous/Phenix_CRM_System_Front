@@ -1,12 +1,7 @@
 /** نمط البريد المستخدم في نماذج المصادقة */
 export const AUTH_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * أخطاء البريد (مفاتيح i18n تحت error.*).
- * @param {string} email
- * @param {string} [fieldKey="email"]
- * @returns {Record<string, string>}
- */
+
 export function collectAuthEmailErrors(email, fieldKey = "email") {
   const trimmed = typeof email === "string" ? email.trim() : "";
   const out = {};
@@ -20,12 +15,7 @@ export function collectAuthEmailErrors(email, fieldKey = "email") {
   return out;
 }
 
-/**
- * قواعد كلمة المرور: 8+، حرف، رقم.
- * @param {string} password
- * @param {string} [fieldKey="password"]
- * @returns {Record<string, string>}
- */
+
 export function collectAuthPasswordPolicyErrors(password, fieldKey = "password") {
   const out = {};
   if (!password) {
@@ -42,13 +32,7 @@ export function collectAuthPasswordPolicyErrors(password, fieldKey = "password")
   return out;
 }
 
-/**
- * تأكيد كلمة المرور.
- * @param {string} password
- * @param {string} passwordConfirmation
- * @param {string} [confirmationFieldKey="password_confirmation"]
- * @returns {Record<string, string>}
- */
+
 export function collectAuthPasswordConfirmationErrors(
   password,
   passwordConfirmation,
@@ -65,11 +49,7 @@ export function collectAuthPasswordConfirmationErrors(
   return out;
 }
 
-/**
- * @param {string} name
- * @param {string} [fieldKey="name"]
- * @returns {Record<string, string>}
- */
+
 export function collectAuthNameErrors(name, fieldKey = "name") {
   const trimmed = typeof name === "string" ? name.trim() : "";
   if (trimmed) return {};

@@ -1,27 +1,24 @@
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 
-/**
- * @param {object} props
- * @param {{
- *   current_page: number,
- *   total_pages: number,
- *   total_items: number,
- *   from: number | null,
- *   to: number | null,
- *   items_per_page: number,
- * } | null | undefined} props.meta
- * @param {(page: number) => void} props.onPageChange
- * @param {boolean} [props.disabled]
- * @param {'ltr' | 'rtl'} props.dir
- */
 export default function UsersPagination({ meta, onPageChange, disabled, dir }) {
   const { t } = useTranslation("user");
 
   if (!meta || meta.total_pages < 1) return null;
 
-  const { current_page: current, total_pages: last, total_items: total, from, to } = meta;
+  const {
+    current_page: current,
+    total_pages: last,
+    total_items: total,
+    from,
+    to,
+  } = meta;
   const canPrev = current > 1;
   const canNext = current < last;
 

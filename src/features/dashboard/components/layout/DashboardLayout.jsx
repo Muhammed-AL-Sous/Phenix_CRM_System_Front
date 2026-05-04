@@ -1,5 +1,5 @@
 // React Hooks
-import { Suspense, useState, useLayoutEffect, useEffect } from "react";
+import { Suspense, useState, useLayoutEffect, useEffect, useRef } from "react";
 
 // React Redux
 import { useSelector } from "react-redux";
@@ -26,6 +26,7 @@ import { notifySonner } from "../../../../lib/notifySonner";
 import RouteSuspenseGate from "../../../../routes/RouteSuspenseGate";
 
 export default function DashboardLayout() {
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const user = useSelector(selectCurrentUser);
   const { direction } = useSelector((state) => state.ui);
@@ -37,6 +38,7 @@ export default function DashboardLayout() {
 
   const userId = user?.id;
 
+ 
   useEffect(() => {
     if (!userId) {
       return;

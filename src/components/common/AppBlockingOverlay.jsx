@@ -13,7 +13,7 @@ export default function AppBlockingOverlay() {
   return (
     <div
       className={[
-        "fixed inset-0 z-[10001] flex flex-col items-center justify-center gap-4",
+        "fixed inset-0 z-10001 flex flex-col items-center justify-center gap-4",
         "bg-[#f8fafc] dark:bg-[#18181b]",
         "transition-opacity duration-200 ease-out",
         show ? "opacity-100" : "pointer-events-none opacity-0",

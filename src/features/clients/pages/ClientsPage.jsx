@@ -51,10 +51,10 @@ export default function ClientsPage() {
           <h1>Clients</h1>
         </div>
         <div
-          className="min-h-[12rem] rounded-xl border border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
+          className="min-h-48"
           aria-busy
         >
-          <PanelEdgeSpinner className="min-h-[10rem]" />
+          <PanelEdgeSpinner className="min-h-40" />
         </div>
       </div>
     );

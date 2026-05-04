@@ -1,4 +1,4 @@
-import { UserPen, UserX } from "lucide-react";
+import { UserPen,UserRoundX} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { PanelEdgeSpinner } from "../../../components/common/SpinnerFallback";
@@ -87,7 +87,7 @@ export default function UsersTable({
                       onClick={() => onDelete(u.id)}
                       className="cursor-pointer rounded-lg border border-red-500 px-1 py-1 text-red-500 transition-colors duration-200 hover:border-red-600 hover:text-red-600"
                     >
-                      <UserX size={18} />
+                      <UserRoundX size={18} />
                     </button>
                   ) : null}
                   <button

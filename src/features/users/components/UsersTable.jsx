@@ -1,4 +1,4 @@
-import { UserPen,UserRoundX} from "lucide-react";
+import { UserPen, UserRoundX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { PanelEdgeSpinner } from "../../../components/common/SpinnerFallback";
@@ -19,7 +19,11 @@ export default function UsersTable({
 
   const rowNumber = (i) => {
     if (metaFrom != null) return metaFrom + i;
-    return (page - 1) * perPage + i + 1;
+    return (page - 1) * perPage + i + 1; 
+    // (1 - 1) * 15 + 0 + 1 = 1,
+    // (1 - 1) * 15 + 14 + 1 = 15,
+    // (2 - 1) * 15 + 0 + 1 = 16,
+    // (2 - 1) * 15 + 14 + 1 = 30
   };
 
   if (isInitialLoading && !users.length) {
@@ -33,6 +37,8 @@ export default function UsersTable({
       </p>
     );
   }
+  const thClassName =
+    "px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400";
 
   return (
     <div className="relative">
@@ -43,27 +49,17 @@ export default function UsersTable({
         )}
         aria-busy={isFetching || undefined}
       >
-        <table className="min-w-full divide-y divide-slate-200 dark:divide-zinc-800">
+        <table className="min-w-full divide-y divide-slate-300 dark:divide-zinc-800">
           <thead className="bg-slate-100 dark:bg-zinc-900">
             <tr>
-              <th className="px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
-                {t("users.list.row")}
-              </th>
-              <th className="px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
-                {t("users.name")}
-              </th>
-              <th className="px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
-                {t("users.email")}
-              </th>
-              <th className="px-4 py-3 text-start text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
-                {t("users.role")}
-              </th>
-              <th className="px-4 py-3 text-end text-xs font-semibold uppercase text-slate-600 dark:text-slate-400">
-                {t("users.actions")}
-              </th>
+              <th className={thClassName}>{t("users.list.row")}</th>
+              <th className={thClassName}>{t("users.name")}</th>
+              <th className={thClassName}>{t("users.email")}</th>
+              <th className={thClassName}>{t("users.role")}</th>
+              <th className={thClassName}>{t("users.actions")}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 bg-slate-50 font-[Livvic] dark:divide-zinc-800 dark:bg-zinc-950">
+          <tbody className="divide-y divide-slate-300 bg-slate-50 font-[Livvic] dark:divide-zinc-800 dark:bg-zinc-950">
             {users.map((u, i) => (
               <tr key={u.id}>
                 <td className="whitespace-nowrap px-4 py-3 text-sm font-medium tabular-nums text-slate-700 dark:text-slate-400">
@@ -75,7 +71,7 @@ export default function UsersTable({
                 <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-400">
                   {u.email}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm font-medium capitalize text-slate-700 dark:text-slate-400">
+                <td className="whitespace-nowrap px-4 py-3 text-sm rtl:text-base font-medium capitalize text-slate-700 dark:text-slate-400">
                   {u.role != null && u.role !== ""
                     ? t(`users.role_names.${u.role}`, { defaultValue: u.role })
                     : "—"}

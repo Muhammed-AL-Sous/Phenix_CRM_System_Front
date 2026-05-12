@@ -4,7 +4,7 @@
         "add_user": "إضافة مستخدم",
         "edit_user": "تعديل مستخدم",
         "delete_user": "حذف مستخدم",
-        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المستخدم ؟",
+        "confirmDelete": "هل أنت متأكد من حذف هذا المستخدم ؟",
         "cancel": "إلغاء",
         "confirm_delete_action": "حذف",
         "name": "الاسم",
@@ -78,7 +78,7 @@
         "addRole": "إضافة دور",
         "editRole": "تعديل دور",
         "deleteRole": "حذف دور",
-        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا الدور ؟",
+        "confirmDelete": "هل أنت متأكد من حذف هذا الدور ؟",
         "name": "الإسم",
         "permissions": "الصلاحيات",
         "actions": "الإجراءات"
@@ -88,7 +88,7 @@
         "addPermission": "إضافة صلاحية",
         "editPermission": "تعديل صلاحية",
         "deletePermission": "حذف صلاحية",
-        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذه الصلاحية ؟",
+        "confirmDelete": "هل أنت متأكد من حذف هذه الصلاحية ؟",
         "name": "الإسم",
         "actions": "الإجراءات"
     },

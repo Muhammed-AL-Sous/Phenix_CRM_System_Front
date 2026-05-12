@@ -29,6 +29,7 @@ body {
 .no-scroll-anchor {
   overflow-anchor: none;
 }
+
 /* ================= Custom Scrollbar Light Mode ================= */
 ::-webkit-scrollbar {
   width: 8px;

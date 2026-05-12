@@ -87,7 +87,6 @@ function UsersModalForm({
     [],
   );
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -239,7 +238,7 @@ function UsersModalForm({
             </span>
             {t("users.role")}
           </label>
-          
+
           <FormListbox
             id="users-modal-role"
             value={roleId}
@@ -266,8 +265,8 @@ function UsersModalForm({
           </span>
           {t("users.password")}
           {isEdit ? (
-            <span className="ms-1 font-normal text-slate-500 dark:text-slate-400">
-              ({t("users.optional_password_hint")})
+            <span className="ms-1 text-[11px] font-medium font-[Livvic] rtl:font-[Vazirmatn] text-slate-500 dark:text-slate-400">
+              ( {t("users.optional_password_hint")} )
             </span>
           ) : null}
         </label>

@@ -1,5 +1,5 @@
 // React Hooks
-import { Suspense, useState, useLayoutEffect, useEffect, useRef } from "react";
+import { Suspense, useState, useLayoutEffect, useEffect } from "react";
 
 // React Redux
 import { useSelector } from "react-redux";

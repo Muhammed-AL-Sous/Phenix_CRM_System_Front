@@ -103,27 +103,50 @@ const UsersPage = () => {
   const [deleteUser, { isLoading: isDeletingUser }] = useDeleteUserMutation();
 
   useEffect(() => {
-  // نتحقق من وجود رقم الصفحة لتجنب التنفيذ عند أول تحميل إذا لم تكن هناك بيانات بعد
-  if (meta?.current_page) {
-    // نبحث عن حاوية التمرير الأساسية في الـ Dashboard
-    const scrollContainer = document.querySelector("main.no-scroll-anchor");
-    
-    if (scrollContainer) {
-      scrollContainer.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+    // نتحقق من وجود رقم الصفحة لتجنب التنفيذ عند أول تحميل إذا لم تكن هناك بيانات بعد
+    if (meta?.current_page) {
+      // نبحث عن حاوية التمرير الأساسية في الـ Dashboard
+      const scrollContainer = document.querySelector("main.no-scroll-anchor");
+
+      if (scrollContainer) {
+        scrollContainer.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
     }
-  }
-}, [meta?.current_page]);
+  }, [meta?.current_page]);
 
   const deleteConfirmLabel = useMemo(() => {
-    if (deleteConfirmUserId == null) return "";
+    if (deleteConfirmUserId == null) return null;
+
     const u = users.find((row) => row.id === deleteConfirmUserId);
-    if (!u) return "";
-    const bits = [u.name, u.email].filter(Boolean);
-    return bits.join(" — ");
-  }, [deleteConfirmUserId, users]);
+    if (!u) return null;
+
+    // تعريف مفاتيح الترجمة
+    const detailsUser = {
+      name: "users.name",
+      email: "users.email",
+    };
+
+    return (
+      <div className="space-y-2 text-sm mt-2 text-slate-700 dark:text-slate-300 font-[Livvic]">
+        <p>
+          <span className="font-semibold font-[Almarai]">
+            {t(detailsUser.name)} :{" "}
+          </span>
+          <span className="font-semibold">{u.name}</span>
+        </p>
+
+        <p>
+          <span className="font-semibold font-[Almarai]">
+            {t(detailsUser.email)} : {" "}
+          </span>
+          <span className="font-semibold">{u.email}</span>
+        </p>
+      </div>
+    );
+  }, [deleteConfirmUserId, users, t]);
 
   // ===== Reset Filters To Default Values ===== //
   const handleResetFilters = () => {

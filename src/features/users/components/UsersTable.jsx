@@ -2,6 +2,7 @@ import { UserPen, UserRoundX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { PanelEdgeSpinner } from "../../../components/common/SpinnerFallback";
+import { useSelector } from "react-redux";
 
 export default function UsersTable({
   users = [],
@@ -16,10 +17,10 @@ export default function UsersTable({
   isInitialLoading = false,
 }) {
   const { t } = useTranslation("user");
-
+  const { direction } = useSelector((state) => state.ui);
   const rowNumber = (i) => {
     if (metaFrom != null) return metaFrom + i;
-    return (page - 1) * perPage + i + 1; 
+    return (page - 1) * perPage + i + 1;
     // (1 - 1) * 15 + 0 + 1 = 1,
     // (1 - 1) * 15 + 14 + 1 = 15,
     // (2 - 1) * 15 + 0 + 1 = 16,
@@ -56,7 +57,9 @@ export default function UsersTable({
               <th className={thClassName}>{t("users.name")}</th>
               <th className={thClassName}>{t("users.email")}</th>
               <th className={thClassName}>{t("users.role")}</th>
-              <th className={thClassName}>{t("users.actions")}</th>
+              <th className={thClassName} style={{ textAlign: direction === "rtl" ? "left" : "right" }}>
+                {t("users.actions")}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-300 bg-slate-50 font-[Livvic] dark:divide-zinc-800 dark:bg-zinc-950">

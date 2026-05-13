@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "motion/react";
 import { Loader2 } from "lucide-react";
+import { IconDeleteUser } from "../../../components/icons/SidebarUsersIcons";
 
 export default function DeleteUserConfirmModal({
   isOpen,
@@ -14,8 +15,7 @@ export default function DeleteUserConfirmModal({
   const { t } = useTranslation("user");
   const { direction } = useSelector((state) => state.ui);
   const dir = direction === "rtl" ? "rtl" : "ltr";
-  const portalTarget =
-    typeof document !== "undefined" ? document.body : null;
+  const portalTarget = typeof document !== "undefined" ? document.body : null;
 
   if (!portalTarget) return null;
 
@@ -32,7 +32,6 @@ export default function DeleteUserConfirmModal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-
           {/* ======== Start Backdrop ======== */}
           <button
             type="button"
@@ -59,21 +58,33 @@ export default function DeleteUserConfirmModal({
           >
             <h2
               id="delete-user-confirm-title"
-              className="text-lg font-bold text-slate-900 dark:text-red-500/90"
+              className="text-lg font-bold flex items-center relative gap-2 text-red-700 dark:text-red-500/90"
             >
-              {t("users.delete_user")}
+              <span style={{ position: "relative", top: "-4px" }}>
+                <IconDeleteUser
+                  size={30}
+                 
+                />
+              </span>
+              <span>{t("users.delete_user")}</span>
+
             </h2>
+
             <div
               id="delete-user-confirm-desc"
-              className="mt-3 text-sm font-[Livvic] rtl:font-[Vazirmatn] leading-relaxed font-semibold text-slate-900 dark:text-slate-300"
+              className="mt-3 text-sm font-[Livvic] rtl:font-[Vazirmatn] leading-relaxed font-semibold text-slate-900 dark:text-slate-300 border border-dashed border-slate-500 dark:border-zinc-700 rounded-lg p-4"
             >
-              {t("users.confirmDelete")}
+              <h3 className="text-base font-bold text-red-700 dark:text-red-500">
+                {t("users.confirmDelete")}
+              </h3>
+
               {userLabel ? (
                 <span className="mt-1 block font-medium font-[Livvic] text-slate-800 dark:text-slate-100">
                   {userLabel}
                 </span>
               ) : null}
             </div>
+
             <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
               <button
                 type="button"

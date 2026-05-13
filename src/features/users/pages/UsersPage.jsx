@@ -127,22 +127,34 @@ const UsersPage = () => {
     const detailsUser = {
       name: "users.name",
       email: "users.email",
+      role: "users.role"
     };
 
     return (
-      <div className="space-y-2 text-sm mt-2 text-slate-700 dark:text-slate-300 font-[Livvic]">
+      <div className="space-y-2 text-sm mt-2 text-slate-600 dark:text-slate-300 font-[Almarai]">
         <p>
-          <span className="font-semibold font-[Almarai]">
+          <span className="font-semibold">
             {t(detailsUser.name)} :{" "}
           </span>
           <span className="font-semibold">{u.name}</span>
         </p>
 
         <p>
-          <span className="font-semibold font-[Almarai]">
+          <span className="font-semibold">
             {t(detailsUser.email)} : {" "}
           </span>
           <span className="font-semibold">{u.email}</span>
+        </p>
+
+        <p>
+          <span className="font-semibold">
+            {t(detailsUser.role)} : {" "}
+          </span>
+          <span className="font-semibold">
+           ( {u.role != null && u.role !== ""
+              ? t(`users.role_names.${u.role}`, { defaultValue: u.role })
+              : "—"} )
+          </span>
         </p>
       </div>
     );

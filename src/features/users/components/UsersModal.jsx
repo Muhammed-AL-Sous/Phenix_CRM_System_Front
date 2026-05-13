@@ -32,6 +32,10 @@ import { AnimatePresence, motion } from "motion/react";
 import { notifySonner } from "../../../lib/notifySonner";
 import FormListbox from "../../../components/utility/FormListbox";
 import { handleDualPasswordFieldToggle } from "../../auth/utils/dualPasswordFieldToggle";
+import {
+  IconAddUser,
+  IconEditUser,
+} from "../../../components/icons/SidebarUsersIcons";
 
 function firstValidationMessage(errors) {
   if (!errors || typeof errors !== "object") return null;
@@ -479,8 +483,22 @@ export default function UsersModal({
             onClick={(ev) => ev.stopPropagation()}
           >
             <div className="flex items-center justify-between gap-4">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                {isEdit ? t("users.edit_user") : t("users.add_user")}
+              <h2 className="text-lg font-bold text-gray-600 dark:text-white flex items-center gap-2">
+                {isEdit ? (
+                  <span style={{ position: "relative", top: "-2px" }}>
+                    <IconEditUser size={30}/>{" "}
+                  </span>
+                ) : (
+                  <span style={{ position: "relative", top: "-4px" }}>
+                    <IconAddUser size={30} />
+                  </span>
+                )}
+
+                {isEdit ? (
+                  <span>{t("users.edit_user")}</span>
+                ) : (
+                  <span>{t("users.add_user")}</span>
+                )}
               </h2>
               <button
                 type="button"

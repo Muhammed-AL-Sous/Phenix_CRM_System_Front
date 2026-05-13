@@ -23,6 +23,7 @@ import { selectCurrentUser } from "../../../auth/authSlice";
 import { useLogoutMutation } from "../../../auth/authApiSlice";
 import { useNavigate } from "react-router";
 import { ROLES_CONFIG } from "../../../../routes/roles.config";
+import { IconAdmin } from "../../../../components/icons/SidebarUsersIcons";
 
 const DashboardNavbar = ({ toggleSidebar }) => {
   const { t } = useTranslation("dashboard");
@@ -128,12 +129,15 @@ const DashboardNavbar = ({ toggleSidebar }) => {
               <div
                 className={`hidden sm:block ${isRTL ? "text-left" : "text-right"}`}
               >
-                <p className="text-sm font-black text-slate-900 dark:text-white leading-tight max-w-40 truncate">
+                <h3 className="text-sm font-black text-slate-900 dark:text-white leading-tight max-w-40 truncate">
                   {displayName}
-                </p>
-                <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
-                  {roleLabel}
-                </p>
+                </h3>
+                <div className="flex items-center gap-2 text-slate-500">
+                  <span>
+                    <IconAdmin size={14} />
+                  </span>
+                  <span className="text-[10px] font-bold  uppercase tracking-widest">{roleLabel}</span>
+                </div>
               </div>
             </div>
           }

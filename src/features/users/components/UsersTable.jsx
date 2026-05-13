@@ -74,7 +74,7 @@ export default function UsersTable({
                 <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-400">
                   {u.email}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-sm rtl:text-base font-medium capitalize text-slate-700 dark:text-slate-400">
+                <td className="whitespace-nowrap px-4 py-3 text-sm rtl:text-base font-medium rtl:text-slate-800 capitalize text-slate-700 dark:text-slate-400">
                   {u.role != null && u.role !== ""
                     ? t(`users.role_names.${u.role}`, { defaultValue: u.role })
                     : "—"}

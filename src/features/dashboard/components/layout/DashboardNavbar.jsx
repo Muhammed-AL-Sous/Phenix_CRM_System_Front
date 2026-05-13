@@ -23,7 +23,11 @@ import { selectCurrentUser } from "../../../auth/authSlice";
 import { useLogoutMutation } from "../../../auth/authApiSlice";
 import { useNavigate } from "react-router";
 import { ROLES_CONFIG } from "../../../../routes/roles.config";
-import { IconAdmin } from "../../../../components/icons/SidebarUsersIcons";
+import {
+  IconAdmin,
+  IconSupport,
+} from "../../../../components/icons/SidebarUsersIcons";
+import { useMemo } from "react";
 
 const DashboardNavbar = ({ toggleSidebar }) => {
   const { t } = useTranslation("dashboard");
@@ -37,9 +41,28 @@ const DashboardNavbar = ({ toggleSidebar }) => {
   const profilePath = rolePrefix ? `/${rolePrefix}/profile` : "/";
 
   const displayName = user?.name?.trim() || "—";
-  const roleLabel = user?.role
-    ? t(`role_${user.role}`, { defaultValue: user.role })
-    : "";
+
+  const roleOptions = useMemo(
+    () => [
+      {
+        id: "admin",
+        name: t("user:users.role_names.admin"),
+        icon: IconAdmin,
+        className:
+          "flex items-center gap-1 px-2 py-1 w-max m-auto rounded-sm justify-center text-slate-100 dark:text-white border border-red-500 bg-red-700 dark:bg-red-700/40 dark:border-red-700/70 text-center text-xs",
+      },
+      // { id: "manager", name: t("users.role_names.manager"), icon: IconManager },
+      {
+        id: "support",
+        name: t("user:users.role_names.support"),
+        icon: IconSupport,
+        className:
+          "flex items-center gap-1 px-2 py-1 w-max m-auto rounded-sm justify-center text-slate-100 dark:text-white border border-green-500 bg-green-700 dark:bg-green-700/40 dark:border-green-700/50 text-center text-xs",
+      },
+      // { id: "client", name: t("users.role_names.client"), icon: IconClient },
+    ],
+    [t],
+  );
 
   const handleLogout = async () => {
     try {
@@ -129,15 +152,26 @@ const DashboardNavbar = ({ toggleSidebar }) => {
               <div
                 className={`hidden sm:block ${isRTL ? "text-left" : "text-right"}`}
               >
-                <h3 className="text-sm font-black text-slate-900 dark:text-white leading-tight max-w-40 truncate">
+                <h3 className="text-sm mb-1 font-semibold text-slate-700 text-center dark:text-white leading-tight max-w-40 truncate m-auto">
                   {displayName}
                 </h3>
-                <div className="flex items-center gap-2 text-slate-500">
-                  <span>
-                    <IconAdmin size={14} />
-                  </span>
-                  <span className="text-[10px] font-bold  uppercase tracking-widest">{roleLabel}</span>
-                </div>
+
+                {user?.role &&
+                  roleOptions.map((option) =>
+                    option.id === user.role ? (
+                      <div className={option.className} key={option.id}>
+                        <span className="rtl:order-2">
+                          <option.icon size={20} />
+                        </span>
+                        <span
+                          className="text-[12px] text-slate-100 font-bold dark:text-slate-100 font-[Livvic] rtl:font-[Vazirmatn]"
+                          style={{ position: "relative", top: "1.5px" }}
+                        >
+                          {option.name}
+                        </span>
+                      </div>
+                    ) : null,
+                  )}
               </div>
             </div>
           }
